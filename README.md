@@ -13,6 +13,7 @@ IPAddress should have the same api for:
 - ruby (the root implementation, it's not updated after the port to rust)
 - rust
 - javascript/typescript
+- cpp
 The documentation is in ruby and hopefully in rust. There should
 be examples writen in ruby in. 
 
@@ -53,7 +54,10 @@ For javascript:
 it is a commonjs file ipaddress.js in the root of the package
 if your in typescript there is the src directory with the 
 typescipt sources.
+
+For c++ you need boost 1.54> and cmake and g++
   
+  $ cmake . && make
 
 == Documentation
 
