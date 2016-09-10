@@ -19,7 +19,7 @@ public:
     size_t bits;
     size_t part_bits;
     size_t dns_bits;
-    std::string rev_domain;
+    const char *rev_domain;
     size_t part_mod;
     Crunchy host_ofs; // ipv4=1, ipv6=0
 
