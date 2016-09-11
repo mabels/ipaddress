@@ -60,6 +60,12 @@ int main(int, char **) {
           }
           Chai::assert.equal(c_count, 0, "loosing memory");
       });
+      
+      it("Ptr", [](){
+          TestOptional to;
+          auto some = Some(to);
+          Chai::assert.equal(some->_42, 42);
+      });
 
   });
   return exit();

@@ -114,7 +114,7 @@ pub fn new<S: Into<String>>(_str: S) -> Result<IPAddress, String> {
         //mapped = Some(ipv4.unwrap());
         let addr = ipv4.unwrap();
         let ipv6_bits = ::ip_bits::v6();
-        let part_mod = ipv6_bits.part_mod;
+        let ref part_mod = ipv6_bits.part_mod;
         let up_addr = addr.host_address.clone();
         let down_addr = addr.host_address.clone();
 

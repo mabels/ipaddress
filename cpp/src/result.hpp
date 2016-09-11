@@ -38,11 +38,19 @@ class Result {
     }
     return msg;
   }
+  const T& unwrap() const {
+    return val.unwrap();
+  }
+  const T* operator->() const {
+    return &unwrap();
+  }
 
   T& unwrap() {
     return val.unwrap();
   }
-
+  T* operator->() {
+    return &unwrap();
+  }
 };
 
 template<typename T> Result<T> Ok(T &t) {

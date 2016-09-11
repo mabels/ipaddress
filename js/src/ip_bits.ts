@@ -22,17 +22,17 @@ export class IpBits {
     host_ofs: Crunchy; // ipv4=1, ipv6=0
 
     public clone(): IpBits {
-        let my = new IpBits();
-        my.version = this.version;
-        my.vt_as_compressed_string = this.vt_as_compressed_string;
-        my.vt_as_uncompressed_string = this.vt_as_uncompressed_string;
-        my.bits = this.bits;
-        my.part_bits = this.part_bits;
-        my.dns_bits = this.dns_bits;
-        my.rev_domain = this.rev_domain;
-        my.part_mod = this.part_mod;
-        my.host_ofs = this.host_ofs.clone();
-        return my;
+        // let my = new IpBits();
+        // my.version = this.version;
+        // my.vt_as_compressed_string = this.vt_as_compressed_string;
+        // my.vt_as_uncompressed_string = this.vt_as_uncompressed_string;
+        // my.bits = this.bits;
+        // my.part_bits = this.part_bits;
+        // my.dns_bits = this.dns_bits;
+        // my.rev_domain = this.rev_domain;
+        // my.part_mod = this.part_mod;
+        // my.host_ofs = this.host_ofs.clone();
+        return this;
     }
 
     public parts(bu: Crunchy): number[] {
@@ -62,22 +62,32 @@ export class IpBits {
         }
     }
 
+    public static _v4 : IpBits = null;
     public static v4(): IpBits {
-        let my = new IpBits();
-        my.version = IpVersion.V4;
-        my.vt_as_compressed_string = IpBits.ipv4_as_compressed;
-        my.vt_as_uncompressed_string = IpBits.ipv4_as_compressed;
-        my.bits = 32;
-        my.part_bits = 8;
-        my.dns_bits = 8;
-        my.rev_domain = "in-addr.arpa";
-        my.part_mod = 1 << 8;
-        my.host_ofs = Crunchy.one();
-        return my;
+      if (IpBits._v4) {
+        return IpBits._v4;
+      }
+      let my = new IpBits();
+      IpBits._v4 = my;
+      my.version = IpVersion.V4;
+      my.vt_as_compressed_string = IpBits.ipv4_as_compressed;
+      my.vt_as_uncompressed_string = IpBits.ipv4_as_compressed;
+      my.bits = 32;
+      my.part_bits = 8;
+      my.dns_bits = 8;
+      my.rev_domain = "in-addr.arpa";
+      my.part_mod = 1 << 8;
+      my.host_ofs = Crunchy.one();
+      return my;
     }
 
+    public static _v6 : IpBits = null;
     public static v6(): IpBits {
+      if (IpBits._v6) {
+        return IpBits._v6;
+      }
         let my = new IpBits();
+        IpBits._v6 = my;
         my.version = IpVersion.V6;
         my.vt_as_compressed_string = IpBits.ipv6_as_compressed;
         my.vt_as_uncompressed_string = IpBits.ipv6_as_uncompressed;

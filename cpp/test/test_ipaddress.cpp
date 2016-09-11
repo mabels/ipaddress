@@ -37,27 +37,27 @@ int main() {
 
 
     it("test_method_ipaddress", []() {
-        std::cout << "-1" << std::endl;
+        // std::cout << "-1" << std::endl;
       Chai::assert.isTrue(IPAddress::parse(setup().valid_ipv4).isOk(), "valid_ipv4");
-        std::cout << "-2" << std::endl;
+        // std::cout << "-2" << std::endl;
       Chai::assert.isTrue(IPAddress::parse(setup().valid_ipv6).isOk(), "valid_ipv6");
-        std::cout << "-3" << std::endl;
+        // std::cout << "-3" << std::endl;
       Chai::assert.isTrue(IPAddress::parse(setup().valid_mapped).isOk(), "valid_mapped");
-        std::cout << "-4" << std::endl;
+        // std::cout << "-4" << std::endl;
 
-      Chai::assert.isTrue(IPAddress::parse(setup().valid_ipv4).unwrap().is_ipv4(), "isv4");
-        std::cout << "-5" << std::endl;
-      Chai::assert.isTrue(IPAddress::parse(setup().valid_ipv6).unwrap().is_ipv6(), "isv6");
-        std::cout << "-6" << std::endl;
-      Chai::assert.isTrue(IPAddress::parse(setup().valid_mapped).unwrap().is_mapped(), "ismapped");
-        std::cout << "-7" << std::endl;
+      Chai::assert.isTrue(IPAddress::parse(setup().valid_ipv4)->is_ipv4(), "isv4");
+        // std::cout << "-5" << std::endl;
+      Chai::assert.isTrue(IPAddress::parse(setup().valid_ipv6)->is_ipv6(), "isv6");
+        // std::cout << "-6" << std::endl;
+      Chai::assert.isTrue(IPAddress::parse(setup().valid_mapped)->is_mapped(), "ismapped");
+        // std::cout << "-7" << std::endl;
 
       Chai::assert.isTrue(IPAddress::parse(setup().invalid_ipv4).isErr(), "invalid_ipv4");
-        std::cout << "-8" << std::endl;
+        // std::cout << "-8" << std::endl;
       Chai::assert.isTrue(IPAddress::parse(setup().invalid_ipv6).isErr(), "invalid_ipv6");
-        std::cout << "-9" << std::endl;
+        // std::cout << "-9" << std::endl;
       Chai::assert.isTrue(IPAddress::parse(setup().invalid_mapped).isErr(), "invalid_mapped");
-        std::cout << "-A" << std::endl;
+        // std::cout << "-A" << std::endl;
     });
 
     it("test_module_method_valid", []() {
@@ -114,7 +114,7 @@ int main() {
         ip_addresses.push_back(IPAddress::parse(net).unwrap());
       }
 
-      Chai::assert.equal(IPAddress::summarize_str({}).unwrap().size(), 0);
+      Chai::assert.equal(IPAddress::summarize_str({})->size(), 0);
       assertArrayEqual(
           IPAddress::to_string_vec(IPAddress::summarize_str({"10.1.0.4/24"}).unwrap()),
           {"10.1.0.0/24"});

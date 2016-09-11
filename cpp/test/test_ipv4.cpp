@@ -272,26 +272,26 @@ int main() {
         );
       it("test_method_private", []() {
           Chai::assert.equal(true,
-              IPAddress::parse("192.168.10.50/24").unwrap().is_private());
+              IPAddress::parse("192.168.10.50/24")->is_private());
           Chai::assert.equal(true,
-              IPAddress::parse("192.168.10.50/16").unwrap().is_private());
+              IPAddress::parse("192.168.10.50/16")->is_private());
           Chai::assert.equal(true,
-              IPAddress::parse("172.16.77.40/24").unwrap().is_private());
+              IPAddress::parse("172.16.77.40/24")->is_private());
           Chai::assert.equal(true,
-              IPAddress::parse("172.16.10.50/14").unwrap().is_private());
+              IPAddress::parse("172.16.10.50/14")->is_private());
           Chai::assert.equal(true,
-              IPAddress::parse("10.10.10.10/10").unwrap().is_private());
-          Chai::assert.equal(true, IPAddress::parse("10.0.0.0/8").unwrap().is_private());
+              IPAddress::parse("10.10.10.10/10")->is_private());
+          Chai::assert.equal(true, IPAddress::parse("10.0.0.0/8")->is_private());
           Chai::assert.equal(false,
-              IPAddress::parse("192.168.10.50/12").unwrap().is_private());
-          Chai::assert.equal(false, IPAddress::parse("3.3.3.3").unwrap().is_private());
-          Chai::assert.equal(false, IPAddress::parse("10.0.0.0/7").unwrap().is_private());
+              IPAddress::parse("192.168.10.50/12")->is_private());
+          Chai::assert.equal(false, IPAddress::parse("3.3.3.3")->is_private());
+          Chai::assert.equal(false, IPAddress::parse("10.0.0.0/7")->is_private());
           Chai::assert.equal(false,
-              IPAddress::parse("172.32.0.0/12").unwrap().is_private());
+              IPAddress::parse("172.32.0.0/12")->is_private());
           Chai::assert.equal(false,
-              IPAddress::parse("172.16.0.0/11").unwrap().is_private());
+              IPAddress::parse("172.16.0.0/11")->is_private());
           Chai::assert.equal(false,
-              IPAddress::parse("192.0.0.2/24").unwrap().is_private());
+              IPAddress::parse("192.0.0.2/24")->is_private());
       }
       );
       it("test_method_octet", []() {
@@ -328,13 +328,13 @@ int main() {
           }
         );
       it("test_method_dns_rev_domains", []() {
-          Chai::assert.deepEqual(IPAddress::parse("173.17.5.1/23").unwrap().dns_rev_domains(),
+          Chai::assert.deepEqual(IPAddress::parse("173.17.5.1/23")->dns_rev_domains(),
               {"4.17.173.in-addr.arpa", "5.17.173.in-addr.arpa"});
-          Chai::assert.deepEqual(IPAddress::parse("173.17.1.1/15").unwrap().dns_rev_domains(),
+          Chai::assert.deepEqual(IPAddress::parse("173.17.1.1/15")->dns_rev_domains(),
               {"16.173.in-addr.arpa", "17.173.in-addr.arpa"});
-          Chai::assert.deepEqual(IPAddress::parse("173.17.1.1/7").unwrap().dns_rev_domains(),
+          Chai::assert.deepEqual(IPAddress::parse("173.17.1.1/7")->dns_rev_domains(),
               {"172.in-addr.arpa", "173.in-addr.arpa"});
-          Chai::assert.deepEqual(IPAddress::parse("173.17.1.1/29").unwrap().dns_rev_domains(),
+          Chai::assert.deepEqual(IPAddress::parse("173.17.1.1/29")->dns_rev_domains(),
               {
               "0.1.17.173.in-addr.arpa",
               "1.1.17.173.in-addr.arpa",
@@ -345,15 +345,15 @@ int main() {
               "6.1.17.173.in-addr.arpa",
               "7.1.17.173.in-addr.arpa"
               });
-          Chai::assert.deepEqual(IPAddress::parse("174.17.1.1/24").unwrap().dns_rev_domains(),
+          Chai::assert.deepEqual(IPAddress::parse("174.17.1.1/24")->dns_rev_domains(),
               {"1.17.174.in-addr.arpa"});
-          Chai::assert.deepEqual(IPAddress::parse("175.17.1.1/16").unwrap().dns_rev_domains(),
+          Chai::assert.deepEqual(IPAddress::parse("175.17.1.1/16")->dns_rev_domains(),
               {"17.175.in-addr.arpa"});
-          Chai::assert.deepEqual(IPAddress::parse("176.17.1.1/8").unwrap().dns_rev_domains(),
+          Chai::assert.deepEqual(IPAddress::parse("176.17.1.1/8")->dns_rev_domains(),
               {"176.in-addr.arpa"});
-          Chai::assert.deepEqual(IPAddress::parse("177.17.1.1/0").unwrap().dns_rev_domains(),
+          Chai::assert.deepEqual(IPAddress::parse("177.17.1.1/0")->dns_rev_domains(),
               {"in-addr.arpa"});
-          Chai::assert.deepEqual(IPAddress::parse("178.17.1.1/32").unwrap().dns_rev_domains(),
+          Chai::assert.deepEqual(IPAddress::parse("178.17.1.1/32")->dns_rev_domains(),
               {"1.1.17.178.in-addr.arpa"});
       }
       );
@@ -506,12 +506,12 @@ int main() {
         );
       it("test_method_supernet", []() {
           Chai::assert.isTrue(setup().ip.supernet(24).isErr());
-          Chai::assert.equal("0.0.0.0/0", setup().ip.supernet(0).unwrap().to_string());
+          Chai::assert.equal("0.0.0.0/0", setup().ip.supernet(0)->to_string());
           // Chai::assert.equal("0.0.0.0/0", setup().ip.supernet(-2).to_string());
           Chai::assert.equal("172.16.10.0/23",
-              setup().ip.supernet(23).unwrap().to_string());
+              setup().ip.supernet(23)->to_string());
           Chai::assert.equal("172.16.8.0/22",
-              setup().ip.supernet(22).unwrap().to_string());
+              setup().ip.supernet(22)->to_string());
           }
         );
       it("test_classmethod_parse_u32", []() {
@@ -520,7 +520,7 @@ int main() {
           auto my = i.second;
           auto ip = Ipv4::from_number(my, 32).unwrap();
           auto splitted = IPAddress::split_at_slash(addr);
-          auto num = IPAddress::parse_dec_str(splitted.unwrap().netmask.unwrap()).unwrap();
+          auto num = IPAddress::parse_dec_str(splitted->netmask.unwrap()).unwrap();
           auto ip2 = ip.change_prefix(num).unwrap();
           Chai::assert.equal(ip2.to_string(), addr);
           }

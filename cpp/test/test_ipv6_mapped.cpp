@@ -56,7 +56,7 @@ int main() {
             Chai::assert.isTrue(IPAddress::parse(ip).isOk());
             Chai::assert.equal(
                 u128.toString(),
-                IPAddress::parse(ip).unwrap().host_address.toString());
+                IPAddress::parse(ip)->host_address.toString());
       }
       for (auto i : s.valid_mapped_ipv6) {
         auto ip = i.first;
@@ -65,14 +65,14 @@ int main() {
         Chai::assert.isTrue(IPAddress::parse(ip).isOk());
         Chai::assert.equal(
             u128.toString(),
-            IPAddress::parse(ip).unwrap().host_address.toString());
+            IPAddress::parse(ip)->host_address.toString());
       }
     });
     it("test_mapped_from_ipv6_conversion", []() {
       for (auto i : setup().valid_mapped_ipv6_conversion) {
         auto ip6 = i.first;
         auto ip4 = i.second;
-        Chai::assert.equal(ip4, IPAddress::parse(ip6).unwrap().mapped.unwrap().to_s());
+        Chai::assert.equal(ip4, IPAddress::parse(ip6)->mapped->to_s());
       }
     });
     it("test_attributes", []() {

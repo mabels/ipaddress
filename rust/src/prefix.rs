@@ -17,7 +17,7 @@ use std::fmt;
 
 pub struct Prefix {
     pub num: usize,
-    pub ip_bits: ::ip_bits::IpBits,
+    pub ip_bits: &'static ::ip_bits::IpBits,
     pub net_mask: BigUint,
     pub vt_from: fn(&Prefix, usize) -> Result<Prefix, String>,
     //pub vt_to_ip_str: &'static (Fn(&Vec<u16>) -> String)

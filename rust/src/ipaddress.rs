@@ -33,7 +33,7 @@ use ip_bits::IpVersion;
 
 
 pub struct IPAddress {
-    pub ip_bits: IpBits,
+    pub ip_bits: &'static IpBits,
     pub host_address: BigUint,
     pub prefix: Prefix,
     pub mapped: Option<Box<IPAddress>>,

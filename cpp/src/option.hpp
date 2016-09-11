@@ -39,11 +39,19 @@ template<typename T> class Option {
     }
     return *t;
   }
+  const T* operator->() const {
+    return &unwrap();
+  }
+
   T& unwrap() {
     if (this->none) {
       throw OptionError("try to unwrap a none option");
     }
     return *t;
+  }
+
+  T* operator->() {
+    return &unwrap();
   }
 };
 

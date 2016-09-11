@@ -60,7 +60,7 @@ describe("prefix32", []() {
             auto num = e.second;
             // console.log(e);
             auto prefix = IPAddress::parse_netmask_to_prefix(netmask).unwrap();
-            std::cout << netmask << ":" << num << ":" << prefix << std::endl;
+            //std::cout << netmask << ":" << num << ":" << prefix << std::endl;
             Chai::assert.equal(num, prefix);
         }
     });
@@ -84,21 +84,21 @@ describe("prefix32", []() {
         for (auto i : setup().u32_hash) {
             auto num = i.first;
             auto ip32 = i.second;
-            Chai::assert.isTrue(ip32.eq(Prefix32::create(num).unwrap().netmask()));
+            Chai::assert.isTrue(ip32.eq(Prefix32::create(num)->netmask()));
         }
     });
     it("test_method_plus", []() {
         auto p1 = Prefix32::create(8).unwrap();
         auto p2 = Prefix32::create(10).unwrap();
-        Chai::assert.equal(18, p1.add_prefix(p2).unwrap().get_prefix());
-        Chai::assert.equal(12, p1.add(4).unwrap().get_prefix());
+        Chai::assert.equal(18, p1.add_prefix(p2)->get_prefix());
+        Chai::assert.equal(12, p1.add(4)->get_prefix());
     });
     it("test_method_minus", []() {
         auto p1 = Prefix32::create(8).unwrap();
         auto p2 = Prefix32::create(24).unwrap();
-        Chai::assert.equal(16, p1.sub_prefix(p2).unwrap().get_prefix());
-        Chai::assert.equal(16, p2.sub_prefix(p1).unwrap().get_prefix());
-        Chai::assert.equal(20, p2.sub(4).unwrap().get_prefix());
+        Chai::assert.equal(16, p1.sub_prefix(p2)->get_prefix());
+        Chai::assert.equal(16, p2.sub_prefix(p1)->get_prefix());
+        Chai::assert.equal(20, p2.sub(4)->get_prefix());
     });
     it("test_initialize", []() {
         Chai::assert.isTrue(Prefix32::create(33).isErr());
@@ -126,7 +126,7 @@ describe("prefix32", []() {
     it("test_method_hostmask", []() {
         auto prefix = Prefix32::create(8).unwrap();
         // console.log(">>>>", prefix.host_mask());
-        Chai::assert.equal("0.255.255.255", Ipv4::from_number(prefix.host_mask(), 0).unwrap().to_s());
+        Chai::assert.equal("0.255.255.255", Ipv4::from_number(prefix.host_mask(), 0)->to_s());
     });
 });
   return exit();
