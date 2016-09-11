@@ -109,7 +109,7 @@ describe("prefix32", []() {
             auto arr = i.first;
             auto pref = i.second;
             auto prefix = Prefix32::create(pref).unwrap();
-            Chai::assert.deepEqual(prefix.ip_bits.parts(prefix.netmask()), arr);
+            Chai::assert.deepEqual(prefix.ip_bits->parts(prefix.netmask()), arr);
         }
     });
     it("test_method_brackets", []() {
@@ -119,7 +119,7 @@ describe("prefix32", []() {
             auto prefix = Prefix32::create(pref).unwrap();
             for (size_t index=0; index < arr.size(); ++index) {
                 // console.log("xxxx", prefix.netmask());
-                Chai::assert.equal(prefix.ip_bits.parts(prefix.netmask())[index], arr[index]);
+                Chai::assert.equal(prefix.ip_bits->parts(prefix.netmask())[index], arr[index]);
             }
         }
     });

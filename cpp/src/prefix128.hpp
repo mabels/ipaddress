@@ -24,7 +24,7 @@ public:
             //static _FROM: &'static (Fn(&Prefix, usize) -> Result<Prefix, String>) = &from;
             //static _TO_IP_STR: &'static (Fn(&Vec<u16>) -> String) = &Prefix128::to_ip_str;
             auto ip_bits = IpBits::v6();
-            auto bits = ip_bits.bits;
+            auto bits = ip_bits->bits;
             Prefix ret(
                 num,
                 ip_bits,

@@ -13,14 +13,14 @@ class Prefix {
 public:
     typedef std::function<Result<Prefix>(const size_t num)> From;
     size_t num;
-    IpBits ip_bits;
+    const IpBits *ip_bits;
     Crunchy net_mask;
     From vt_from;
 
     Prefix() {
     }
 
-    Prefix(size_t num, const IpBits &ip_bits, const Crunchy &net_mask, const From &vt_from) {
+    Prefix(size_t num, const IpBits *ip_bits, const Crunchy &net_mask, const From &vt_from) {
         this->num = num;
         this->ip_bits = ip_bits;
         this->net_mask = net_mask;
@@ -37,16 +37,16 @@ public:
     }
 
     bool eq(const Prefix &other) const {
-        return this->ip_bits.version == other.ip_bits.version &&
+        return this->ip_bits->version == other.ip_bits->version &&
             this->num == other.num;
     }
     bool ne(const Prefix &other) const {
         return !this->eq(other);
     }
     ssize_t cmp(const Prefix &oth) const {
-        if (this->ip_bits.version < oth.ip_bits.version) {
+        if (this->ip_bits->version < oth.ip_bits->version) {
             return -1;
-        } else if (this->ip_bits.version > oth.ip_bits.version) {
+        } else if (this->ip_bits->version > oth.ip_bits->version) {
             return 1;
         } else {
             if (this->num < oth.num) {
@@ -64,11 +64,11 @@ public:
     }
 
     std::string to_ip_str() const {
-        return this->ip_bits.vt_as_compressed_string(this->ip_bits, this->net_mask);
+        return this->ip_bits->vt_as_compressed_string(this->ip_bits, this->net_mask);
     }
 
     Crunchy size() const {
-        return Crunchy::one().shl(this->ip_bits.bits - this->num);
+        return Crunchy::one().shl(this->ip_bits->bits - this->num);
     }
 
     static Crunchy new_netmask(size_t prefix, size_t bits) {
@@ -100,7 +100,7 @@ public:
     //
     Crunchy host_mask() const {
         auto ret = Crunchy::zero();
-        for (size_t _ = 0; _ < (this->ip_bits.bits - this->num); _++) {
+        for (size_t _ = 0; _ < (this->ip_bits->bits - this->num); _++) {
             ret = ret.shl(1).add(Crunchy::one());
         }
         return ret;
@@ -117,7 +117,7 @@ public:
     //      // => 128
     //
     size_t host_prefix() const {
-        return this->ip_bits.bits - this->num;
+        return this->ip_bits->bits - this->num;
     }
 
     //

@@ -96,13 +96,13 @@ public:
             }
             //println!("ip:{},{:x}", ip.to_string(), num);
             auto ipv4_bits = IpBits::v4();
-            if (ipv4_bits.bits < ip.prefix.host_prefix()) {
+            if (ipv4_bits->bits < ip.prefix.host_prefix()) {
                 std::cout << "mapped:" << ip << std::endl;
                 //println!("enhance_if_mapped-2:{}:{}", ip.to_string(), ip.prefix.host_prefix());
                 return Err<IPAddress>("prefix not in range");
             }
             // console.log("------G");
-            auto mapped = Ipv4::from_number(num, ipv4_bits.bits - ip.prefix.host_prefix());
+            auto mapped = Ipv4::from_number(num, ipv4_bits->bits - ip.prefix.host_prefix());
             // console.log("------H");
             if (mapped.isErr()) {
                 // println!("enhance_if_mapped-3");

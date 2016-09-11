@@ -91,7 +91,7 @@ int main() {
           auto ip = IPAddress::parse(i.first).unwrap();
           Chai::assert.isTrue(ip.is_ipv4() && !ip.is_ipv6());
           }
-          Chai::assert.equal(32, setup().ip.prefix.ip_bits.bits);
+          Chai::assert.equal(32, setup().ip.prefix.ip_bits->bits);
           Chai::assert.isTrue(IPAddress::parse("1.f.13.1/-3").isErr());
           Chai::assert.isTrue(IPAddress::parse("10.0.0.0/8").isOk());
           });

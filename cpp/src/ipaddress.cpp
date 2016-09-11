@@ -25,14 +25,14 @@ std::ostream& operator<<(std::ostream &o, const Prefix &prefix) {
       return o;
 }
 
-std::ostream& operator<<(std::ostream &o, const IpBits &ip_bits) {
+std::ostream& operator<<(std::ostream &o, const IpBits *ip_bits) {
     o << "<IpBits@"
-    << "version:" << ip_bits.version << ","
-    << "bits:" << ip_bits.bits << ","
-    << "dns_bits:" << ip_bits.dns_bits << ","
-    << "rev_domain:" << ip_bits.rev_domain << ","
-    << "part_mod:" << ip_bits.part_mod << ","
-    << "host_ofs:" << ip_bits.host_ofs << ","
+    << "version:" << ip_bits->version << ","
+    << "bits:" << ip_bits->bits << ","
+    << "dns_bits:" << ip_bits->dns_bits << ","
+    << "rev_domain:" << ip_bits->rev_domain << ","
+    << "part_mod:" << ip_bits->part_mod << ","
+    << "host_ofs:" << ip_bits->host_ofs << ","
     << ">";
   return o;
 }

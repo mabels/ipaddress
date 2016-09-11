@@ -52,7 +52,7 @@ class IPAddress {
     typedef std::function<bool(const IPAddress &source)> Is;
     typedef std::function<IPAddress(const IPAddress &source)> ToIpv4;
     typedef std::function<void(const IPAddress &source)> EachFn;
-    IpBits ip_bits;
+    const IpBits *ip_bits;
     Crunchy host_address;
     Prefix prefix;
     Option<IPAddress> mapped;
@@ -63,7 +63,7 @@ class IPAddress {
     IPAddress() {
     }
 
-    IPAddress(const IpBits &ip_bits, const Crunchy &host_address,
+    IPAddress(const IpBits *ip_bits, const Crunchy &host_address,
         const Prefix &prefix, const Option<IPAddress> &mapped,
         const Is &vt_is_private, const Is &vt_is_loopback,
         const ToIpv4 &vt_to_ipv6) : prefix(prefix) {
@@ -82,7 +82,7 @@ class IPAddress {
         mapped = Some(mip);
       }
       return IPAddress(
-          this->ip_bits.clone(),
+          this->ip_bits->clone(),
           this->host_address.clone(),
           this->prefix.clone(),
           mapped,
@@ -109,8 +109,8 @@ class IPAddress {
     }
 
     ssize_t cmp(const IPAddress &oth) const {
-      if (this->ip_bits.version != oth.ip_bits.version) {
-        if (this->ip_bits.version == IpVersion::V6) {
+      if (this->ip_bits->version != oth.ip_bits->version) {
+        if (this->ip_bits->version == IpVersion::V6) {
           return 1;
         }
         return -1;
@@ -133,7 +133,7 @@ class IPAddress {
       //     }
       // }
       // console.log("************", this);
-      return this->ip_bits.version == other.ip_bits.version &&
+      return this->ip_bits->version == other.ip_bits->version &&
         this->prefix.eq(other.prefix) &&
         this->host_address.eq(other.host_address);
     }
@@ -202,7 +202,7 @@ class IPAddress {
     //     //-> true
     //
     bool is_ipv4() const {
-      return this->ip_bits.version == IpVersion::V4;
+      return this->ip_bits->version == IpVersion::V4;
     }
 
     // True if the object is an IPv6 address
@@ -213,7 +213,7 @@ class IPAddress {
     //     //-> false
     //
     bool is_ipv6() const {
-      return this->ip_bits.version == IpVersion::V6;
+      return this->ip_bits->version == IpVersion::V6;
     }
 
     // Checks if the given string is a valid IP address,
@@ -383,12 +383,12 @@ class IPAddress {
     static std::vector<IPAddress> aggregate(const std::vector<IPAddress> &networks);
 
     std::vector<size_t> parts() const {
-      return this->ip_bits.parts(this->host_address);
+      return this->ip_bits->parts(this->host_address);
     }
 
     std::vector<std::string> parts_hex_str() const {
       std::vector<std::string> ret;
-      auto leading = 1 << this->ip_bits.part_bits;
+      auto leading = 1 << this->ip_bits->part_bits;
       for (auto i : this->parts()) {
         std::stringstream s2;
         s2 << std::hex << (leading + i);
@@ -419,15 +419,15 @@ class IPAddress {
       std::string ret;
       std::string dot;
       auto dns_parts = this->dns_parts();
-      for (auto i = ((this->prefix.host_prefix() + (this->ip_bits.dns_bits - 1)) / this->ip_bits.dns_bits);
+      for (auto i = ((this->prefix.host_prefix() + (this->ip_bits->dns_bits - 1)) / this->ip_bits->dns_bits);
           i < this->dns_parts().size(); ++i) {
         // console.log("dns_r", i);
         ret += dot;
-        ret += this->ip_bits.dns_part_format(dns_parts[i]);
+        ret += this->ip_bits->dns_part_format(dns_parts[i]);
         dot = ".";
       }
       ret += dot;
-      ret += this->ip_bits.rev_domain;
+      ret += this->ip_bits->rev_domain;
       return ret;
     }
 
@@ -435,27 +435,27 @@ class IPAddress {
     std::vector<size_t> dns_parts() const {
       std::vector<size_t> ret;
       auto num = this->host_address.clone();
-      auto mask = 1 << this->ip_bits.dns_bits;
-      for (size_t _ = 0; _ < this->ip_bits.bits / this->ip_bits.dns_bits; _++) {
+      auto mask = 1 << this->ip_bits->dns_bits;
+      for (size_t _ = 0; _ < this->ip_bits->bits / this->ip_bits->dns_bits; _++) {
         auto part = num.clone().mds(mask);
-        num = num.shr(this->ip_bits.dns_bits);
+        num = num.shr(this->ip_bits->dns_bits);
         ret.push_back(part);
       }
       return ret;
     }
 
     std::vector<IPAddress> dns_networks() const {
-      // +this->ip_bits.dns_bits-1
-      auto next_bit_mask = this->ip_bits.bits -
-        ((((this->prefix.host_prefix()) / this->ip_bits.dns_bits)) * this->ip_bits.dns_bits);
+      // +this->ip_bits->dns_bits-1
+      auto next_bit_mask = this->ip_bits->bits -
+        ((((this->prefix.host_prefix()) / this->ip_bits->dns_bits)) * this->ip_bits->dns_bits);
       // console.log("dns_networks-1", this->to_string(), this->prefix.host_prefix();j
-      // this->ip_bits.dns_bits, next_bit_mask);
+      // this->ip_bits->dns_bits, next_bit_mask);
       if (next_bit_mask <= 0) {
         return { this->network() };
       }
       //  println!("dns_networks:{}:{}", this->to_string(), next_bit_mask);
       // dns_bits
-      auto step_bit_net = Crunchy::one().shl(this->ip_bits.bits - next_bit_mask);
+      auto step_bit_net = Crunchy::one().shl(this->ip_bits->bits - next_bit_mask);
       if (step_bit_net.eq(Crunchy::zero())) {
         // console.log("dns_networks-2", this->to_string());
         return { this->network() };
@@ -612,7 +612,7 @@ class IPAddress {
     }
 
     bool ip_same_kind(const IPAddress &oth) const {
-      return this->ip_bits.version == oth.ip_bits.version;
+      return this->ip_bits->version == oth.ip_bits->version;
     }
 
     //  Returns true if the address is an unspecified address
@@ -707,7 +707,7 @@ class IPAddress {
       }
       // console.log("--5", netmask, my);
       auto my_ip = my.unwrap();
-      return IPAddress::netmask_to_prefix(my_ip.host_address, my_ip.ip_bits.bits);
+      return IPAddress::netmask_to_prefix(my_ip.host_address, my_ip.ip_bits->bits);
     }
 
 
@@ -762,7 +762,7 @@ class IPAddress {
     }
 
     std::string to_s() const {
-      return this->ip_bits.as_compressed_string(this->host_address);
+      return this->ip_bits->as_compressed_string(this->host_address);
     }
 
     std::string to_string_uncompressed() const {
@@ -773,7 +773,7 @@ class IPAddress {
       return ret;
     }
     std::string to_s_uncompressed() const {
-      return this->ip_bits.as_uncompressed_string(this->host_address);
+      return this->ip_bits->as_uncompressed_string(this->host_address);
     }
 
     std::string to_s_mapped() const {
@@ -808,7 +808,7 @@ class IPAddress {
     std::string bits() const {
       auto num = this->host_address.toString(2);
       std::string ret;
-      for (auto _ = num.size(); _ < this->ip_bits.bits; _++) {
+      for (auto _ = num.size(); _ < this->ip_bits->bits; _++) {
         ret += "0";
       }
       ret += num;
@@ -847,7 +847,7 @@ class IPAddress {
     //      // => true
     //
     bool is_network() const {
-      return this->prefix.num != this->ip_bits.bits &&
+      return this->prefix.num != this->ip_bits->bits &&
         this->host_address.eq(this->network().host_address);
     }
 
@@ -926,7 +926,7 @@ class IPAddress {
     //      // => "192.168.100.1"
     //
     IPAddress first() const {
-      return this->from(this->network().host_address.add(this->ip_bits.host_ofs), this->prefix);
+      return this->from(this->network().host_address.add(this->ip_bits->host_ofs), this->prefix);
     }
 
     //  Like its sibling method IPv4// first, this method
@@ -950,7 +950,7 @@ class IPAddress {
     //      // => "192.168.100.254"
     //
     IPAddress last() const {
-      return this->from(this->broadcast().host_address.sub(this->ip_bits.host_ofs), this->prefix);
+      return this->from(this->broadcast().host_address.sub(this->ip_bits->host_ofs), this->prefix);
     }
 
     //  Iterates over all the hosts IP addresses for the given
@@ -1249,7 +1249,7 @@ class IPAddress {
     //  a power of two.
     //
     Result<std::vector<IPAddress>> subnet(size_t subprefix) const {
-      if (subprefix < this->prefix.num || this->ip_bits.bits < subprefix) {
+      if (subprefix < this->prefix.num || this->ip_bits->bits < subprefix) {
         return Err<std::vector<IPAddress>>("subprefix out of range");
       }
       std::vector<IPAddress> ret;
@@ -1279,7 +1279,7 @@ class IPAddress {
     }
 
     Result<Prefix> newprefix(size_t num) const {
-      for (size_t i = num; i < this->ip_bits.bits; ++i) {
+      for (size_t i = num; i < this->ip_bits->bits; ++i) {
         auto a = floor(log2(i));
         if (a == log2(i)) {
           return this->prefix.add(a);

@@ -17,7 +17,7 @@ class Prefix32 {
             // &from;
             //static _TO_IP_STR: &'static (Fn(&Vec<u16>) -> String) = &to_ip_str;
             auto ip_bits = IpBits::v4();
-            auto bits = ip_bits.bits;
+            auto bits = ip_bits->bits;
             Prefix prefix(
                 num,
                 ip_bits,
