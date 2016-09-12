@@ -20,8 +20,8 @@ include_directories(${Boost_INCLUDE_DIR})
 
 find_package(Threads REQUIRED)
 
-set ( PROJECT_LINK_LIBS libipaddress.a )
-link_directories( .. )
+set (PROJECT_LINK_LIBS libipaddress.a)
+link_directories( ../${CMAKE_BUILD_TYPE}/${CMAKE_SYSTEM_NAME})
 
 #add_executable(test_crunchy, test_crunchy.cpp)
 #add_test(test_crunchy test_crunchy)
