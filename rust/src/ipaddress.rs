@@ -48,6 +48,12 @@ impl fmt::Debug for IPAddress {
     }
 }
 
+lazy_static! {
+        static ref RE_MAPPED : Regex = Regex::new(r":.+\.").unwrap();
+        static ref RE_IPV4 : Regex = Regex::new(r"\.").unwrap();
+        static ref RE_IPV6 : Regex = Regex::new(r":").unwrap();
+}
+
 
 impl Clone for IPAddress {
     fn clone(&self) -> IPAddress {
@@ -124,17 +130,14 @@ impl IPAddress {
     ///
     pub fn parse<S: Into<String>>(_str: S) -> Result<IPAddress, String> {
         let str = _str.into();
-        let re_mapped = Regex::new(r":.+\.").unwrap();
-        let re_ipv4 = Regex::new(r"\.").unwrap();
-        let re_ipv6 = Regex::new(r":").unwrap();
-        if re_mapped.is_match(&str) {
+        if RE_MAPPED.is_match(&str) {
             // println!("mapped:{}", &str);
             return ::ipv6_mapped::new(str);
         } else {
-            if re_ipv4.is_match(&str) {
+            if RE_IPV4.is_match(&str) {
                 // println!("ipv4:{}", &str);
                 return ::ipv4::new(str);
-            } else if re_ipv6.is_match(&str) {
+            } else if RE_IPV6.is_match(&str) {
                 // println!("ipv6:{}", &str);
                 return ::ipv6::new(str);
             }
