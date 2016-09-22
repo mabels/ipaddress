@@ -13,27 +13,27 @@ class IPAddressTest < Test::Unit::TestCase
     @invalid_ipv6   = ":1:2:3:4:5:6:7"
     @invalid_mapped = "::1:2.3.4"
 
-    @ipv4class   = IPAddress::IPv4
-    @ipv6class   = IPAddress::IPv6
-    @mappedclass = IPAddress::IPv6::Mapped
+    #@ipv4class   = IPAddress::IPv4
+    #@ipv6class   = IPAddress::IPv6
+    #@mappedclass = IPAddress::IPv6::Mapped
 
-    @method = Module.method("IPAddress")
+    #@method = Module.method("IPAddress")
   end
 
-  def test_method_IPAddress
-    assert_nothing_raised {@method.call(@valid_ipv4)}
-    assert_nothing_raised {@method.call(@valid_ipv6)}
-    assert_nothing_raised {@method.call(@valid_mapped)}
-
-    assert_instance_of @ipv4class, @method.call(@valid_ipv4)
-    assert_instance_of @ipv6class, @method.call(@valid_ipv6)
-    assert_instance_of @mappedclass, @method.call(@valid_mapped)
-
-    assert_raise(ArgumentError) {@method.call(@invalid_ipv4)}
-    assert_raise(ArgumentError) {@method.call(@invalid_ipv6)}
-    assert_raise(ArgumentError) {@method.call(@invalid_mapped)}
-
-  end
+  #def test_method_IPAddress
+  #  assert_nothing_raised {@method.call(@valid_ipv4)}
+  #  assert_nothing_raised {@method.call(@valid_ipv6)}
+  #  assert_nothing_raised {@method.call(@valid_mapped)}
+#
+#    #assert_instance_of @ipv4class, @method.call(@valid_ipv4)
+#    #assert_instance_of @ipv6class, @method.call(@valid_ipv6)
+#    #assert_instance_of @mappedclass, @method.call(@valid_mapped)
+#
+#    assert_raise(ArgumentError) {@method.call(@invalid_ipv4)}
+#    assert_raise(ArgumentError) {@method.call(@invalid_ipv6)}
+#    assert_raise(ArgumentError) {@method.call(@invalid_mapped)}
+#
+#  end
 
   def test_module_method_valid?
     assert_equal true, IPAddress::valid?("10.0.0.1")
@@ -42,16 +42,16 @@ class IPAddressTest < Test::Unit::TestCase
     assert_equal true, IPAddress::valid?("dead:beef:cafe:babe::f0ad")
     assert_equal false, IPAddress::valid?("10.0.0.256")
     assert_equal false, IPAddress::valid?("10.0.0.0.0")
-    assert_equal false, IPAddress::valid?("10.0.0")
-    assert_equal false, IPAddress::valid?("10.0")
+    assert_equal true, IPAddress::valid?("10.0.0")
+    assert_equal true, IPAddress::valid?("10.0")
     assert_equal false, IPAddress::valid?("2002:::1")
     assert_equal false, IPAddress::valid?("2002:516:2:200")
 
   end
 
   def test_module_method_valid_ipv4_netmark?
-    assert_equal true, IPAddress::valid_ipv4_netmask?("255.255.255.0")
-    assert_equal false, IPAddress::valid_ipv4_netmask?("10.0.0.1")
+    assert_equal true, IPAddress::valid_netmask?("255.255.255.0")
+    assert_equal false, IPAddress::valid_netmask?("10.0.0.1")
   end
 
   def test_summarize
@@ -62,28 +62,28 @@ class IPAddressTest < Test::Unit::TestCase
     nets += (0..255).to_a.select{|i| !(16<=i&&i<31)}.map{|i| "172.#{i}.0.0/16" }
     nets += (0..255).to_a.select{|i| i!=168}.map{|i| "192.#{i}.0.0/16" }
 
-    nets = nets.map{|i| IPAddress::IPv4.new(i) }
+    nets = nets.map{|i| IPAddress.parse(i) }
 
     assert_equal [], IPAddress::summarize([]), []
-    assert_equal ["10.1.0.0/24"], IPAddress::summarize(["10.1.0.4/24"]).map{|i| i.to_string}
-    assert_equal ["2000:1::/32"], IPAddress::summarize(["2000:1::4711/32"]).map{|i| i.to_string}
+    assert_equal ["10.1.0.0/24"], IPAddress::summarize_str(["10.1.0.4/24"]).map{|i| i.to_string}
+    assert_equal ["2000:1::/32"], IPAddress::summarize_str(["2000:1::4711/32"]).map{|i| i.to_string}
 
-    assert_equal ["0.0.0.0/0"], IPAddress::summarize(["10.1.0.4/24","7.0.0.0/0", "1.2.3.4/4"]).map{|i| i.to_string}
+    assert_equal ["0.0.0.0/0"], IPAddress::summarize_str(["10.1.0.4/24","7.0.0.0/0", "1.2.3.4/4"]).map{|i| i.to_string}
 
     networks = ["2000:1::/32", "3000:1::/32", "2000:2::/32", "2000:3::/32", "2000:4::/32", "2000:5::/32", "2000:6::/32", "2000:7::/32", "2000:8::/32"]
-    assert_equal ["2000:1::/32", "2000:2::/31", "2000:4::/30", "2000:8::/32", "3000:1::/32"], IPAddress::summarize(networks).map{|i| i.to_string}
+    assert_equal ["2000:1::/32", "2000:2::/31", "2000:4::/30", "2000:8::/32", "3000:1::/32"], IPAddress::summarize_str(networks).map{|i| i.to_string}
 
 
     networks = ["10.0.1.1/24", "30.0.1.0/16", "10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24", "10.0.7.0/24", "10.0.8.0/24"]
-    assert_equal ["10.0.1.0/24", "10.0.2.0/23", "10.0.4.0/22", "10.0.8.0/24", "30.0.0.0/16"], IPAddress::summarize(networks).map{|i| i.to_string}
+    assert_equal ["10.0.1.0/24", "10.0.2.0/23", "10.0.4.0/22", "10.0.8.0/24", "30.0.0.0/16"], IPAddress::summarize_str(networks).map{|i| i.to_string}
 
     networks = ["10.0.0.0/23", "10.0.2.0/24"]
-    assert_equal ["10.0.0.0/23", "10.0.2.0/24"], IPAddress::summarize(networks).map{|i| i.to_string}
+    assert_equal ["10.0.0.0/23", "10.0.2.0/24"], IPAddress::summarize_str(networks).map{|i| i.to_string}
     networks = ["10.0.0.0/24", "10.0.1.0/24", "10.0.2.0/23"]
-    assert_equal ["10.0.0.0/22"], IPAddress::summarize(networks).map{|i| i.to_string}
+    assert_equal ["10.0.0.0/22"], IPAddress::summarize_str(networks).map{|i| i.to_string}
 
 
-    assert_equal ["10.0.0.0/16"], IPAddress::summarize(["10.0.0.0/16", "10.0.2.0/24"]).map{|i| i.to_string}
+    assert_equal ["10.0.0.0/16"], IPAddress::summarize_str(["10.0.0.0/16", "10.0.2.0/24"]).map{|i| i.to_string}
 
     puts ""
     #require 'ruby-prof'
@@ -115,5 +115,3 @@ class IPAddressTest < Test::Unit::TestCase
   end
 
 end
-
-

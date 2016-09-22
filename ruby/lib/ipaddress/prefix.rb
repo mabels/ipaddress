@@ -1,265 +1,172 @@
-module IPAddress
-  
-  #
-  # =NAME
-  #   
-  # IPAddress::Prefix
-  #
-  # =SYNOPSIS
-  #  
-  # Parent class for Prefix32 and Prefix128
-  #
-  # =DESCRIPTION
-  #
-  # IPAddress::Prefix is the parent class for IPAddress::Prefix32 
-  # and IPAddress::Prefix128, defining some modules in common for
-  # both the subclasses.
-  #
-  # IPAddress::Prefix shouldn't be accesses directly, unless
-  # for particular needs.
-  #
-  class Prefix 
 
+require_relative 'ip_bits'
+require_relative 'crunchy'
+
+
+class IPAddress
+
+  class Prefix
     include Comparable
 
-    attr_reader :prefix
+    attr_reader :num, :ip_bits, :net_mask, :vt_from
 
-    #
-    # Creates a new general prefix
-    #
-    def initialize(num)
-      @prefix = num.to_i
+    def initialize(obj)
+      @num = obj[:num]
+      @ip_bits = obj[:ip_bits]
+      @net_mask = obj[:net_mask]
+      @vt_from = obj[:vt_from]
     end
 
-    #
-    # Returns a string with the prefix 
-    #
-    def to_s
-      "#@prefix"
-    end
-    alias_method :inspect, :to_s
-
-    # 
-    # Returns the prefix
-    #
-    def to_i
-      @prefix
+    def clone()
+      return Prefix.new({
+        num: @num,
+        ip_bits: @ip_bits,
+        net_mask: @net_mask,
+        vt_from: @vt_from
+      })
     end
 
-    # 
-    # Compare the prefix
-    #
+    def eq(other)
+      return @ip_bits.version == other.ip_bits.version &&
+        @num == other.num
+    end
+
+    def ne(other)
+      return !eq(other)
+    end
+
     def <=>(oth)
-      @prefix <=> oth.to_i
+      cmp(oth)
     end
 
-    #
-    # Sums two prefixes or a prefix to a 
-    # number, returns a Fixnum
-    #
-    def +(oth)
-      if oth.is_a? Fixnum
-        self.prefix + oth
+    def cmp(oth)
+      if (@ip_bits.version < oth.ip_bits.version)
+        return -1
+      elsif (@ip_bits.version > oth.ip_bits.version)
+        return 1
       else
-        self.prefix + oth.prefix
+        if (@num < oth.num)
+          return -1
+        elsif (@num > oth.num)
+          return 1
+        else
+          return 0
+        end
       end
     end
 
-    #
-    # Returns the difference between two
-    # prefixes, or a prefix and a number,
-    # as a Fixnum
-    #
-    def -(oth)
-      if oth.is_a? Fixnum
-        self.prefix - oth
-      else
-        (self.prefix - oth.prefix).abs
+    ##[allow(dead_code)]
+    def from(num)
+      return (@vt_from).call(self, num)
+    end
+
+    def to_ip_str()
+      return @ip_bits.vt_as_compressed_string.call(@ip_bits, @net_mask)
+    end
+
+    def size()
+      return Crunchy.one().shl(@ip_bits.bits - @num)
+    end
+
+    def self.new_netmask(prefix, bits)
+      mask = Crunchy.zero()
+      host_prefix = bits - prefix
+      prefix.times do  |i|
+        # console.log(">>>", i, host_prefix, mask)
+        mask = mask.add(Crunchy.one().shl(host_prefix + i))
       end
+
+      return mask
     end
-    
-   end # class Prefix
 
+    def netmask()
+      return @net_mask
+    end
 
-  class Prefix32 < Prefix
+    def get_prefix()
+      return @num
+    end
 
-    IN4MASK = 0xffffffff
-    
+    #  The hostmask is the contrary of the subnet mask,
+    #  as it shows the bits that can change within the
+    #  hosts
     #
-    # Creates a new prefix object for 32 bits IPv4 addresses
+    #    prefix = IPAddress::Prefix32.new 24
     #
-    #   prefix = IPAddress::Prefix32.new 24
-    #     #=> 24
+    #    prefix.hostmask
+    #      # => "0.0.0.255"
     #
-    def initialize(num)
-      unless (0..32).include? num
-        raise ArgumentError, "Prefix must be in range 0..32, got: #{num}"
+    def host_mask()
+      ret = Crunchy.zero()
+      (@ip_bits.bits - @num).times do
+        ret = ret.shl(1).add(Crunchy.one())
       end
-      super(num)
+
+      return ret
     end
 
     #
-    # Returns the length of the host portion
-    # of a netmask. 
+    #  Returns the length of the host portion
+    #  of a netmask.
     #
-    #   prefix = Prefix32.new 24
+    #    prefix = Prefix128.new 96
     #
-    #   prefix.host_prefix
-    #     #=> 8
+    #    prefix.host_prefix
+    #      # => 128
     #
-    def host_prefix
-      32 - @prefix
-    end
-    
-    #
-    # Transforms the prefix into a string of bits
-    # representing the netmask
-    #
-    #   prefix = IPAddress::Prefix32.new 24
-    # 
-    #   prefix.bits 
-    #     #=> "11111111111111111111111100000000"
-    #
-    def bits
-      "%.32b" % to_u32
+    def host_prefix()
+      return @ip_bits.bits - @num
     end
 
     #
-    # Gives the prefix in IPv4 dotted decimal format, 
-    # i.e. the canonical netmask we're all used to
+    #  Transforms the prefix into a string of bits
+    #  representing the netmask
     #
-    #   prefix = IPAddress::Prefix32.new 24
+    #    prefix = IPAddress::Prefix128.new 64
     #
-    #   prefix.to_ip
-    #     #=> "255.255.255.0"
+    #    prefix.bits
+    #      # => "1111111111111111111111111111111111111111111111111111111111111111"
+    #          "0000000000000000000000000000000000000000000000000000000000000000"
     #
-    def to_ip
-      [bits].pack("B*").unpack("CCCC").join(".")
+    def bits()
+      return netmask().toString(2)
     end
 
-    #
-    # An array of octets of the IPv4 dotted decimal 
-    # format 
-    #
-    #   prefix = IPAddress::Prefix32.new 24
-    #
-    #   prefix.octets
-    #     #=> [255, 255, 255, 0]
-    #
-    def octets
-      to_ip.split(".").map{|i| i.to_i}
+    # #[allow(dead_code)]
+    # def net_mask(&self) -> BigUint {
+    #     return (self.in_mask.clone() >> (self.host_prefix() as usize)) << (self.host_prefix() as usize)
+    # }
+
+    def to_s()
+      return get_prefix().to_s
     end
 
-    #
-    # Unsigned 32 bits decimal number representing
-    # the prefix
-    #
-    #   prefix = IPAddress::Prefix32.new 24
-    #
-    #   prefix.to_u32
-    #     #=> 4294967040
-    #
-    def to_u32
-      (IN4MASK >> host_prefix) << host_prefix
-    end
-    
-    #
-    # Shortcut for the octecs in the dotted decimal 
-    # representation
-    #
-    #   prefix = IPAddress::Prefix32.new 24
-    #
-    #   prefix[2]
-    #     #=> 255
-    #
-    def [](index)
-      octets[index]
+    ##[allow(dead_code)]
+    # def inspect(&self) -> String {
+    #     return self.to_s()
+    # }
+    def to_i()
+      return get_prefix()
     end
 
-    #
-    # The hostmask is the contrary of the subnet mask,
-    # as it shows the bits that can change within the
-    # hosts
-    #
-    #   prefix = IPAddress::Prefix32.new 24
-    #
-    #   prefix.hostmask
-    #     #=> "0.0.0.255"
-    #
-    def hostmask
-      [~to_u32].pack("N").unpack("CCCC").join(".")
+    def add_prefix(other)
+      return from(get_prefix() + other.get_prefix())
     end
-    
-    #
-    # Creates a new prefix by parsing a netmask in 
-    # dotted decimal form
-    #
-    #   prefix = IPAddress::Prefix32::parse_netmask "255.255.255.0"
-    #     #=> 24
-    #
-    def self.parse_netmask(netmask)
-      octets = netmask.split(".").map{|i| i.to_i}
-      num = octets.pack("C"*octets.size).unpack("B*").first.count "1"
-      return self.new(num)
+
+    def add(other)
+      return from(get_prefix() + other)
     end
-    
-  end # class Prefix32 < Prefix
 
-  class Prefix128 < Prefix
+    def sub_prefix(other)
+      return sub(other.get_prefix())
+    end
 
-    #
-    # Creates a new prefix object for 128 bits IPv6 addresses
-    #
-    #   prefix = IPAddress::Prefix128.new 64
-    #     #=> 64
-    #
-    def initialize(num=128)
-      unless (0..128).include? num.to_i
-        raise ArgumentError, "Prefix must be in range 0..128, got: #{num}"
+    def sub(other)
+      if (other > get_prefix())
+        return from(other - get_prefix())
       end
-      super(num.to_i)
+
+      return from(get_prefix() - other)
     end
-
-    #
-    # Transforms the prefix into a string of bits
-    # representing the netmask
-    #
-    #   prefix = IPAddress::Prefix128.new 64
-    #
-    #   prefix.bits
-    #     #=> "1111111111111111111111111111111111111111111111111111111111111111"
-    #         "0000000000000000000000000000000000000000000000000000000000000000"
-    #
-    def bits
-      "1" * @prefix + "0" * (128 - @prefix)
-    end
-
-    #
-    # Unsigned 128 bits decimal number representing
-    # the prefix
-    #
-    #   prefix = IPAddress::Prefix128.new 64
-    #
-    #   prefix.to_u128
-    #     #=> 340282366920938463444927863358058659840
-    #
-    def to_u128
-      bits.to_i(2)
-    end
-
-    #
-    # Returns the length of the host portion
-    # of a netmask. 
-    #
-    #   prefix = Prefix128.new 96
-    #
-    #   prefix.host_prefix
-    #     #=> 32
-    #
-    def host_prefix
-      128 - @prefix
-    end
-
-  end # class Prefix123 < Prefix
-
-end # module IPAddress
+  end
+end

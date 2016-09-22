@@ -5,12 +5,12 @@
 
 Gem::Specification.new do |s|
   s.name = %q{construqt-ipaddress}
-  s.version = "0.8.4"
+  s.version = "2.0.0"
 
   s.license       = "Simple from Marco Ceresa"
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Marco Ceresa", "Meno Abels"]
-  s.date = %q{2014-11-29}
+  s.authors = ["Meno Abels"]
+  s.date = %q{2016-09-22}
   s.description = %q{      IPAddress is a Ruby library designed to make manipulation
       of IPv4 and IPv6 addresses both powerful and simple. It mantains
       a layer of compatibility with Ruby's own IPAddr, while
@@ -18,21 +18,30 @@ Gem::Specification.new do |s|
 }
   s.email = %q{meno.abels@construqt.me}
   s.extra_rdoc_files = [
-    "LICENSE",
-    "README.rdoc"
+    "../LICENSE",
+    "../README.md"
   ]
   s.files = [
-    ".document",
-    "CHANGELOG.rdoc",
-    "LICENSE",
-    "README.rdoc",
+    "../LICENSE",
+    "../README.md",
     "Rakefile",
     "VERSION",
     "ipaddress.gemspec",
-    "lib/ipaddress.rb",
+    "lib/construqt/ipaddress.rb",
+    "lib/ipaddress/crunchy.rb",
+    "lib/ipaddress/ip_bits.rb",
+    "lib/ipaddress/ip_version.rb",
     "lib/ipaddress/ipv4.rb",
     "lib/ipaddress/ipv6.rb",
+    "lib/ipaddress/ipv6_loopback.rb",
+    "lib/ipaddress/ipv6_mapped.rb",
+    "lib/ipaddress/ipv6_unspec.rb",
     "lib/ipaddress/prefix.rb",
+    "lib/ipaddress/prefix128.rb",
+    "lib/ipaddress/prefix32.rb",
+    "lib/ipaddress/result_crunchy_parts.rb",
+    "lib/ipaddress/rle.rb",
+    "lib/ipaddress.rb",
     "test/ipaddress/ipv4_test.rb",
     "test/ipaddress/ipv6_test.rb",
     "test/ipaddress/prefix_test.rb",
