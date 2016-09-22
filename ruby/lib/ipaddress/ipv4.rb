@@ -78,10 +78,10 @@ class IPAddress
     end
 
     def self.ipv4_is_private(my)
-      return [IPAddress.parse("10.0.0.0/8"),
+      return !!([IPAddress.parse("10.0.0.0/8"),
               IPAddress.parse("172.16.0.0/12"),
               IPAddress.parse("192.168.0.0/16")]
-        .find{|i|  i.includes(my)} != nil
+        .find{|i|  i.includes(my)})
     end
 
     def self.ipv4_is_loopback(my)
@@ -178,7 +178,7 @@ class IPAddress
       end
 
       o_ip = IPAddress.parse(ip_si)
-      if (o_ip == nil)
+      if (o_ip.nil?)
         return o_ip
       end
 

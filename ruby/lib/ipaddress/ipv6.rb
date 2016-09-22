@@ -128,7 +128,7 @@ class IPAddress
 
     def self.from_number(adr, prefix_num)
       prefix = Prefix128.create(prefix_num)
-      if (prefix === nil)
+      if (prefix.nil?)
         return nil
       end
 

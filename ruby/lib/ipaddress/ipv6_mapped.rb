@@ -106,7 +106,7 @@ class IPAddress
       ipv4_str = split_colon[split_colon.length - 1]
       if (IPAddress.is_valid_ipv4(ipv4_str))
         ipv4 = IPAddress.parse("#{ipv4_str}#{netmask}")
-        if (ipv4 == nil)
+        if (ipv4.nil?)
           # console.log("mapped-3")
           return ipv4
         end
@@ -135,7 +135,7 @@ class IPAddress
 
         # console.log("-----A", rebuild_ipv6, part_mod)
         r_ipv6 = IPAddress.parse(rebuild_ipv6)
-        if (r_ipv6 == nil)
+        if (r_ipv6.nil?)
           # println!("---3|{}", &rebuild_ipv6)
           # console.log("mapped-4")
           return r_ipv6
@@ -155,7 +155,7 @@ class IPAddress
         end
 
         r_ipv6 = IPAddress.parse("::ffff:#{rebuild_ipv4}")
-        if (r_ipv6 == nil)
+        if (r_ipv6.nil?)
           # println!("---3|{}", &rebuild_ipv6)
           #console.log("mapped-7")
           return nil
