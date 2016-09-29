@@ -978,6 +978,10 @@ class IPAddress
     return other.host_address.clone().sub(@host_address)
   end
 
+  def add_num(num)
+    return from(@host_address.add(num), @prefix)
+  end
+
   def add(other)
     return IPAddress.aggregate([self, other])
   end
