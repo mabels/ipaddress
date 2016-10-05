@@ -44,5 +44,11 @@ target_link_libraries(ipaddressStatic ${Boost_LIBRARIES})
 set_target_properties(ipaddressStatic PROPERTIES OUTPUT_NAME ipaddress)
 
 
+install(TARGETS ipaddress ipaddressStatic
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib/static)
+install(DIRECTORY src/ DESTINATION include/ipaddress FILES_MATCHING PATTERN "*.hpp")
+
 enable_testing()
 add_subdirectory(test)
