@@ -6,6 +6,8 @@
 #include "../src/ipv6_unspec.hpp"
 #include "../src/prefix128.hpp"
 
+using namespace ipaddress;
+
 class IPv6UnspecifiedTest {
 public:
   IPAddress ip = Ipv6Unspec::create();

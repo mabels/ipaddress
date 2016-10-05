@@ -1,5 +1,7 @@
 #include "ipv6_mapped.hpp"
 
+namespace ipaddress {
+
 Result<IPAddress> Ipv6Mapped::create(const std::string &str) {
     // console.log("mapped-1");
     auto i = IPAddress::split_at_slash(str);
@@ -86,4 +88,5 @@ Result<IPAddress> Ipv6Mapped::create(const std::string &str) {
     std::cout << "ipv4 not valid" << std::endl;
     // console.log("mapped-9");
     return Err<IPAddress>("not a valid mapped string");
+}
 }

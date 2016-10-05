@@ -4,6 +4,8 @@
 #include "../src/prefix128.hpp"
 #include "../src/crunchy.hpp"
 
+using namespace ipaddress;
+
 class Prefix128Test {
     public:
       std::vector<std::pair<size_t, Crunchy>> u128_hash;
@@ -39,7 +41,7 @@ describe("prefix128", []() {
     });
     it("test_method_to_u32", []() {
         for (auto hash : setup().u128_hash) {
-            Chai::assert.isTrue(hash.second.eq(Prefix128::create(hash.first).unwrap().netmask()));
+            Chai::assert.isTrue(hash.second.eq(Prefix128::create(hash.first)->netmask()));
         }
     });
 });

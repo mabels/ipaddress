@@ -10,6 +10,7 @@
 
 #include "result.hpp"
 
+namespace ipaddress {
 /**
  * based
  * Crunch - Arbitrary-precision integer arithmetic library
@@ -217,5 +218,6 @@ public:
 
 std::ostream& operator<<(std::ostream &o, const Crunchy &crunchy);
 
+}
 
 #endif

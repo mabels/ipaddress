@@ -7,6 +7,8 @@
 #include "../src/ipv4.hpp"
 #include "../src/crunchy.hpp"
 
+using namespace ipaddress;
+
 class Prefix32Test {
 public:
     const char *netmask0 = "0.0.0.0";

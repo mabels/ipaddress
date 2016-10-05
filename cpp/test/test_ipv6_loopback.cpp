@@ -6,6 +6,8 @@
 #include "../src/ipv6_loopback.hpp"
 #include "../src/crunchy.hpp"
 
+using namespace ipaddress;
+
 typedef struct S_IPv6LoopbackTest {
   IPAddress ip;
   const char * s;

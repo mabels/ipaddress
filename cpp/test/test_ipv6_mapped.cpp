@@ -7,6 +7,8 @@
 #include "../src/ipv6_unspec.hpp"
 #include "../src/prefix128.hpp"
 
+using namespace ipaddress;
+
 class IPv6MappedTest {
 public:
   IPAddress ip = Ipv6Mapped::create("::172.16.10.1").unwrap();

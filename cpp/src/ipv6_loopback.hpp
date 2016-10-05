@@ -5,6 +5,7 @@
 #include "ipv6.hpp"
 #include "crunchy.hpp"
 
+namespace ipaddress {
 
 class Ipv6Loopback {
   public:
@@ -55,5 +56,5 @@ class Ipv6Loopback {
         return Ipv6::from_int(Crunchy::one(), 128).unwrap();
     }
 };
-
+}
 #endif

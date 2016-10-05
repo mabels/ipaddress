@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 
+namespace ipaddress {
 class OptionError : public std::exception {
     const std::string msg;
   public:
@@ -71,6 +72,7 @@ std::ostream& operator<<(std::ostream &o, const Option<T> &option) {
     o << "Some(" << option.unwrap() << ")";
   }
   return o;
+}
 }
 
 #endif

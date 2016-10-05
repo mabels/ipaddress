@@ -5,6 +5,8 @@
 
 #include "result.hpp"
 
+namespace ipaddress {
+
 class Prefix128 {
 public:
     // #[derive(Ord,PartialOrd,Eq,PartialEq,Debug,Copy,Clone)]
@@ -40,5 +42,7 @@ public:
         return Prefix128::create(num);
     }
 };
+
+}
 
 #endif

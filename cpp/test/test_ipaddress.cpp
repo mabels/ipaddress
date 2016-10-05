@@ -6,6 +6,8 @@
 #include "../src/ipaddress.hpp"
 #include "../src/prefix32.hpp"
 
+using namespace ipaddress;
+
 class IPAddressTest {
 public:
   const char *valid_ipv4 = "172.16.10.1/24";

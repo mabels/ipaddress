@@ -8,6 +8,8 @@
 #include "../src/ipv4.hpp"
 #include "../src/crunchy.hpp"
 
+using namespace ipaddress;
+
 typedef struct S_IPv4Prefix {
   std::string ip;
   size_t  prefix;

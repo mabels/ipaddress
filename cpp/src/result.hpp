@@ -3,6 +3,8 @@
 
 #include "option.hpp"
 
+namespace ipaddress {
+
 class ResultError : public std::exception {
     const char *msg;
   public:
@@ -59,5 +61,5 @@ template<typename T> Result<T> Ok(T &t) {
 template<typename T> Result<T> Err(const char *msg) {
   return Result<T>(0, msg);
 }
-
+}
 #endif

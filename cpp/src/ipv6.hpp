@@ -10,6 +10,7 @@
 
 #include <string>
 
+namespace ipaddress {
 class Ipv6 {
 public:
     //  =Name
@@ -209,4 +210,5 @@ public:
     }
 
 };
+}
 #endif

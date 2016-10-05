@@ -4,6 +4,7 @@
 
 #include "../src/result.hpp"
 
+using namespace ipaddress;
 
 class TestOptional {
   public:

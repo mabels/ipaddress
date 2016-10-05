@@ -5,6 +5,7 @@
 #include "prefix.hpp"
 #include "ip_bits.hpp"
 
+namespace ipaddress {
 class Prefix32 {
     public:
     static Result<Prefix> from(size_t num) {
@@ -30,5 +31,6 @@ class Prefix32 {
     }
 
 };
+}
 
 #endif

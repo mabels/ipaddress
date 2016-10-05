@@ -8,6 +8,7 @@
 #include <string>
 #include <sstream>
 
+namespace ipaddress {
 
 class Rle {
 public:
@@ -50,5 +51,5 @@ public:
 };
 
 std::ostream& operator<<(std::ostream &o, const Rle &rle);
-
+}
 #endif

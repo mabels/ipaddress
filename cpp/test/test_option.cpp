@@ -4,6 +4,7 @@
 
 #include "../src/option.hpp"
 
+using namespace ipaddress;
 
 int c_count = 0;
 class TestOptional {
@@ -60,7 +61,7 @@ int main(int, char **) {
           }
           Chai::assert.equal(c_count, 0, "loosing memory");
       });
-      
+
       it("Ptr", [](){
           TestOptional to;
           auto some = Some(to);

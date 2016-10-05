@@ -7,6 +7,8 @@
 #include "../src/ipv6.hpp"
 #include "../src/prefix128.hpp"
 
+using namespace ipaddress;
+
 class IPv6Test {
 public:
   std::vector<std::pair<std::string, std::string>> compress_addr;
@@ -106,7 +108,7 @@ int main() {
     for (auto i : setup().valid_ipv6) {
       auto ip = i.first;
       auto num = i.second;
-      Chai::assert.isTrue(num.eq(IPAddress::parse(ip).unwrap().host_address));
+      Chai::assert.isTrue(num.eq(IPAddress::parse(ip)->host_address));
     }
   });
   it("test_method_set_prefix", []() {
@@ -190,19 +192,19 @@ int main() {
   it("test_method_reverse", []() {
     auto str = "f.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.0.0.0.5.0.5.0.e.f.f."
                "3.ip6.arpa";
-    Chai::assert.equal(str, IPAddress::parse("3ffe:505:2::f").unwrap().dns_reverse());
+    Chai::assert.equal(str, IPAddress::parse("3ffe:505:2::f")->dns_reverse());
   });
     it("test_method_dns_rev_domains", []() {
-        Chai::assert.deepEqual(IPAddress::parse("f000:f100::/3").unwrap().dns_rev_domains(),
+        Chai::assert.deepEqual(IPAddress::parse("f000:f100::/3")->dns_rev_domains(),
             {"e.ip6.arpa", "f.ip6.arpa"});
-        Chai::assert.deepEqual(IPAddress::parse("fea3:f120::/15").unwrap().dns_rev_domains(),
+        Chai::assert.deepEqual(IPAddress::parse("fea3:f120::/15")->dns_rev_domains(),
             {"2.a.e.f.ip6.arpa", "3.a.e.f.ip6.arpa"
 });
-        Chai::assert.deepEqual(IPAddress::parse("3a03:2f80:f::/48").unwrap().dns_rev_domains(),
+        Chai::assert.deepEqual(IPAddress::parse("3a03:2f80:f::/48")->dns_rev_domains(),
             {"f.0.0.0.0.8.f.2.3.0.a.3.ip6.arpa"
         });
 
-        Chai::assert.deepEqual(IPAddress::parse("f000:f100::1234/125").unwrap().dns_rev_domains(),
+        Chai::assert.deepEqual(IPAddress::parse("f000:f100::1234/125")->dns_rev_domains(),
             {"0.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
                 "1.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
                 "2.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
@@ -216,27 +218,27 @@ int main() {
     );
     it("test_method_compressed", []() {
       Chai::assert.equal("1:1:1::1",
-                         IPAddress::parse("1:1:1:0:0:0:0:1").unwrap().to_s());
+                         IPAddress::parse("1:1:1:0:0:0:0:1")->to_s());
       Chai::assert.equal("1:0:1::1",
-                         IPAddress::parse("1:0:1:0:0:0:0:1").unwrap().to_s());
+                         IPAddress::parse("1:0:1:0:0:0:0:1")->to_s());
       Chai::assert.equal("1::1:1:1:2:3:1",
-                         IPAddress::parse("1:0:1:1:1:2:3:1").unwrap().to_s());
+                         IPAddress::parse("1:0:1:1:1:2:3:1")->to_s());
       Chai::assert.equal("1::1:1:0:2:3:1",
-                         IPAddress::parse("1:0:1:1::2:3:1").unwrap().to_s());
+                         IPAddress::parse("1:0:1:1::2:3:1")->to_s());
       Chai::assert.equal("1:0:0:1::1",
-                         IPAddress::parse("1:0:0:1:0:0:0:1").unwrap().to_s());
+                         IPAddress::parse("1:0:0:1:0:0:0:1")->to_s());
       Chai::assert.equal("1::1:0:0:1",
-                         IPAddress::parse("1:0:0:0:1:0:0:1").unwrap().to_s());
-      Chai::assert.equal("1::1", IPAddress::parse("1:0:0:0:0:0:0:1").unwrap().to_s());
+                         IPAddress::parse("1:0:0:0:1:0:0:1")->to_s());
+      Chai::assert.equal("1::1", IPAddress::parse("1:0:0:0:0:0:0:1")->to_s());
       // Chai::assert.equal("1:1.1:2:0:0:1",
       // IPAddress::parse("1:1:0:1:2.1").to_s
     });
     it("test_method_unspecified", []() {
-      Chai::assert.equal(true, IPAddress::parse("::").unwrap().is_unspecified());
+      Chai::assert.equal(true, IPAddress::parse("::")->is_unspecified());
       Chai::assert.equal(false, setup().ip.is_unspecified());
     });
     it("test_method_loopback", []() {
-      Chai::assert.equal(true, IPAddress::parse("::1").unwrap().is_loopback());
+      Chai::assert.equal(true, IPAddress::parse("::1")->is_loopback());
       Chai::assert.equal(false, setup().ip.is_loopback());
     });
     it("test_method_network", []() {
@@ -291,12 +293,12 @@ int main() {
         }
       }
       std::vector<std::string> ret0;
-      for (auto i : IPAddress::parse("fd01:db8::4/3").unwrap().dns_networks()) {
+      for (auto i : IPAddress::parse("fd01:db8::4/3")->dns_networks()) {
         ret0.push_back(i.to_string());
       }
         Chai::assert.deepEqual(ret0, {"e000::/4", "f000::/4" });
     std::vector<std::string> ret1;
-    for (auto i : IPAddress::parse("3a03:2f80:f::/48").unwrap().dns_networks()) {
+    for (auto i : IPAddress::parse("3a03:2f80:f::/48")->dns_networks()) {
       ret1.push_back(i.to_string());
     }
         Chai::assert.deepEqual(ret1, {"3a03:2f80:f::/48" });
@@ -344,26 +346,26 @@ int main() {
     it("test_classmethod_compress", []() {
       auto compressed = "2001:db8:0:cd30::";
       auto expanded = "2001:0db8:0000:cd30:0000:0000:0000:0000";
-      Chai::assert.equal(compressed, IPAddress::parse(expanded).unwrap().to_s());
+      Chai::assert.equal(compressed, IPAddress::parse(expanded)->to_s());
       Chai::assert.equal("2001:db8::cd3",
-                         IPAddress::parse("2001:0db8:0::cd3").unwrap().to_s());
+                         IPAddress::parse("2001:0db8:0::cd3")->to_s());
       Chai::assert.equal("2001:db8::cd30",
-                         IPAddress::parse("2001:0db8::cd30").unwrap().to_s());
+                         IPAddress::parse("2001:0db8::cd30")->to_s());
       Chai::assert.equal("2001:db8::cd3",
-                         IPAddress::parse("2001:0db8::cd3").unwrap().to_s());
+                         IPAddress::parse("2001:0db8::cd3")->to_s());
     });
     it("test_classhmethod_parse_u128", []() {
       for (auto i : setup().valid_ipv6) {
         auto ip = i.first;
         auto num = i.second;
         // console.log(">>>>>>>>", i);
-        Chai::assert.equal(IPAddress::parse(ip).unwrap().to_s(),
-                           Ipv6::from_int(num, 128).unwrap().to_s());
+        Chai::assert.equal(IPAddress::parse(ip)->to_s(),
+                           Ipv6::from_int(num, 128)->to_s());
       }
     });
     it("test_classmethod_parse_hex", []() {
       Chai::assert.equal(setup().ip.to_string(),
-                         Ipv6::from_str(setup().hex, 16, 64).unwrap().to_string());
+                         Ipv6::from_str(setup().hex, 16, 64)->to_string());
     });
     });
   return exit();

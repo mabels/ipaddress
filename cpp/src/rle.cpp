@@ -4,6 +4,8 @@
 
 #include "rle.hpp"
 
+namespace ipaddress{
+
 std::ostream& operator<<(std::ostream &o, const Rle &rle) {
     o << rle.toString();
     return o;
@@ -67,4 +69,5 @@ std::vector<Rle> Rle::code(const std::vector<size_t> &parts) {
     }
     last.handle_last();
     return last.ret;
+}
 }

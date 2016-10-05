@@ -6,6 +6,8 @@
 
 #include "../src/rle.hpp"
 
+using namespace ipaddress;
+
 void assert_rle(std::vector<Rle> left, std::vector<Rle> right, const char *str) {
   // std::cout << str << std::endl;
   Chai::assert.equal(left.size(), right.size(), "array size() missmatch");

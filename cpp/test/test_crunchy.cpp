@@ -3,6 +3,7 @@
 #include "chai.hpp"
 #include "mocha.hpp"
 
+using namespace ipaddress;
 int main(int, char **) {
 
   describe("#compare", []() {

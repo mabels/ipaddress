@@ -2,7 +2,7 @@
 #define __IPV6_UNSPEC__
 
 #include "ipaddress.hpp"
-
+namespace ipaddress {
 class Ipv6Unspec {
 public:
     //  The address with all zero bits is called the +unspecified+ address
@@ -59,4 +59,5 @@ public:
     }
     //  class IPv6::Unspecified
 };
+}
 #endif

@@ -8,7 +8,7 @@
 #include "ip_bits.hpp"
 #include "crunchy.hpp"
 
-
+namespace ipaddress {
 class Prefix {
 public:
     typedef std::function<Result<Prefix>(const size_t num)> From;
@@ -171,4 +171,5 @@ public:
 };
 
 std::ostream& operator<<(std::ostream &o, const Prefix &prefix);
+}
 #endif

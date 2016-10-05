@@ -7,7 +7,7 @@
 #include "ip_bits.hpp"
 #include "prefix128.hpp"
 // #include "ipv6.hpp"
-
+namespace ipaddress {
 class Ipv4 {
     public:
     static Result<IPAddress> from_number(const Crunchy &addr, size_t prefix_num) {
@@ -181,4 +181,6 @@ class Ipv4 {
         return Ok(ip);
     }
 };
+
+}
 #endif

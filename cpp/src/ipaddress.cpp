@@ -5,6 +5,7 @@
 #include "ipv6.hpp"
 #include "ipv6_mapped.hpp"
 
+namespace ipaddress {
 
 std::ostream& operator<<(std::ostream &o, const IPAddress &ipaddress) {
     o << "<ipaddress@"
@@ -110,52 +111,30 @@ std::vector<IPAddress> IPAddress::aggregate(const std::vector<IPAddress> &networ
   //         &stack[i].to_string_uncompressed());
   // }
   for (ssize_t pos = 0; true;) {
-    if (pos < 0) {
-      pos = 0;
-    }
+    if (pos < 0) { pos = 0; }
     auto stack_len = static_cast<ssize_t>(stack.size()); // borrow checker
-    // println!("loop:{}:{}", pos, stack_len);
-    // if stack_len == 1 {
-    //     println!("exit 1");
-    //     break;
-    // }
-    if (pos >= stack_len) {
-      // println!("exit first:{}:{}", stack_len, pos);
-      break;
-    }
+    if (pos >= stack_len) { break; }
     auto first = IPAddress::pos_to_idx(pos, stack_len);
     pos = pos + 1;
-    if (pos >= stack_len) {
-      // println!("exit second:{}:{}", stack_len, pos);
-      break;
-    }
+    if (pos >= stack_len) { break; }
     auto second = IPAddress::pos_to_idx(pos, stack_len);
     pos = pos + 1;
-    //auto firstUnwrap = first;
     if (stack[first].includes(stack[second])) {
       pos = pos - 2;
-      // println!("remove:1:{}:{}:{}=>{}", first, second, stack_len, pos + 1);
       auto pidx = IPAddress::pos_to_idx(pos + 1, stack_len);
-      // std::cout << "-1:" << pidx << ":" << stack.size() << std::endl;
       stack.erase(stack.begin() + pidx);
     } else {
       stack[first].prefix = stack[first].prefix.sub(1).unwrap();
-      // println!("complex:{}:{}:{}:{}:P1:{}:P2:{}", pos, stack_len,
-      // first, second,
-      // stack[first].to_string(), stack[second].to_string());
       if ((stack[first].prefix.num + 1) == stack[second].prefix.num &&
           stack[first].includes(stack[second])) {
         pos = pos - 2;
         auto idx = IPAddress::pos_to_idx(pos, stack_len);
         stack[idx] = stack[first].clone(); // kaputt
         auto pidx = IPAddress::pos_to_idx(pos + 1, stack_len);
-        // std::cout << "-1:" << pidx << ":" << stack.size() << std::endl;
         stack.erase(stack.begin() + pidx);
-        // println!("remove-2:{}:{}", pos + 1, stack_len);
         pos = pos - 1; // backtrack
       } else {
         stack[first].prefix = stack[first].prefix.add(1).unwrap(); //reset prefix
-        // println!("easy:{}:{}=>{}", pos, stack_len, stack[first].to_string());
         pos = pos - 1; // do it with second as first
       }
     }
@@ -163,4 +142,6 @@ std::vector<IPAddress> IPAddress::aggregate(const std::vector<IPAddress> &networ
   // println!("agg={}:{}", pos, stack.size());
   //return stack.erase(0, stack.size());
   return std::vector<IPAddress>(stack.begin(), stack.end());
+}
+
 }

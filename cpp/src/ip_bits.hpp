@@ -9,6 +9,9 @@
 #include <functional>
 #include <vector>
 
+namespace ipaddress {
+
+
 class IpBits {
 public:
   typedef std::function<std::string(const IpBits *source, const Crunchy &num)> ToString;
@@ -33,7 +36,7 @@ private:
     rev_domain(rev_domain), part_mod(part_mod), host_ofs(host_ofs) {
   }
 public:
-  
+
     const IpBits* clone() const {
       return this;
         // IpBits my;
@@ -84,5 +87,6 @@ public:
 };
 
 std::ostream& operator<<(std::ostream &o, const IpBits &ip_bits);
+}
 
 #endif

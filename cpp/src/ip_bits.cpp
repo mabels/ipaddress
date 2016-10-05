@@ -1,6 +1,7 @@
 
 #include "ip_bits.hpp"
 
+namespace ipaddress {
 
 static std::string ipv4_as_compressed(const IpBits *ip_bits, const Crunchy &host_address) {
     std::stringstream ret;
@@ -82,4 +83,6 @@ const IpBits* IpBits::v6() {
       1 << 16,
       Crunchy::zero());
   return v6Ptr;
+}
+
 }

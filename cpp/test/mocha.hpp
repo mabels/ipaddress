@@ -14,7 +14,7 @@ static int okCount = 0;
 
 
 int exit() {
-  std::cout << std::endl;
+
   std::stringstream s2;
   s2 << std::dec << "Total " << okCount+failCount
     << " Ok " << okCount

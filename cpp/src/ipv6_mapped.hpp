@@ -5,6 +5,8 @@
 #include "ip_bits.hpp"
 #include "ipaddress.hpp"
 
+namespace ipaddress {
+
 class Ipv6Mapped {
 public:
     //  Ac
@@ -85,4 +87,5 @@ public:
     //
     static Result<IPAddress> create(const std::string &str);
 };
+}
 #endif

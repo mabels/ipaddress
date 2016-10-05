@@ -25,7 +25,7 @@
 #include "result.hpp"
 #include "option.hpp"
 
-
+namespace ipaddress {
 
 class ResultCrunchyParts {
   public:
@@ -1294,5 +1294,7 @@ class IPAddress {
 };
 
 std::ostream& operator<<(std::ostream &o, const IPAddress &ipa);
+
+}
 
 #endif
