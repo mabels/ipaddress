@@ -1,5 +1,6 @@
-#include "chai.hpp"
-#include "mocha.hpp"
+
+#include <cascara/cascara.hpp>
+using namespace cascara;
 
 #include "../src/ipaddress.hpp"
 #include "../src/prefix128.hpp"
@@ -32,15 +33,15 @@ int main() {
   describe("ipv6_loopback", []() {
       it("test_attributes", []() {
           auto s = setup();
-          Chai::assert.equal(128, s.ip.prefix.num);
-          Chai::assert.equal(true, s.ip.is_loopback());
-          Chai::assert.equal(s.s, s.ip.to_s());
-          Chai::assert.equal(s.n, s.ip.to_string());
-          Chai::assert.equal(s.string, s.ip.to_string_uncompressed());
-          Chai::assert.equal(s.one.toString(), s.ip.host_address.toString());
+          assert.equal(128u, s.ip.prefix.num);
+          assert.equal(true, s.ip.is_loopback());
+          assert.equal(s.s, s.ip.to_s());
+          assert.equal(s.n, s.ip.to_string());
+          assert.equal(s.string, s.ip.to_string_uncompressed());
+          assert.equal(s.one.toString(), s.ip.host_address.toString());
           });
       it("test_method_ipv6", []() {
-          Chai::assert.equal(true, setup().ip.is_ipv6());
+          assert.equal(true, setup().ip.is_ipv6());
           });
       });
   return exit();

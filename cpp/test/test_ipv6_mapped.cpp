@@ -1,5 +1,6 @@
-#include "chai.hpp"
-#include "mocha.hpp"
+
+#include <cascara/cascara.hpp>
+using namespace cascara;
 
 #include "../src/crunchy.hpp"
 #include "../src/ipaddress.hpp"
@@ -50,13 +51,13 @@ int main() {
   describe("ipv6_mapped", []() {
     it("test_initialize", []() {
       auto s = setup();
-      Chai::assert.isTrue(IPAddress::parse("::172.16.10.1").isOk());
+      assert.isTrue(IPAddress::parse("::172.16.10.1").isOk());
       for (auto i : s.valid_mapped) {
             auto ip = i.first;
             auto u128 = i.second;
             // println("-{}--{}", ip, u128);
-            Chai::assert.isTrue(IPAddress::parse(ip).isOk());
-            Chai::assert.equal(
+            assert.isTrue(IPAddress::parse(ip).isOk());
+            assert.equal(
                 u128.toString(),
                 IPAddress::parse(ip)->host_address.toString());
       }
@@ -64,8 +65,8 @@ int main() {
         auto ip = i.first;
         auto u128 = i.second;
         // println("===={}=={:x}", ip, u128);
-        Chai::assert.isTrue(IPAddress::parse(ip).isOk());
-        Chai::assert.equal(
+        assert.isTrue(IPAddress::parse(ip).isOk());
+        assert.equal(
             u128.toString(),
             IPAddress::parse(ip)->host_address.toString());
       }
@@ -74,20 +75,20 @@ int main() {
       for (auto i : setup().valid_mapped_ipv6_conversion) {
         auto ip6 = i.first;
         auto ip4 = i.second;
-        Chai::assert.equal(ip4, IPAddress::parse(ip6)->mapped->to_s());
+        assert.equal(ip4, IPAddress::parse(ip6)->mapped->to_s());
       }
     });
     it("test_attributes", []() {
       auto s = setup();
-      Chai::assert.equal(s.address, s.ip.to_string(), "to_string");
-      Chai::assert.equal(128, s.ip.prefix.num, "prefix_num");
-      Chai::assert.equal(s.s, s.ip.to_s_mapped(), "mapped");
-      Chai::assert.equal(s.sstr, s.ip.to_string_mapped(), "mapped str");
-      Chai::assert.equal(s.string, s.ip.to_string_uncompressed(), "uncompressed");
-      Chai::assert.equal(s.u128.toString(), s.ip.host_address.toString(), "crunchy");
+      assert.equal(s.address, s.ip.to_string(), "to_string");
+      assert.equal(128, s.ip.prefix.num, "prefix_num");
+      assert.equal(s.s, s.ip.to_s_mapped(), "mapped");
+      assert.equal(s.sstr, s.ip.to_string_mapped(), "mapped str");
+      assert.equal(s.string, s.ip.to_string_uncompressed(), "uncompressed");
+      assert.equal(s.u128.toString(), s.ip.host_address.toString(), "crunchy");
     });
-    it("test_method_ipv6", []() { Chai::assert.isTrue(setup().ip.is_ipv6()); });
-    it("test_mapped", []() { Chai::assert.isTrue(setup().ip.is_mapped()); });
+    it("test_method_ipv6", []() { assert.isTrue(setup().ip.is_ipv6()); });
+    it("test_mapped", []() { assert.isTrue(setup().ip.is_mapped()); });
   });
   return exit();
 }

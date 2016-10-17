@@ -1,6 +1,7 @@
 
-#include "chai.hpp"
-#include "mocha.hpp"
+
+#include <cascara/cascara.hpp>
+using namespace cascara;
 
 #include "../src/crunchy.hpp"
 #include "../src/ipaddress.hpp"
@@ -29,7 +30,7 @@ RangeItem Range(size_t start, size_t target) {
 }
 
 void assertArrayEqual(std::vector<std::string> a, std::vector<std::string> b) {
-  Chai::assert.deepEqual(a, b);
+  assert.deepEqual(a, b);
 }
 
 IPAddressTest setup() { return IPAddressTest(); }
@@ -40,44 +41,44 @@ int main() {
 
     it("test_method_ipaddress", []() {
         // std::cout << "-1" << std::endl;
-      Chai::assert.isTrue(IPAddress::parse(setup().valid_ipv4).isOk(), "valid_ipv4");
+      assert.isTrue(IPAddress::parse(setup().valid_ipv4).isOk(), "valid_ipv4");
         // std::cout << "-2" << std::endl;
-      Chai::assert.isTrue(IPAddress::parse(setup().valid_ipv6).isOk(), "valid_ipv6");
+      assert.isTrue(IPAddress::parse(setup().valid_ipv6).isOk(), "valid_ipv6");
         // std::cout << "-3" << std::endl;
-      Chai::assert.isTrue(IPAddress::parse(setup().valid_mapped).isOk(), "valid_mapped");
+      assert.isTrue(IPAddress::parse(setup().valid_mapped).isOk(), "valid_mapped");
         // std::cout << "-4" << std::endl;
 
-      Chai::assert.isTrue(IPAddress::parse(setup().valid_ipv4)->is_ipv4(), "isv4");
+      assert.isTrue(IPAddress::parse(setup().valid_ipv4)->is_ipv4(), "isv4");
         // std::cout << "-5" << std::endl;
-      Chai::assert.isTrue(IPAddress::parse(setup().valid_ipv6)->is_ipv6(), "isv6");
+      assert.isTrue(IPAddress::parse(setup().valid_ipv6)->is_ipv6(), "isv6");
         // std::cout << "-6" << std::endl;
-      Chai::assert.isTrue(IPAddress::parse(setup().valid_mapped)->is_mapped(), "ismapped");
+      assert.isTrue(IPAddress::parse(setup().valid_mapped)->is_mapped(), "ismapped");
         // std::cout << "-7" << std::endl;
 
-      Chai::assert.isTrue(IPAddress::parse(setup().invalid_ipv4).isErr(), "invalid_ipv4");
+      assert.isTrue(IPAddress::parse(setup().invalid_ipv4).isErr(), "invalid_ipv4");
         // std::cout << "-8" << std::endl;
-      Chai::assert.isTrue(IPAddress::parse(setup().invalid_ipv6).isErr(), "invalid_ipv6");
+      assert.isTrue(IPAddress::parse(setup().invalid_ipv6).isErr(), "invalid_ipv6");
         // std::cout << "-9" << std::endl;
-      Chai::assert.isTrue(IPAddress::parse(setup().invalid_mapped).isErr(), "invalid_mapped");
+      assert.isTrue(IPAddress::parse(setup().invalid_mapped).isErr(), "invalid_mapped");
         // std::cout << "-A" << std::endl;
     });
 
     it("test_module_method_valid", []() {
-      Chai::assert.equal(true, IPAddress::is_valid("10.0.0.1"));
-      Chai::assert.equal(true, IPAddress::is_valid("10.0.0.0"));
-      Chai::assert.equal(true, IPAddress::is_valid("2002::1"));
-      Chai::assert.equal(true, IPAddress::is_valid("dead:beef:cafe:babe::f0ad"));
-      Chai::assert.equal(false, IPAddress::is_valid("10.0.0.256"));
-      Chai::assert.equal(false, IPAddress::is_valid("10.0.0.0.0"));
-      Chai::assert.equal(true, IPAddress::is_valid("10.0.0"));
-      Chai::assert.equal(true, IPAddress::is_valid("10.0"));
-      Chai::assert.equal(false, IPAddress::is_valid("2002:516:2:200"));
-      Chai::assert.equal(false, IPAddress::is_valid("2002:::1"));
+      assert.equal(true, IPAddress::is_valid("10.0.0.1"));
+      assert.equal(true, IPAddress::is_valid("10.0.0.0"));
+      assert.equal(true, IPAddress::is_valid("2002::1"));
+      assert.equal(true, IPAddress::is_valid("dead:beef:cafe:babe::f0ad"));
+      assert.equal(false, IPAddress::is_valid("10.0.0.256"));
+      assert.equal(false, IPAddress::is_valid("10.0.0.0.0"));
+      assert.equal(true, IPAddress::is_valid("10.0.0"));
+      assert.equal(true, IPAddress::is_valid("10.0"));
+      assert.equal(false, IPAddress::is_valid("2002:516:2:200"));
+      assert.equal(false, IPAddress::is_valid("2002:::1"));
     });
 
     it("test_module_method_valid_ipv4_netmark", []() {
-      Chai::assert.equal(true, IPAddress::is_valid_netmask("255.255.255.0"), "255.255.255.0 should ok");
-      Chai::assert.equal(false, IPAddress::is_valid_netmask("10.0.0.1"), "10.0.0.1 this is bad");
+      assert.equal(true, IPAddress::is_valid_netmask("255.255.255.0"), "255.255.255.0 should ok");
+      assert.equal(false, IPAddress::is_valid_netmask("10.0.0.1"), "10.0.0.1 this is bad");
     });
 
     it("test_summarize", []() {
@@ -116,7 +117,7 @@ int main() {
         ip_addresses.push_back(IPAddress::parse(net).unwrap());
       }
 
-      Chai::assert.equal(IPAddress::summarize_str({})->size(), 0);
+      assert.equal(IPAddress::summarize_str({})->size(), 0);
       assertArrayEqual(
           IPAddress::to_string_vec(IPAddress::summarize_str({"10.1.0.4/24"}).unwrap()),
           {"10.1.0.0/24"});
@@ -160,7 +161,7 @@ int main() {
 
       size_t cnt = 100;
       for (size_t _ = 0; _ < cnt; ++_) {
-        Chai::assert.deepEqual(
+        assert.deepEqual(
             IPAddress::to_string_vec(IPAddress::summarize(ip_addresses)), {
               "1.0.0.0/8",      "2.0.0.0/7",      "4.0.0.0/6",
               "8.0.0.0/7",      "11.0.0.0/8",     "12.0.0.0/6",
@@ -189,8 +190,8 @@ int main() {
       assertArrayEqual(IPAddress::to_string_vec(
                            IPAddress::summarize({ a1, a2 })),
                        {"10.0.0.0/23"});
-      Chai::assert.equal("10.0.0.1/24", a1.to_string());
-      Chai::assert.equal("10.0.1.1/24", a2.to_string());
+      assert.equal("10.0.0.1/24", a1.to_string());
+      assert.equal("10.0.1.1/24", a2.to_string());
     });
   });
   return exit();

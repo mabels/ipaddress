@@ -1,6 +1,7 @@
 
-#include "mocha.hpp"
-#include "chai.hpp"
+
+#include <cascara/cascara.hpp>
+using namespace cascara;
 
 #include "../src/option.hpp"
 
@@ -21,22 +22,22 @@ int main(int, char **) {
 
       it("default", [](){
           auto none = Option<TestOptional>();
-          Chai::assert.isTrue(none.isNone());
-          Chai::assert.isFalse(none.isSome());
+          assert.isTrue(none.isNone());
+          assert.isFalse(none.isSome());
           try {
             none.unwrap();
-            Chai::assert.isTrue(true, "unwrap should not work");
+            assert.isTrue(true, "unwrap should not work");
           } catch (OptionError e) {
           }
       });
 
       it("None", [](){
           auto none = None<TestOptional>();
-          Chai::assert.isTrue(none.isNone());
-          Chai::assert.isFalse(none.isSome());
+          assert.isTrue(none.isNone());
+          assert.isFalse(none.isSome());
           try {
             none.unwrap();
-            Chai::assert.isTrue(true, "unwrap should not work");
+            assert.isTrue(true, "unwrap should not work");
           } catch (OptionError e) {
           }
       });
@@ -45,27 +46,27 @@ int main(int, char **) {
           TestOptional to;
           auto some = Some(to);
           to._42 = 8199;
-          Chai::assert.isFalse(some.isNone());
-          Chai::assert.isTrue(some.isSome());
-          Chai::assert.equal(some.unwrap()._42, 42);
+          assert.isFalse(some.isNone());
+          assert.isTrue(some.isSome());
+          assert.equal(some.unwrap()._42, 42);
           some.unwrap()._42 = 4711;
-          Chai::assert.equal(some.unwrap()._42, 4711);
+          assert.equal(some.unwrap()._42, 4711);
       });
       it("Memory", [](){
           TestOptional to;
           c_count = 0;
           {
             auto some = Some(to);
-            Chai::assert.equal(c_count, 1);
-            Chai::assert.equal(some.unwrap()._42, 42);
+            assert.equal(c_count, 1);
+            assert.equal(some.unwrap()._42, 42);
           }
-          Chai::assert.equal(c_count, 0, "loosing memory");
+          assert.equal(c_count, 0, "loosing memory");
       });
 
       it("Ptr", [](){
           TestOptional to;
           auto some = Some(to);
-          Chai::assert.equal(some->_42, 42);
+          assert.equal(some->_42, 42);
       });
 
   });

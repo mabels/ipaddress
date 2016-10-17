@@ -15,7 +15,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -g")
 
 enable_testing()
 
-find_package(Boost 1.54.0 COMPONENTS system coroutine context iostreams thread regex REQUIRED)
+find_package(Boost 1.54.0 COMPONENTS system regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
 find_package(Threads REQUIRED)

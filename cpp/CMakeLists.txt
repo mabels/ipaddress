@@ -13,9 +13,13 @@ endif()
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -g")
 
+if(NOT GITBASE)
+  set(GITBASE https://github.com)
+endif()
+
 
 #Only tested with versions 1.55 and 1.56
-find_package(Boost 1.54.0 COMPONENTS system regex coroutine context thread iostreams REQUIRED)
+find_package(Boost 1.54.0 COMPONENTS system regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
 if(APPLE)
@@ -24,6 +28,9 @@ if(APPLE)
 endif()
 
 #include(CMakeLists-easyloggingpp.txt)
+
+include(CMakeLists-cascara.txt)
+
 
 #set(SIMPLEWEB_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/Simple-WebSocket-Server")
 #TODO: add requirement for version 1.0.1g (can it be done in one line?)

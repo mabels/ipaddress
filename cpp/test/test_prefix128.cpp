@@ -1,5 +1,6 @@
-#include "chai.hpp"
-#include "mocha.hpp"
+
+#include <cascara/cascara.hpp>
+using namespace cascara;
 
 #include "../src/prefix128.hpp"
 #include "../src/crunchy.hpp"
@@ -24,8 +25,8 @@ class Prefix128Test {
 int main() {
 describe("prefix128", []() {
     it("test_initialize", []() {
-        Chai::assert.isTrue(Prefix128::create(129).isErr());
-        Chai::assert.isTrue(Prefix128::create(64).isOk());
+        assert.isTrue(Prefix128::create(129).isErr());
+        assert.isTrue(Prefix128::create(64).isOk());
     });
 
     it("test_method_bits", []() {
@@ -37,11 +38,11 @@ describe("prefix128", []() {
         for (auto i = 0; i < 64; ++i) {
             str << "0";
         }
-        Chai::assert.equal(str.str(), prefix.bits());
+        assert.equal(str.str(), prefix.bits());
     });
     it("test_method_to_u32", []() {
         for (auto hash : setup().u128_hash) {
-            Chai::assert.isTrue(hash.second.eq(Prefix128::create(hash.first)->netmask()));
+            assert.isTrue(hash.second.eq(Prefix128::create(hash.first)->netmask()));
         }
     });
 });

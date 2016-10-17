@@ -1,5 +1,6 @@
-#include "chai.hpp"
-#include "mocha.hpp"
+
+#include <cascara/cascara.hpp>
+using namespace cascara;
 
 #include "../src/crunchy.hpp"
 #include "../src/ipaddress.hpp"
@@ -23,16 +24,16 @@ IPv6UnspecifiedTest setup() { return IPv6UnspecifiedTest(); }
 int main() {
   describe("ipv6_unspec", []() {
     it("test_attributes", []() {
-      Chai::assert.isTrue(setup().ip.host_address.eq(setup().num));
-      Chai::assert.equal(128, setup().ip.prefix.num);
-      Chai::assert.equal(true, setup().ip.is_unspecified());
-      Chai::assert.equal(setup().to_s, setup().ip.to_s());
-      Chai::assert.equal(setup().to_string, setup().ip.to_string());
-      Chai::assert.equal(setup().to_string_uncompressed,
+      assert.isTrue(setup().ip.host_address.eq(setup().num));
+      assert.equal(128, setup().ip.prefix.num);
+      assert.equal(true, setup().ip.is_unspecified());
+      assert.equal(setup().to_s, setup().ip.to_s());
+      assert.equal(setup().to_string, setup().ip.to_string());
+      assert.equal(setup().to_string_uncompressed,
                          setup().ip.to_string_uncompressed());
     });
     it("test_method_ipv6", []() {
-      Chai::assert.equal(true, setup().ip.is_ipv6());
+      assert.equal(true, setup().ip.is_ipv6());
     });
   });
   return exit();

@@ -1,0 +1,23 @@
+include(ExternalProject)
+ExternalProject_Add(
+  cascara
+
+  GIT_REPOSITORY "${GITBASE}/mabels/cascara"
+  GIT_TAG "master"
+
+  UPDATE_COMMAND ""
+
+  SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/cascara"
+  CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_STATIC_LIBS=ON -DBUILD_SHARED_LIBS=OFF -DARCHIVE_INSTALL_DIR=<INSTALL_DIR> -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> ../..
+
+  #BUILD_COMMAND ""
+  #INSTALL_COMMAND ""
+  TEST_COMMAND ""
+)
+
+ExternalProject_Get_Property(cascara install_dir)
+include_directories(${install_dir}/include)
+
+
+set(cascara_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/3rdparty/cascara/include")
+include_directories(${cascara_INCLUDE_DIRS})

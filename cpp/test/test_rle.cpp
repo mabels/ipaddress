@@ -1,5 +1,6 @@
-#include "chai.hpp"
-#include "mocha.hpp"
+
+#include <cascara/cascara.hpp>
+using namespace cascara;
 
 #include <sstream>
 #include <vector>
@@ -10,10 +11,10 @@ using namespace ipaddress;
 
 void assert_rle(std::vector<Rle> left, std::vector<Rle> right, const char *str) {
   // std::cout << str << std::endl;
-  Chai::assert.equal(left.size(), right.size(), "array size() missmatch");
+  assert.equal(left.size(), right.size(), "array size() missmatch");
   for (size_t i = 0; i < left.size(); ++i) {
     // std::cout << left[i] << "==" << right[i] << std::endl;
-    Chai::assert.isTrue(left[i].eq(right[i]),
+    assert.isTrue(left[i].eq(right[i]),
                         ([str, i, left, right]() -> const char * {
                           std::stringstream s2;
                           s2 << str << "=>";
