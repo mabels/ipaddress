@@ -5,33 +5,33 @@ import (
 )
 
 type Rle struct {
-	part uint32
-	pos  int
-	cnt  uint32
-	max  bool
+	Part uint16
+	Pos  int
+	Cnt  int
+	Max  bool
 }
 
 func (r Rle) String() string {
-	return fmt.Sprintf("Rle:part:{%d},pos:{%d},cnt:{%d},max:{%d}",
-		r.part, r.pos, r.cnt, r.max)
+	return fmt.Sprintf("Rle:Part:{%d},Pos:{%d},Cnt:{%d},Max:{%d}",
+		r.Part, r.Pos, r.Cnt, r.Max)
 }
 
 // impl<T: Display + LowerHex> fmt::Debug for Rle<T> {
 //     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//         write!(f, "<Rle@part:{:x},pos:{},cnt:{},max:{}>",
-//             self.part, self.pos, self.cnt, self.max)
+//         write!(f, "<Rle@Part:{:x},Pos:{},Cnt:{},Max:{}>",
+//             self.Part, self.Pos, self.Cnt, self.Max)
 //     }
 // }
 
 func (self Rle) Equal(other Rle) bool {
-  return self.part == other.part && self.pos == other.pos &&
-          self.cnt == other.cnt && self.max == other.max;
+  return self.Part == other.Part && self.Pos == other.Pos &&
+          self.Cnt == other.Cnt && self.Max == other.Max;
 }
 
 //impl<T: PartialEq> Eq for Rle<T> {}
 type Last struct {
 	val       *Rle
-	max_poses map[uint32][]int
+	Max_Poses map[uint16][]int
 	ret       []Rle
 }
 
@@ -41,50 +41,50 @@ func (self *Last) handle_last() {
 		return
 	}
 	_last := self.val
-	max_rles, ok := self.max_poses[_last.part]
+	Max_rles, ok := self.Max_Poses[_last.Part]
 	if !ok {
-		max_rles = make([]int, 0)
-		self.max_poses[_last.part] = max_rles
-    // fmt.Printf("--2 %d\n", _last.part)
+		Max_rles = make([]int, 0)
+		self.Max_Poses[_last.Part] = Max_rles
+    // fmt.Printf("--2 %d\n", _last.Part)
 	}
-  // fmt.Printf("--A %d\n", len(max_rles))
-	for _, idx := range max_rles {
+  // fmt.Printf("--A %d\n", len(Max_rles))
+	for _, idx := range Max_rles {
 		prev := &self.ret[idx]
-		if prev.cnt > _last.cnt {
-      // fmt.Printf("--3 %d %d\n", prev.part, _last.part)
-			_last.max = false
+		if prev.Cnt > _last.Cnt {
+      // fmt.Printf("--3 %d %d\n", prev.Part, _last.Part)
+			_last.Max = false
 		}
-		if prev.cnt == _last.cnt {
+		if prev.Cnt == _last.Cnt {
       // fmt.Printf("--4\n")
 			// nothing
 		}
-		if prev.cnt < _last.cnt {
-      // fmt.Printf("--5 %d %d\n", prev.part, _last.part)
+		if prev.Cnt < _last.Cnt {
+      // fmt.Printf("--5 %d %d\n", prev.Part, _last.Part)
 			// println!("<<<<< last={:?}->{}->prev={:?}", _last, idx, prev);
-			//self.ret[idx].max = false;
-			prev.max = false
+			//self.ret[idx].Max = false;
+			prev.Max = false
 		}
 	}
 	//println!("push:{}:{:?}", self.ret.len(), _last);
-	self.max_poses[_last.part] = append(max_rles, len(self.ret))
-	_last.pos = len(self.ret)
+	self.Max_Poses[_last.Part] = append(Max_rles, len(self.ret))
+	_last.Pos = len(self.ret)
 	self.ret = append(self.ret, *_last)
   // fmt.Printf("--6 -- %s -- %s -- %s --\n", _last, self.ret, self.val)
 }
 
-func Code(parts []uint32) []Rle {
-	last := Last{nil, make(map[uint32][]int), make([]Rle, 0)}
+func Code(Parts []uint16) []Rle {
+	last := Last{nil, make(map[uint16][]int), make([]Rle, 0)}
   // fmt.Println("code");
 	// println!("code");
-	for i := 0; i < len(parts); i++ {
-		part := parts[i]
-    // fmt.Printf("code-1 %d %d\n", part, last.val);
-		// println!("part:{}", part);
-		if last.val != nil && last.val.part == part {
-			last.val.cnt += 1
+	for i := 0; i < len(Parts); i++ {
+		Part := Parts[i]
+    // fmt.Printf("code-1 %d %d\n", Part, last.val);
+		// println!("Part:{}", Part);
+		if last.val != nil && last.val.Part == Part {
+			last.val.Cnt += 1
 		} else {
 			last.handle_last()
-			last.val = &Rle{part, 0, 1, true}
+			last.val = &Rle{Part, 0, 1, true}
 		}
 	}
 	last.handle_last()
