@@ -1,5 +1,5 @@
 
-use ipaddress::IPAddress;
+import "ipaddress"
 ///  The address with all zero bits is called the +unspecified+ address
 ///  (corresponding to 0.0.0.0 in IPv4). It should be something like this:
 ///
@@ -49,7 +49,6 @@ use ipaddress::IPAddress;
 ///    ip.to_s
 ///       ///  => "::/128"
 ///
-#[allow(dead_code)]
-pub fn new() -> IPAddress {
-    return IPAddress::parse("::").unwrap();
+func New() IPAddress {
+    return IPAddress.Parse("::");
 }

@@ -1,18 +1,8 @@
 
-use ipaddress::IPAddress;
-use core::result::Result;
-use num::bigint::BigUint;
-use core::str::FromStr;
-use num_traits::One;
-use num_traits::Num;
-use core::ops::Rem;
-use core::ops::Shl;
-use core::ops::Shr;
-use num_traits::Zero;
-use num_traits::FromPrimitive;
-use num_traits::ToPrimitive;
-use prefix128;
-use ipv4;
+import "ipaddress"
+import "math/bigInt"
+import "prefix/prefix128"
+import "ipv4"
 
 ///  =Name
 ///
@@ -70,57 +60,57 @@ use ipv4;
 ///  portion.
 ///
 ///
-pub fn from_str<S: Into<String>>(_str: S, radix: u32, prefix: usize) -> Result<IPAddress, String> {
-    let str = _str.into();
-    let num = BigUint::from_str_radix(&str.clone(), radix);
-    if num.is_err() {
-        return Err(format!("unparsable {}", str));
+func From_str(str string, radix uint32, prefix uint32) (*IPAddress, *string) {
+    var num bigInt
+    num, err = num.SetString(str, radix);
+    if err {
+        return nil, fmt.Sprintf("unparsable %s", str);
     }
-    return from_int(num.unwrap(), prefix);
+    return From_int(num, prefix)
 }
 
-pub fn enhance_if_mapped(mut ip: IPAddress) -> Result<IPAddress, String> {
+func enhance_if_mapped(ip *IPAddress) (*IPAddress, *string) {
     // println!("real mapped {:x} {:x}", &ip.host_address, ip.host_address.clone().shr(32));
     if ip.is_mapped() {
-        return Ok(ip);
+        return ip, nil
     }
-    let ipv6_top_96bit = ip.host_address.clone().shr(32);
-    if ipv6_top_96bit == BigUint::from_u32(0xffff).unwrap() {
+    ipv6_top_96bit := bigInt.Rsh(ip.host_address, 32)
+    if ipv6_top_96bit == bigInt.new(0xffff) {
         // println!("enhance_if_mapped-1:{}", );
-        let num = ip.host_address.clone().rem(BigUint::one().shl(32));
+        num := bigInt.Rem(ip.host_address, bigInt.Lsh(bigInt.new(1), 32));
         if num == BigUint::zero() {
-            return Ok(ip);
+            return ip, nil;
         }
-        println!("ip:{},{:x}", ip.to_string(), num);
-        let ipv4_bits = ::ip_bits::v4();
+        //println!("ip:{},{:x}", ip.to_string(), num);
+        ipv4_bits := ip_bits.V4();
         if ipv4_bits.bits < ip.prefix.host_prefix() {
-            println!("enhance_if_mapped-2:{}:{}", ip.to_string(), ip.prefix.host_prefix());
-            return Err(format!("enhance_if_mapped prefix not ipv4 compatible {}", ip.prefix.host_prefix()));
+            // println!("enhance_if_mapped-2:{}:{}", ip.to_string(), ip.prefix.host_prefix());
+            return nil, fmt.Sprintf("enhance_if_mapped prefix not ipv4 compatible %d", ip.prefix.host_prefix());
         }
-        let mapped = ipv4::from_u32(num.to_u32().unwrap(), ipv4_bits.bits-ip.prefix.host_prefix());
-        if mapped.is_err() {
-            println!("enhance_if_mapped-3");
+        mapped, err := ipv4.From_u32(num.to_u32(), ipv4_bits.bits-ip.prefix.host_prefix());
+        if err {
+            // fm!("enhance_if_mapped-3");
             return mapped;
         }
         // println!("real mapped!!!!!={}", mapped.clone().unwrap().to_string());
-        ip.mapped = Some(Box::new(mapped.unwrap()));
+        ip.mapped = mapped
     }
-    return Ok(ip);
+    return ip, nil
 }
 
-pub fn from_int(adr: BigUint, prefix: usize) -> Result<IPAddress, String> {
-    let prefix = prefix128::new(prefix);
-    if prefix.is_err() {
-        return Err(prefix.unwrap_err());
+func From_int(adr bigUInt, prefix uint) (*IPAddress, *string) {
+    prefix, err := prefix128.New(prefix)
+    if err {
+        return nil, err
     }
     return enhance_if_mapped(IPAddress {
-        ip_bits: ::ip_bits::v6(),
-        host_address: adr.clone(),
-        prefix: prefix.unwrap(),
-        mapped: None,
-        vt_is_private: ipv6_is_private,
-        vt_is_loopback: ipv6_is_loopback,
-        vt_to_ipv6: to_ipv6,
+        ip_bits.v6(),
+        adr.clone(),
+        prefix,
+        nil,
+        ipv6_is_private,
+        ipv6_is_loopback,
+        to_ipv6,
     });
 }
 
@@ -140,50 +130,49 @@ pub fn from_int(adr: BigUint, prefix: usize) -> Result<IPAddress, String> {
 ///
 ///    ip6 = IPAddress "2001:db8::8:800:200c:417a/64"
 ///
-pub fn new<S: Into<String>>(_str: S) -> Result<IPAddress, String> {
-    let str = _str.into();
-    let (ip, o_netmask) = IPAddress::split_at_slash(&str);
-    if IPAddress::is_valid_ipv6(ip.clone()) {
-        let o_num = IPAddress::split_to_num(&ip);
-        if o_num.is_err() {
-            return Err(o_num.unwrap_err());
+func New(str: string) (*IPAddress, *string) {
+    ip, o_netmask := IPAddress::split_at_slash(str);
+    if IPAddress.Is_valid_ipv6(ip) {
+        o_num, err := IPAddress.Split_to_num(ip);
+        if err {
+            return nil, err
         }
-        let mut netmask = 128;
-        if o_netmask.is_some() {
-            let network = o_netmask.unwrap();
-            let num_mask = u8::from_str(&network);
-            if num_mask.is_err() {
-                return Err(format!("Invalid Netmask {}", str));
+        netmask := 128;
+        if o_netmask {
+            network := o_netmask
+            num_mask, err = strconv::parseInt(network, 8, 10);
+            if err {
+                return nil, fmt.Sprintf("can not parse:%s", network)
             }
             netmask = network.parse::<usize>().unwrap();
         }
-        let prefix = ::prefix128::new(netmask);
-        if prefix.is_err() {
-            return Err(prefix.unwrap_err());
+        prefix, err := prefix128.New(netmask);
+        if err {
+            return nil, err
         }
         return enhance_if_mapped(IPAddress {
-            ip_bits: ::ip_bits::v6(),
-            host_address: o_num.unwrap(),
-            prefix: prefix.unwrap(),
-            mapped: None,
-            vt_is_private: ipv6_is_private,
-            vt_is_loopback: ipv6_is_loopback,
-            vt_to_ipv6: to_ipv6
+            ip_bits.V6(),
+            o_num,
+            prefix,
+            nul,
+            ipv6_is_private,
+            ipv6_is_loopback,
+            to_ipv6
         });
     } else {
-        return Err(format!("Invalid IP {}", str));
+        return nil, fmt.Sprintf("Invalid IP %s", str);
     }
-} 
+}
 
-pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
+func to_ipv6(ia *IPAddress) IPAddress {
     return ia.clone();
 }
 
-pub fn ipv6_is_loopback(my: &IPAddress) -> bool {
-    return my.host_address == BigUint::one();
+func ipv6_is_loopback(my *IPAddress) bool {
+    return my.host_address == bigInt.new(1);
 }
 
 
-pub fn ipv6_is_private(my: &IPAddress) -> bool {
-    return IPAddress::parse("fd00::/8").unwrap().includes(my);
+func ipv6_is_private(my *IPAddress)bool {
+    return IPAddress.parse("fd00::/8").Includes(my);
 }

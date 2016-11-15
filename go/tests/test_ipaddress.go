@@ -1,7 +1,8 @@
-extern crate ipaddress;
-extern crate num;
 
-#[cfg(test)]
+import "math/big"
+
+import "./ipaddress"
+
 mod tests {
     use ipaddress::IPAddress;
 
@@ -16,7 +17,7 @@ mod tests {
         pub invalid_mapped: &'static str,
     }
 
-    pub fn setup() -> IPAddressTest {
+    func setup()IPAddressTest {
         return IPAddressTest {
             valid_ipv4: "172.16.10.1/24",
             valid_ipv6: "2001:db8::8:800:200c:417a/64",
@@ -29,7 +30,7 @@ mod tests {
     }
 
     #[test]
-    pub fn test_method_ipaddress() {
+    func test_method_ipaddress() {
         assert!(IPAddress::parse(setup().valid_ipv4).is_ok());
         assert!(IPAddress::parse(setup().valid_ipv6).is_ok());
         assert!(IPAddress::parse(setup().valid_mapped).is_ok());
@@ -43,7 +44,7 @@ mod tests {
         assert!(IPAddress::parse(setup().invalid_mapped).is_err());
     }
     #[test]
-    pub fn test_module_method_valid() {
+    func test_module_method_valid() {
         assert_eq!(true, IPAddress::is_valid("10.0.0.1"));
         assert_eq!(true, IPAddress::is_valid("10.0.0.0"));
         assert_eq!(true, IPAddress::is_valid("2002::1"));
@@ -56,12 +57,12 @@ mod tests {
         assert_eq!(false, IPAddress::is_valid("2002:::1"));
     }
     #[test]
-    pub fn test_module_method_valid_ipv4_netmark() {
+    func test_module_method_valid_ipv4_netmark() {
         assert_eq!(true, IPAddress::is_valid_netmask("255.255.255.0"));
         assert_eq!(false, IPAddress::is_valid_netmask("10.0.0.1"));
     }
     #[test]
-    pub fn test_summarize() {
+    func test_summarize() {
         let mut netstr: Vec<String> = Vec::new();
         for range in vec![(1..10), (11..127), (128..169), (170..172), (173..192), (193..224)] {
             for i in range {

@@ -1,15 +1,5 @@
 
-// use num::bigint::BigUint;
-// use ip_bits::IpBits;
-use ipaddress::IPAddress;
-
-use num_integer::Integer;
-// use core::fmt::Display;
-
-use num_traits::cast::ToPrimitive;
-use core::ops::Shr;
-use num::bigint::BigUint;
-use num_traits::Zero;
+import "ipaddress"
 
 //  Ac
 ///  It is usually identified as a IPv4 mapped IPv6 address, a particular
@@ -87,17 +77,16 @@ use num_traits::Zero;
 ///    ip6.to_string
 ///      ///  "::ffff:13.1.68.3"
 ///
-pub fn new<S: Into<String>>(_str: S) -> Result<IPAddress, String> {
-    let str = _str.into();
-    let (ip, o_netmask) = IPAddress::split_at_slash(&str);
-    let split_colon = ip.split(":").collect::<Vec<&str>>();
+func New(str string) (*IPAddress, *string) {
+    ip, o_netmask := IPAddress.split_at_slash(str);
+    split_colon := ip.split(":").collect::<Vec<string>>();
     if split_colon.len() <= 1 {
         // println!("---1");
-        return Err(format!("not mapped format-1: {}", &str));
+        return Err(format!("not mapped format-1: {}", string));
     }
     // if split_colon.get(0).unwrap().len() > 0 {
     //     // println!("---1a");
-    //     return Err(format!("not mapped format-2: {}", &str));
+    //     return Err(format!("not mapped format-2: {}", string));
     // }
     // let mapped: Option<IPAddress> = None;
     let mut netmask = String::from("");

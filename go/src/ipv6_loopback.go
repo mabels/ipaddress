@@ -1,7 +1,5 @@
 
-use ipaddress::IPAddress;
-use num::bigint::BigUint;
-use num_traits::One;
+import "ipaddress"
 
 ///    The loopback  address is a unicast localhost address. If an
 ///  application in a host sends packets to this address, the IPv6 stack
@@ -46,7 +44,6 @@ use num_traits::One;
 ///    ip.to_string
 ///      ///  "::1/128"
 ///
-#[allow(dead_code)]
-pub fn new() -> IPAddress {
-    return ::ipv6::from_int(BigUint::one(), 128).unwrap();
+func New() IPAddress {
+    return ipv6.From_int(big.NewInt(1), 128);
 }

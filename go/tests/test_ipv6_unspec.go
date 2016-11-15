@@ -1,7 +1,8 @@
-extern crate ipaddress;
-extern crate num;
 
-#[cfg(test)]
+import "math/big"
+
+import "./ipaddress"
+
 mod tests {
     use ipaddress::IPAddress;
     use ipaddress::ipv6_unspec;
@@ -16,7 +17,7 @@ mod tests {
         pub num: BigUint,
     }
 
-    fn setup() -> IPv6UnspecifiedTest {
+    fn setup()IPv6UnspecifiedTest {
         return IPv6UnspecifiedTest {
             ip: ipv6_unspec::new(),
             to_s: String::from("::"),
@@ -27,7 +28,7 @@ mod tests {
     }
 
     #[test]
-    pub fn test_attributes() {
+    func test_attributes() {
         assert_eq!(setup().ip.host_address, setup().num);
         assert_eq!(128, setup().ip.prefix().get_prefix());
         assert_eq!(true, setup().ip.is_unspecified());
@@ -37,7 +38,7 @@ mod tests {
                    setup().ip.to_string_uncompressed());
     }
     #[test]
-    pub fn test_method_ipv6() {
+    func test_method_ipv6() {
         assert_eq!(true, setup().ip.is_ipv6());
     }
 }

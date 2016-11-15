@@ -17,7 +17,7 @@ func (r Rle) String() string {
 }
 
 // impl<T: Display + LowerHex> fmt::Debug for Rle<T> {
-//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//     fn fmt(&self, f: &mut fmt::Formatter)fmt::Result {
 //         write!(f, "<Rle@Part:{:x},Pos:{},Cnt:{},Max:{}>",
 //             self.Part, self.Pos, self.Cnt, self.Max)
 //     }

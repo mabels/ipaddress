@@ -1,7 +1,8 @@
-extern crate ipaddress;
-extern crate num;
 
-#[cfg(test)]
+import "math/big"
+
+import "./ipaddress"
+
 mod tests {
     use num::bigint::BigUint;
     use num::ToPrimitive;
@@ -33,7 +34,7 @@ mod tests {
         pub class_c: IPAddress,
         pub classful: HashMap<&'static str, usize>,
     }
-    fn setup() -> IPv4Test {
+    fn setup()IPv4Test {
         let mut ipv4t = IPv4Test {
             valid_ipv4: HashMap::new(),
             // , "10.0.0", "10.0"
@@ -123,7 +124,7 @@ mod tests {
 
 
     #[test]
-    pub fn test_initialize() {
+    func test_initialize() {
         let setup = setup();
         for i in setup.valid_ipv4.keys() {
             let ip = IPAddress::parse(i.to_string()).unwrap();
@@ -134,21 +135,21 @@ mod tests {
         assert!(IPAddress::parse("10.0.0.0/8").is_ok());
     }
     #[test]
-    pub fn test_initialize_format_error() {
+    func test_initialize_format_error() {
         for i in setup().invalid_ipv4 {
             assert!(IPAddress::parse(i).is_err());
         }
         assert!(IPAddress::parse("10.0.0.0/asd").is_err());
     }
     #[test]
-    pub fn test_initialize_without_prefix() {
+    func test_initialize_without_prefix() {
         assert!(IPAddress::parse("10.10.0.0").is_ok());
         let ip = IPAddress::parse("10.10.0.0").unwrap();
         assert!(!ip.is_ipv6() && ip.is_ipv4());
         assert_eq!(32, ip.prefix.num);
     }
     #[test]
-    pub fn test_attributes() {
+    func test_attributes() {
         for (arg, attr) in setup().valid_ipv4 {
             let ip = IPAddress::parse(arg).unwrap();
             // println!("test_attributes:{}:{:?}", arg, attr);
@@ -157,19 +158,19 @@ mod tests {
         }
     }
     #[test]
-    pub fn test_octets() {
+    func test_octets() {
         let ip = IPAddress::parse("10.1.2.3/8").unwrap();
         assert_eq!(ip.parts(), [10, 1, 2, 3]);
     }
     #[test]
-    pub fn test_method_to_string() {
+    func test_method_to_string() {
         for (arg, attr) in setup().valid_ipv4 {
             let ip = IPAddress::parse(arg).unwrap();
             assert_eq!(format!("{}/{}", attr.ip, attr.prefix), ip.to_string());
         }
     }
     #[test]
-    pub fn test_method_to_s() {
+    func test_method_to_s() {
         for (arg, attr) in setup().valid_ipv4 {
             let ip = IPAddress::parse(arg).unwrap();
             assert_eq!(attr.ip, ip.to_s());
@@ -178,38 +179,38 @@ mod tests {
         }
     }
     #[test]
-    pub fn test_netmask() {
+    func test_netmask() {
         for (addr, mask) in setup().netmask_values {
             let ip = IPAddress::parse(addr).unwrap();
             assert_eq!(ip.netmask().to_s(), mask);
         }
     }
     #[test]
-    pub fn test_method_to_u32() {
+    func test_method_to_u32() {
         for (addr, int) in setup().decimal_values {
             let ip = IPAddress::parse(addr).unwrap();
             assert_eq!(ip.host_address.to_u32().unwrap(), int);
         }
     }
     #[test]
-    pub fn test_method_is_network() {
+    func test_method_is_network() {
         assert_eq!(true, setup().network.is_network());
         assert_eq!(false, setup().ip.is_network());
     }
     #[test]
-    pub fn test_one_address_network() {
+    func test_one_address_network() {
         let network = IPAddress::parse("172.16.10.1/32").unwrap();
         assert_eq!(false, network.is_network());
     }
     #[test]
-    pub fn test_method_broadcast() {
+    func test_method_broadcast() {
         for (addr, bcast) in setup().broadcast {
             let ip = IPAddress::parse(addr).unwrap();
             assert_eq!(bcast, ip.broadcast().to_string());
         }
     }
     #[test]
-    pub fn test_method_network() {
+    func test_method_network() {
         for (addr, net) in setup().networks {
             let ip = IPAddress::parse(addr).unwrap();
             assert_eq!(net, ip.network().to_string());
@@ -217,26 +218,26 @@ mod tests {
     }
 
     #[test]
-    pub fn test_method_bits() {
+    func test_method_bits() {
         let ip = IPAddress::parse("127.0.0.1").unwrap();
         assert_eq!("01111111000000000000000000000001", ip.bits());
     }
     #[test]
-    pub fn test_method_first() {
+    func test_method_first() {
         let mut ip = IPAddress::parse("192.168.100.0/24").unwrap();
         assert_eq!("192.168.100.1", ip.first().to_s());
         ip = IPAddress::parse("192.168.100.50/24").unwrap();
         assert_eq!("192.168.100.1", ip.first().to_s());
     }
     #[test]
-    pub fn test_method_last() {
+    func test_method_last() {
         let mut ip = IPAddress::parse("192.168.100.0/24").unwrap();
         assert_eq!("192.168.100.254", ip.last().to_s());
         ip = IPAddress::parse("192.168.100.50/24").unwrap();
         assert_eq!("192.168.100.254", ip.last().to_s());
     }
     #[test]
-    pub fn test_method_each_host() {
+    func test_method_each_host() {
         let ip = IPAddress::parse("10.0.0.1/29").unwrap();
         let arr = Arc::new(Mutex::new(Vec::new()));
         ip.each_host(|i| arr.lock().unwrap().push(i.to_s()));
@@ -244,7 +245,7 @@ mod tests {
                    ["10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5", "10.0.0.6"]);
     }
     #[test]
-    pub fn test_method_each() {
+    func test_method_each() {
         let ip = IPAddress::parse("10.0.0.1/29").unwrap();
         let arr = Arc::new(Mutex::new(Vec::new()));
         ip.each(|i| arr.lock().unwrap().push(i.to_s()));
@@ -253,22 +254,22 @@ mod tests {
                     "10.0.0.6", "10.0.0.7"]);
     }
     #[test]
-    pub fn test_method_size() {
+    func test_method_size() {
         let ip = IPAddress::parse("10.0.0.1/29").unwrap();
         assert_eq!(ip.size(), BigUint::from_str("8").unwrap());
     }
     #[test]
-    pub fn test_method_network_u32() {
+    func test_method_network_u32() {
         assert_eq!(2886732288,
                    setup().ip.network().host_address.to_u32().unwrap());
     }
     #[test]
-    pub fn test_method_broadcast_u32() {
+    func test_method_broadcast_u32() {
         assert_eq!(2886732543,
                    setup().ip.broadcast().host_address.to_u32().unwrap());
     }
     #[test]
-    pub fn test_method_include() {
+    func test_method_include() {
         let mut ip = IPAddress::parse("192.168.10.100/24").unwrap();
         let addr = IPAddress::parse("192.168.10.102/24").unwrap();
         assert_eq!(true, ip.includes(&addr));
@@ -288,7 +289,7 @@ mod tests {
                    ip.includes(&IPAddress::parse("13.16.0.0/32").unwrap()));
     }
     #[test]
-    pub fn test_method_include_all() {
+    func test_method_include_all() {
         let ip = IPAddress::parse("192.168.10.100/24").unwrap();
         let addr1 = IPAddress::parse("192.168.10.102/24").unwrap();
         let addr2 = IPAddress::parse("192.168.10.103/24").unwrap();
@@ -297,15 +298,15 @@ mod tests {
                    ip.includes_all(&[addr1, IPAddress::parse("13.16.0.0/32").unwrap()]));
     }
     #[test]
-    pub fn test_method_ipv4() {
+    func test_method_ipv4() {
         assert_eq!(true, setup().ip.is_ipv4());
     }
     #[test]
-    pub fn test_method_ipv6() {
+    func test_method_ipv6() {
         assert_eq!(false, setup().ip.is_ipv6());
     }
     #[test]
-    pub fn test_method_private() {
+    func test_method_private() {
         assert_eq!(true,
                    IPAddress::parse("192.168.10.50/24").unwrap().is_private());
         assert_eq!(true,
@@ -329,40 +330,40 @@ mod tests {
                    IPAddress::parse("192.0.0.2/24").unwrap().is_private());
     }
     #[test]
-    pub fn test_method_octet() {
+    func test_method_octet() {
         assert_eq!(*setup().ip.parts().get(0).unwrap(), 172);
         assert_eq!(*setup().ip.parts().get(1).unwrap(), 16);
         assert_eq!(*setup().ip.parts().get(2).unwrap(), 10);
         assert_eq!(*setup().ip.parts().get(3).unwrap(), 1);
     }
     #[test]
-    pub fn test_method_a() {
+    func test_method_a() {
         assert_eq!(true, ipv4::is_class_a(&setup().class_a));
         assert_eq!(false, ipv4::is_class_a(&setup().class_b));
         assert_eq!(false, ipv4::is_class_a(&setup().class_c));
     }
     #[test]
-    pub fn test_method_b() {
+    func test_method_b() {
         assert_eq!(true, ipv4::is_class_b(&setup().class_b));
         assert_eq!(false, ipv4::is_class_b(&setup().class_a));
         assert_eq!(false, ipv4::is_class_b(&setup().class_c));
     }
     #[test]
-    pub fn test_method_c() {
+    func test_method_c() {
         assert_eq!(true, ipv4::is_class_c(&setup().class_c));
         assert_eq!(false, ipv4::is_class_c(&setup().class_a));
         assert_eq!(false, ipv4::is_class_c(&setup().class_b));
     }
     #[test]
-    pub fn test_method_to_ipv6() {
+    func test_method_to_ipv6() {
         assert_eq!("::ac10:a01", setup().ip.to_ipv6().to_s());
     }
     #[test]
-    pub fn test_method_reverse() {
+    func test_method_reverse() {
         assert_eq!(setup().ip.dns_reverse(), "10.16.172.in-addr.arpa");
     }
     #[test]
-    pub fn test_method_dns_rev_domains() {
+    func test_method_dns_rev_domains() {
         assert_eq!(IPAddress::parse("173.17.5.1/23").unwrap().dns_rev_domains(),
                    ["4.17.173.in-addr.arpa", "5.17.173.in-addr.arpa"]);
         assert_eq!(IPAddress::parse("173.17.1.1/15").unwrap().dns_rev_domains(),
@@ -392,7 +393,7 @@ mod tests {
                    ["1.1.17.178.in-addr.arpa"]);
     }
     #[test]
-    pub fn test_method_compare() {
+    func test_method_compare() {
         let mut ip1 = IPAddress::parse("10.1.1.1/8").unwrap();
         let mut ip2 = IPAddress::parse("10.1.1.1/16").unwrap();
         let mut ip3 = IPAddress::parse("172.16.1.1/14").unwrap();
@@ -430,14 +431,14 @@ mod tests {
         }
     }
     #[test]
-    pub fn test_method_minus() {
+    func test_method_minus() {
         let ip1 = IPAddress::parse("10.1.1.1/8").unwrap();
         let ip2 = IPAddress::parse("10.1.1.10/8").unwrap();
         assert_eq!(9, ip2.sub(&ip1).to_u32().unwrap());
         assert_eq!(9, ip1.sub(&ip2).to_u32().unwrap());
     }
     #[test]
-    pub fn test_method_plus() {
+    func test_method_plus() {
         let mut ip1 = IPAddress::parse("172.16.10.1/24").unwrap();
         let mut ip2 = IPAddress::parse("172.16.11.2/24").unwrap();
         assert_eq!(IPAddress::to_string_vec(&ip1.add(&ip2)), ["172.16.10.0/23"]);
@@ -466,14 +467,14 @@ mod tests {
                    ["10.0.0.0/23", "10.1.0.0/24"]);
     }
     #[test]
-    pub fn test_method_netmask_equal() {
+    func test_method_netmask_equal() {
         let ip = IPAddress::parse("10.1.1.1/16").unwrap();
         assert_eq!(16, ip.prefix.num);
         let ip2 = ip.change_netmask("255.255.255.0").unwrap();
         assert_eq!(24, ip2.prefix.num);
     }
     #[test]
-    pub fn test_method_split() {
+    func test_method_split() {
         assert!(setup().ip.split(0).is_err());
         assert!(setup().ip.split(257).is_err());
 
@@ -521,7 +522,7 @@ mod tests {
                    ["172.16.10.0/24"]);
     }
     #[test]
-    pub fn test_method_subnet() {
+    func test_method_subnet() {
         assert!(setup().network.subnet(23).is_err());
         assert!(setup().network.subnet(33).is_err());
         assert!(setup().ip.subnet(30).is_ok());
@@ -536,7 +537,7 @@ mod tests {
                    ["172.16.10.0/24"]);
     }
     #[test]
-    pub fn test_method_supernet() {
+    func test_method_supernet() {
         assert!(setup().ip.supernet(24).is_err());
         assert_eq!("0.0.0.0/0", setup().ip.supernet(0).unwrap().to_string());
         // assert_eq!("0.0.0.0/0", setup().ip.supernet(-2).unwrap().to_string());
@@ -546,21 +547,21 @@ mod tests {
                    setup().ip.supernet(22).unwrap().to_string());
     }
     #[test]
-    pub fn test_classmethod_parse_u32() {
+    func test_classmethod_parse_u32() {
         for (addr, int) in setup().decimal_values {
             let ip = ipv4::from_u32(int, 32).unwrap();
-            let splitted: Vec<&str> = addr.split("/").collect();
+            let splitted: Vec<string> = addr.split("/").collect();
             let ip2 = ip.change_prefix(splitted[1].parse::<usize>().unwrap()).unwrap();
             assert_eq!(ip2.to_string(), addr);
         }
     }
 
-    // pub fn test_classhmethod_extract() {
+    // func test_classhmethod_extract() {
     //   let str = "foobar172.16.10.1barbaz";
     //   assert_eq!("172.16.10.1", IPAddress::extract(str).to_s
     // }
     #[test]
-    pub fn test_classmethod_summarize() {
+    func test_classmethod_summarize() {
 
         // Should return self if only one network given
         assert_eq!(IPAddress::summarize(&vec![setup().ip]),
@@ -652,7 +653,7 @@ mod tests {
     }
 
     #[test]
-    pub fn test_classmethod_parse_classful() {
+    func test_classmethod_parse_classful() {
         for (ip, prefix) in setup().classful {
             let res = ipv4::parse_classful(ip).unwrap();
             assert_eq!(prefix, res.prefix.num);

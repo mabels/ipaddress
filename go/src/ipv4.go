@@ -1,21 +1,6 @@
-// use core::fmt::Debug;
-
-use num::bigint::BigUint;
-// use ip_bits::IpBits;
-use ipaddress::IPAddress;
-use prefix32;
-// use num_integer::Integer;
-
-
-// use num_traits::identities::One;
-
-// use num_traits::cast::ToPrimitive;
-use num_traits::cast::FromPrimitive;
-
-// use prefix::Prefix;
-// use prefix::Prefix;
-// use prefix::Prefix32;
-// use regex::Regex;
+import "ipaddress"
+import "prefix32"
+import "math/big"
 
 // struct IPv4 {
 //     address: String,
@@ -67,38 +52,37 @@ use num_traits::cast::FromPrimitive;
 //
 // mod IPv4 {
 
-pub fn from_u32(addr: u32, prefix: usize) -> Result<IPAddress, String> {
-    let prefix = prefix32::new(prefix);
-    if prefix.is_err() {
-        return Err(prefix.unwrap_err());
+func (self IPAddress) From_u32(addr uint32, _prefix uint32) (*IPAddress, *string) {
+    prefix, err := prefix32.New(_prefix);
+    if err {
+        return nil, err
     }
-    return Ok(IPAddress {
-        ip_bits: ::ip_bits::v4(),
-        host_address: BigUint::from_u32(addr).unwrap(),
-        prefix: prefix.unwrap(),
-        mapped: None,
-        vt_is_private: ipv4_is_private,
-        vt_is_loopback: ipv4_is_loopback,
-        vt_to_ipv6: to_ipv6,
+    return IPAddress {
+        ip_bits::V4(),
+        bigInt.New(addr),
+        prefix,
+        nil,
+        ipv4_is_private,
+        ipv4_is_loopback,
+        to_ipv6,
     });
 }
 
-pub fn new<S: Into<String>>(_str: S) -> Result<IPAddress, String> {
-    let str = _str.into();
-    let (ip, netmask) = IPAddress::split_at_slash(&str);
-    if !IPAddress::is_valid_ipv4(ip.clone()) {
-        return Err(format!("Invalid IP {}", str));
+func New(str string) (*IPAddress, *string) {
+    ip, netmask := IPAddress.Split_at_slash(str)
+    if !IPAddress.Is_valid_ipv4(ip) {
+        return nil, fmt.Sprintf("Invalid IP %s", str);
     }
-    let mut ip_prefix_num = Ok(32);
-    if netmask.is_some() {
+    ip_prefix_num := 32;
+    if netmask != nil {
         //  netmask is defined
-        ip_prefix_num = IPAddress::parse_netmask_to_prefix(netmask.unwrap());
-        if ip_prefix_num.is_err() {
-            return Err(ip_prefix_num.unwrap_err());
+        ip_prefix_num, err := IPAddress.Parse_netmask_to_prefix(netmask)
+        if err {
+            return nil, err
         }
         //if ip_prefix.ip_bits.version
     }
-    let ip_prefix = prefix32::new(ip_prefix_num.unwrap());
+    ip_prefix := prefix32.New(ip_prefix_num.unwrap());
     if ip_prefix.is_err() {
         return Err(ip_prefix.unwrap_err());
     }
@@ -117,19 +101,19 @@ pub fn new<S: Into<String>>(_str: S) -> Result<IPAddress, String> {
     });
 }
 
-fn ipv4_is_private(my: &IPAddress) -> bool {
+func ipv4_is_private(my: &IPAddress) -> bool {
     return [IPAddress::parse("10.0.0.0/8").unwrap(),
      IPAddress::parse("172.16.0.0/12").unwrap(),
      IPAddress::parse("192.168.0.0/16").unwrap()]
      .iter().find(|i| i.includes(my)).is_some();
 }
 
-fn ipv4_is_loopback(my: &IPAddress) -> bool {
+func ipv4_is_loopback(my: &IPAddress) -> bool {
     return IPAddress::parse("127.0.0.0/8")
         .unwrap().includes(my);
 }
 
-pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
+func to_ipv6(ia: &IPAddress) -> IPAddress {
         return IPAddress {
             ip_bits: ::ip_bits::v6(),
             host_address: ia.host_address.clone(),
@@ -146,7 +130,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 
 
 
-// pub fn is_private(my: &IPAddress) -> bool {
+// func is_private(my: &IPAddress) -> bool {
 //     for i in vec![IPv4::new("10.0.0.0/8"),
 //                   IPv4::new("172.16.0.0/12"),
 //                   IPv4::new("192.168.0.0/16")] {
@@ -157,7 +141,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //     return false;
 // }
 
-// pub fn dns_reverse(my: &IPAddress) {
+// func dns_reverse(my: &IPAddress) {
 //     let parts = self.ip_bits.parts(&my.host_address);
 //     return format!("{}.{}.{}.{}.in-addr.arpa",
 //                    parts.get(3),
@@ -166,7 +150,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //                    parts.get(0));
 // }
 
-// pub fn to_ipv4_str(value: u32) {
+// func to_ipv4_str(value: u32) {
 //   format!("{}.{}.{}.{}",
 //       (value >> 24) & 0xff,
 //       (value >> 16) & 0xff,
@@ -182,7 +166,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.address
 //      // => "172.16.100.4"
 //
-// pub fn address(&self) {
+// func address(&self) {
 //   return self.address
 // }
 
@@ -197,7 +181,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.prefix.class
 //      // => IPAddress::Prefix32
 //
-// pub fn prefix(&self) {
+// func prefix(&self) {
 //   return self.prefix
 // }
 
@@ -218,7 +202,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    puts ip
 //      // => 172.16.100.4/22
 //
-// pub fn set_prefix(&mut self, num: u8) {
+// func set_prefix(&mut self, num: u8) {
 //   self.prefix = Prefix32::new(num)
 // }
 
@@ -229,7 +213,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.octets
 //      // => [172, 16, 100, 4]
 //
-// pub fn octets(&self) {
+// func octets(&self) {
 //   self.octets
 // }
 
@@ -241,10 +225,10 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.to_s
 //      // => "172.16.100.4"
 //
-// pub fn to_s(&self) {
+// func to_s(&self) {
 //   self.address
 // }
-// pub fn compressed(&self) {
+// func compressed(&self) {
 //   self.address
 // }
 
@@ -256,7 +240,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.to_string
 //      // => "172.16.100.4/22"
 //
-// pub fn to_string(&self) {
+// func to_string(&self) {
 //   format!("{}/{}", self.address.to_s, self.prefix.to_s)
 // }
 
@@ -267,7 +251,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.netmask
 //      // => "255.255.252.0"
 //
-// pub fn netmask(&self) {
+// func netmask(&self) {
 //   self.prefix.to_ip()
 // }
 
@@ -285,7 +269,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    puts ip
 //      // => 172.16.100.4/22
 //
-// pub fn set_netmask(&self, addr: &String) {
+// func set_netmask(&self, addr: &String) {
 //   self.prefix = Prefix32::parse_netmask_to_prefix(addr)
 // }
 //
@@ -302,13 +286,13 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.to_i
 //      // => 167772160
 //
-// pub fn u32() {
+// func u32() {
 //   self.ip32
 // }
-// pub fn to_i() {
+// func to_i() {
 //   self.ip32
 // }
-// pub fn to_u32() {
+// func to_u32() {
 //   self.ip32
 // }
 //
@@ -330,7 +314,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    //  Send binary data
 //    a.puts binary_data
 //
-// pub fn data(&self) {
+// func data(&self) {
 //   self.ip32
 // }
 
@@ -347,10 +331,10 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip[3]
 //      // => 50
 //
-// pub fn get(&self, index: u8) {
+// func get(&self, index: u8) {
 //   self.octets.get(index)
 // }
-// pub fn octet(&self, index: u8) {
+// func octet(&self, index: u8) {
 //   self.octets.get(index)
 // }
 
@@ -362,7 +346,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.bits
 //      // => "01111111000000000000000000000001"
 //
-// pub fn bits(&self) {
+// func bits(&self) {
 //   self.ip32.to_string()
 // }
 
@@ -373,7 +357,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.broadcast.to_s
 //      // => "172.16.10.255"
 //
-// pub fn broadcast(&self) {
+// func broadcast(&self) {
 //   IPv4::parse_u32(self.broadcast_u32, self.prefix)
 // }
 
@@ -389,7 +373,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.network?
 //      // => true
 //
-// pub fn is_network() {
+// func is_network() {
 //   (self.prefix.num < 32) && (self.ip32 | self.prefix.to_u32 == self.prefix.to_u32)
 // }
 
@@ -401,7 +385,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.network.to_s
 //      // => "172.16.10.0"
 //
-// pub fn network() }
+// func network() }
 //   self.class.parse_u32(self.network_u32, prefix)
 // }
 
@@ -424,7 +408,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.first.to_s
 //      // => "192.168.100.1"
 //
-// pub fn first(&self) {
+// func first(&self) {
 //   IPv4::parse_u32(self.network_u32+1, self.prefix)
 // }
 
@@ -448,7 +432,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.last.to_s
 //      // => "192.168.100.254"
 //
-// pub fn last(&self) {
+// func last(&self) {
 //   IPv4::parse_u32(self.broadcast_u32-1, self.prefix)
 // }
 //
@@ -468,7 +452,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //      // => "10.0.0.5"
 //      // => "10.0.0.6"
 //
-// pub fn each_host(&self, fn: ) {
+// func each_host(&self, fn: ) {
 //   (self.network_u32+1..self.broadcast_u32-1).each do |i|
 //     yield self.class.parse_u32(i, @prefix)
 //   end
@@ -494,7 +478,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //      // => "10.0.0.6"
 //      // => "10.0.0.7"
 //
-// pub fn each(&self) {
+// func each(&self) {
 //   (self.network_u32..self.broadcast_u32).each do |i|
 //     yield self.class.parse_u32(i, @prefix)
 //   end
@@ -531,7 +515,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    [ip1,ip2,ip3].sort.map{|i| i.to_string}
 //      // => ["10.100.100.1/8","10.100.100.1/16","172.16.0.1/16"]
 //
-// pub fn cmp(&self, oth: IPv4) {
+// func cmp(&self, oth: IPv4) {
 //   if self.to_u32() == oth.to_u32() {
 //     return self.prefix.num - oth.prefix.num
 //   }
@@ -547,7 +531,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.size
 //      // => 8
 //
-// pub fn size(&self) {
+// func size(&self) {
 //   2 ** self.prefix.host_prefix()
 // }
 
@@ -564,7 +548,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //      // =>  "10.0.0.5",
 //      // =>  "10.0.0.6"]
 //
-// pub fn hosts(&self) {
+// func hosts(&self) {
 //   self.to_a[1..-2]
 // }
 
@@ -575,7 +559,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.network_u32
 //      // => 167772160
 //
-// pub fn network_u32(&self) {
+// func network_u32(&self) {
 //   self.ip32 & self.prefix.to_u32()
 // }
 
@@ -586,7 +570,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.broadcast_u32
 //      // => 167772167
 //
-// pub fn broadcast_u32(&self) {
+// func broadcast_u32(&self) {
 //   self.network_u32 + self.size - 1
 // }
 
@@ -604,7 +588,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.include? IPAddress("172.16.0.48/16")
 //      // => false
 //
-// pub fn include?(&self, oth: IPv4) {
+// func include?(&self, oth: IPv4) {
 //   self.prefix.num <= oth.prefix.num &&
 //   self.network_u32 == (oth.to_u32() & self.prefix.to_u32())
 // }
@@ -620,7 +604,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.include_all?(addr1,addr2)
 //      // => true
 //
-// pub fn include_all?(*others)
+// func include_all?(*others)
 //   others.all? {|oth| include?(oth)}
 // end
 
@@ -643,12 +627,12 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.reverse
 //      // => "50.100.16.172.in-addr.arpa"
 //
-// pub fn reverse(&self) {
+// func reverse(&self) {
 //    return format!("{}.{}.{}.{}.in-addr.arpa",
 //      self.octets.get(3), self.octets.get(2),
 //      self.octets.get(1), self.octets.get(0))
 // }
-// pub fn arpa(&self) {
+// func arpa(&self) {
 //     return self.reverse()
 // }
 
@@ -660,7 +644,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //    ip.dns_rev_domains
 //      // => ["16.172.in-addr.arpa","17.172.in-addr.arpa"]
 //
-// pub fn dns_rev_domains(&self) {
+// func dns_rev_domains(&self) {
 //   let mut net = [ self.network ]
 //   let mut cut = 4 - (self.prefix.num/8)
 //   if (self.prefix.num <= 8) { //  edge case class a
@@ -707,7 +691,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //
 //  Returns an array of IPv4 objects
 //
-// pub fn split(my : &IPAddress, subnets: usize) {
+// func split(my : &IPAddress, subnets: usize) {
 //   if subnets <= 1 || (1<<self.prefix.host_prefix()) <= subnets {
 //      return Err(format!("Value {} out of range", subnets))
 //   }
@@ -742,7 +726,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //
 //  If +new_prefix+ is less than 1, returns 0.0.0.0/0
 //
-// pub fn supernet(&self, new_prefix: u8) {
+// func supernet(&self, new_prefix: u8) {
 //     if (new_prefix >= self.prefix.num) {
 //         return Err(format!("New prefix must be smaller than existing prefix: {} >= {}",
 //             new_prefix, self.prefix.num))
@@ -774,7 +758,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //  The resulting number of subnets will of course always be
 //  a power of two.
 //
-// pub fn subnet(&self, subprefix: u8) {
+// func subnet(&self, subprefix: u8) {
 //   if (subprefix <= self.prefix.num || 32 <= subprefix) {
 //     return Err(format!("New prefix must be between {} and 32", subprefix))
 //   }
@@ -798,7 +782,7 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //      // => true
 //
 #[allow(dead_code)]
-pub fn is_class_a(my: &IPAddress) -> bool {
+func is_class_a(my: &IPAddress) -> bool {
     return my.is_ipv4() && my.host_address < BigUint::from_u32(0x80000000).unwrap();
 }
 
@@ -814,7 +798,7 @@ pub fn is_class_a(my: &IPAddress) -> bool {
 //      // => true
 //
 #[allow(dead_code)]
-pub fn is_class_b(my: &IPAddress) -> bool {
+func is_class_b(my: &IPAddress) -> bool {
     return my.is_ipv4() &&
         BigUint::from_u32(0x80000000).unwrap() <= my.host_address &&
         my.host_address < BigUint::from_u32(0xc0000000).unwrap();
@@ -832,7 +816,7 @@ pub fn is_class_b(my: &IPAddress) -> bool {
 //      // => true
 //
 #[allow(dead_code)]
-pub fn is_class_c(my: &IPAddress) -> bool {
+func is_class_c(my: &IPAddress) -> bool {
     return my.is_ipv4() &&
         BigUint::from_u32(0xc0000000).unwrap() <= my.host_address &&
         my.host_address < BigUint::from_u32(0xe0000000).unwrap();
@@ -848,7 +832,7 @@ pub fn is_class_c(my: &IPAddress) -> bool {
 //    ip.to_ipv6
 //      // => "ac10:0a01"
 //
-// pub fn to_ipv6(my: &IPAddress) {
+// func to_ipv6(my: &IPAddress) {
 //     let part_mod = BigUint::one() << 16;
 //     return format!("{:04x}:{:04x}",
 //                    (my.host_address >> 16).mod_floor(&part_mod).to_u16().unwrap(),
@@ -871,7 +855,7 @@ pub fn is_class_c(my: &IPAddress) -> bool {
 //    ip.to_string
 //      // => "10.0.0.0/8"
 //
-// pub fn parse_u32(ip32: u32, prefix: u8) {
+// func parse_u32(ip32: u32, prefix: u8) {
 //   IPv4::new(format!("{}/{}", IPv4::to_ipv4_str(ip32), prefix))
 // }
 
@@ -887,7 +871,7 @@ pub fn is_class_c(my: &IPAddress) -> bool {
 //    ip.to_string
 //      // => "172.16.10.1/24"
 //
-// pub fn self.parse_data(str, prefix=32)
+// func self.parse_data(str, prefix=32)
 //   self.new(str.unpack("C4").join(".")+"/// {prefix}")
 // end
 
@@ -902,7 +886,7 @@ pub fn is_class_c(my: &IPAddress) -> bool {
 //    ip.to_s
 //      // => "172.16.10.1"
 //
-// pub fn self.extract(str) {
+// func self.extract(str) {
 //   let re = Regexp::new(r"((25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)\.){3}(25[0-5]|2[0-4]\d|1
 // \d\d|[1-9]\d|\d)")
 //   IPv4::new(.match(str).to_s
@@ -969,7 +953,7 @@ pub fn is_class_c(my: &IPAddress) -> bool {
 //    IPAddress::IPv4::summarize(ip1,ip2,ip3,ip4).map{|i| i.to_string}
 //      // => ["10.0.1.0/24","10.0.2.0/23","10.0.4.0/24"]
 //
-// pub fn self.summarize(args)
+// func self.summarize(args)
 //   IPAddress.summarize(args)
 // end
 
@@ -996,7 +980,7 @@ pub fn is_class_c(my: &IPAddress) -> bool {
 //  prefix of /24 or 255.255.255.0
 //
 #[allow(dead_code)]
-pub fn parse_classful<S: Into<String>>(ip_s: S) -> Result<IPAddress, String> {
+func parse_classful<S: Into<String>>(ip_s: S) -> Result<IPAddress, String> {
     let ip_si = ip_s.into();
     if !IPAddress::is_valid_ipv4(ip_si.clone()) {
         return Err(format!("Invalid IP {}", ip_si));

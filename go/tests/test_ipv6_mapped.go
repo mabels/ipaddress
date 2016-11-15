@@ -1,7 +1,8 @@
-extern crate ipaddress;
-extern crate num;
 
-#[cfg(test)]
+import "math/big"
+
+import "./ipaddress"
+
 mod tests {
     use std::collections::HashMap;
     use num::bigint::BigUint;
@@ -22,7 +23,7 @@ mod tests {
         pub valid_mapped_ipv6_conversion: HashMap<&'static str, &'static str>,
     }
 
-    pub fn setup() -> IPv6MappedTest {
+    func setup()IPv6MappedTest {
         let mut valid_mapped = HashMap::new();
         valid_mapped.insert("::13.1.68.3", BigUint::from_str("281470899930115").unwrap());
         valid_mapped.insert("0:0:0:0:0:ffff:129.144.52.38",
@@ -54,7 +55,7 @@ mod tests {
 
 
     #[test]
-    pub fn test_initialize() {
+    func test_initialize() {
         let s = setup();
         assert_eq!(true, IPAddress::parse("::172.16.10.1").is_ok());
         for (ip, u128) in s.valid_mapped {
@@ -72,14 +73,14 @@ mod tests {
         }
     }
     #[test]
-    pub fn test_mapped_from_ipv6_conversion() {
+    func test_mapped_from_ipv6_conversion() {
         for (ip6, ip4) in setup().valid_mapped_ipv6_conversion {
             println!("+{}--{}", ip6, ip4);
             assert_eq!(ip4, IPAddress::parse(ip6).unwrap().mapped.unwrap().to_s());
         }
     }
     #[test]
-    pub fn test_attributes() {
+    func test_attributes() {
         let s = setup();
         assert_eq!(s.address, s.ip.to_string());
         assert_eq!(128, s.ip.prefix.num);

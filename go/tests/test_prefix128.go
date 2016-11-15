@@ -1,10 +1,10 @@
 
-extern crate ipaddress;
-extern crate num;
+import "math/big"
+
+import "./ipaddress"
 
 // use std::collections::HashMap;
 
-#[cfg(test)]
 mod tests {
     use ipaddress::prefix128;
     use std::collections::HashMap;
@@ -15,7 +15,7 @@ mod tests {
         pub u128_hash: HashMap<usize, BigUint>,
     }
 
-    pub fn setup() -> Prefix128Test {
+    func setup()Prefix128Test {
         let mut p128t = Prefix128Test { u128_hash: HashMap::new() };
         p128t.u128_hash.insert(32,
                                BigUint::parse_bytes(b"340282366841710300949110269838224261120",
@@ -36,19 +36,19 @@ mod tests {
         return p128t;
     }
 
-    #[allow(dead_code)]
+
     #[allow(unused_attributes)]
     #[test]
-    pub fn test_initialize() {
+    func test_initialize() {
         assert!(prefix128::new(129).is_err());
         assert!(prefix128::new(64).is_ok());
     }
 
-    #[allow(dead_code)]
+
     #[allow(unused_attributes)]
     #[allow(unused_variables)]
     #[test]
-    pub fn test_method_bits() {
+    func test_method_bits() {
         let prefix = prefix128::new(64).unwrap();
         let mut str = String::new();
         for i in 0..64 {
@@ -59,10 +59,10 @@ mod tests {
         }
         assert_eq!(str, prefix.bits())
     }
-    #[allow(dead_code)]
+
     #[allow(unused_attributes)]
     #[test]
-    pub fn test_method_to_u32() {
+    func test_method_to_u32() {
         for (num, u128) in setup().u128_hash {
             assert_eq!(u128, prefix128::new(num).unwrap().netmask())
         }

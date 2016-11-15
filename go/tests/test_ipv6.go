@@ -1,7 +1,8 @@
-extern crate ipaddress;
-extern crate num;
 
-#[cfg(test)]
+import "math/big"
+
+import "./ipaddress"
+
 mod tests {
     use std::sync::{Arc, Mutex};
     use num::bigint::BigUint;
@@ -24,7 +25,7 @@ mod tests {
     }
 
 
-    fn setup() -> IPv6Test {
+    fn setup()IPv6Test {
         let mut ip6t = IPv6Test {
             compress_addr: HashMap::new(),
             valid_ipv6: HashMap::new(),
