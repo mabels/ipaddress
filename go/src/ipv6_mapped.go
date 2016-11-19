@@ -79,69 +79,69 @@ import "ipaddress"
 ///
 func New(str string) (*IPAddress, *string) {
     ip, o_netmask := IPAddress.split_at_slash(str);
-    split_colon := ip.split(":").collect::<Vec<string>>();
-    if split_colon.len() <= 1 {
+    split_colon := ip.split(":");
+    if len(split_colon) <= 1 {
         // println!("---1");
-        return Err(format!("not mapped format-1: {}", string));
+        return null, fmt.Sprintf("not mapped format-1: %s", string);
     }
     // if split_colon.get(0).unwrap().len() > 0 {
     //     // println!("---1a");
     //     return Err(format!("not mapped format-2: {}", string));
     // }
     // let mapped: Option<IPAddress> = None;
-    let mut netmask = String::from("");
-    if o_netmask.is_some() {
-        netmask = format!("/{}", o_netmask.unwrap());
+    netmask := "";
+    if o_netmask != null {
+        netmask = fmt.Sprintf("/%s", o_netmask);
     }
-    let ipv4_str = String::from(*split_colon.iter().last().unwrap());
-    if IPAddress::is_valid_ipv4(ipv4_str.clone()) {
-        let ipv4 = IPAddress::parse(format!("{}{}", ipv4_str, netmask));
-        if ipv4.is_err() {
-            println!("---2");
+    ipv4_str := split_colon[len(split_colon)-1]
+    if IPAddress::is_valid_ipv4(ipv4_str) {
+        ipv4 := IPAddress::parse(fmt.Sprintf("%s%s", ipv4_str, netmask));
+        if ipv4 == nil {
+            fmt.Sprintf("---2");
             return ipv4;
         }
         //mapped = Some(ipv4.unwrap());
-        let addr = ipv4.unwrap();
-        let ipv6_bits = ::ip_bits::v6();
-        let ref part_mod = ipv6_bits.part_mod;
-        let up_addr = addr.host_address.clone();
-        let down_addr = addr.host_address.clone();
+        addr := ipv4;
+        ipv6_bits := ip_bits::v6();
+        part_mod := ipv6_bits.part_mod;
+        up_addr := addr.host_address;
+        down_addr := addr.host_address;
 
         let mut rebuild_ipv6 = String::new();
-        let mut colon = "";
+        colon := "";
         for i in 0..split_colon.len()-1 {
             rebuild_ipv6.push_str(colon);
             rebuild_ipv6.push_str(split_colon[i]);
             colon = ":";
         }
         rebuild_ipv6.push_str(colon);
-        let rebuild_ipv4 = format!("{:x}:{:x}/{}",
+        rebuild_ipv4 := fmt.Sprintf("{:x}:{:x}/{}",
             up_addr.shr(::ip_bits::v6().part_bits).mod_floor(&part_mod).to_u16().unwrap(),
             down_addr.mod_floor(&part_mod).to_u16().unwrap(),
             ipv6_bits.bits-addr.prefix.host_prefix());
         rebuild_ipv6.push_str(&rebuild_ipv4);
         let r_ipv6 = IPAddress::parse(rebuild_ipv6.clone());
         if r_ipv6.is_err() {
-            println!("---3|{}", &rebuild_ipv6);
-            return r_ipv6;
+            // println!("---3|{}", &rebuild_ipv6);
+            return r_ipv6, nil;
         }
         if r_ipv6.clone().unwrap().is_mapped() {
-            return r_ipv6;
+            return r_ipv6, nil;
         }
-        let ipv6 = r_ipv6.unwrap();
-        let p96bit = ipv6.host_address.clone().shr(32);
+        ipv6 := r_ipv6.unwrap();
+        p96bit := ipv6.host_address.clone().shr(32);
         if  p96bit != BigUint::zero() {
-            println!("---4|{}", &rebuild_ipv6);
-            return Err(format!("is not a mapped address:{}", rebuild_ipv6));
+            // println!("---4|%s", &rebuild_ipv6);
+            return nil, fmt.Sprintf("is not a mapped address:%s", rebuild_ipv6);
         }
         {
-            let r_ipv6 = IPAddress::parse(format!("::ffff:{}", rebuild_ipv4));
-            if r_ipv6.is_err() {
-                println!("---3|{}", &rebuild_ipv6);
-                return r_ipv6;
+            r_ipv6 := IPAddress::parse(format!("::ffff:%s", rebuild_ipv4));
+            if r_ipv6 == nil {
+                // fmt.Sprintf("---3|%s", rebuild_ipv6);
+                return r_ipv6, nil;
             }
-            return r_ipv6;
+            return r_ipv6, nil;
         }
     }
-    return Err(format!("unknown mapped format:{}", str));
+    return nil, fmt.Sprintf("unknown mapped format:%s", str);
 }

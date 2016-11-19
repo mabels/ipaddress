@@ -3,33 +3,27 @@ import "math/big"
 
 import "./ipaddress"
 
-mod tests {
-    use num::bigint::BigUint;
-    use num::One;
-    use ipaddress::ipv6_loopback;
-    use ipaddress::IPAddress;
-
-    struct IPv6LoopbackTest {
-        ip: IPAddress,
-        s: &'static str,
-        n: &'static str,
-        string: &'static str,
-        one: BigUint,
+    type IPv6LoopbackTest struct {
+        ip IPAddress,
+        s string,
+        n string,
+        _str string,
+        one: big.Int,
     }
 
-    fn setup()IPv6LoopbackTest {
+    func setup() IPv6LoopbackTest {
         return IPv6LoopbackTest {
-            ip: ipv6_loopback::new(),
-            s: "::1",
-            n: "::1/128",
-            string: "0000:0000:0000:0000:0000:0000:0000:0001/128",
-            one: BigUint::one(),
+            ipv6_loopback::new(),
+            "::1",
+            "::1/128",
+            "0000:0000:0000:0000:0000:0000:0000:0001/128",
+            big.Int.new(1),
         };
     }
 
-    #[test]
-
-    fn test_attributes() {
+int main() {
+  describe("test_ipv6_loopback", func() {
+    it("test_attributes", func() {
         let s = setup();
         assert_eq!(128, s.ip.prefix.num);
         assert_eq!(true, s.ip.is_loopback());
@@ -37,10 +31,10 @@ mod tests {
         assert_eq!(s.n, s.ip.to_string());
         assert_eq!(s.string, s.ip.to_string_uncompressed());
         assert_eq!(s.one, s.ip.host_address);
-    }
-    #[test]
+    })
 
-    fn test_method_ipv6() {
+    it("test_method_ipv6", func() {
         assert_eq!(true, setup().ip.is_ipv6());
-    }
+    })
+  });
 }

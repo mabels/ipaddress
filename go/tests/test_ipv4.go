@@ -3,23 +3,12 @@ import "math/big"
 
 import "./ipaddress"
 
-mod tests {
-    use num::bigint::BigUint;
-    use num::ToPrimitive;
-    use std::str::FromStr;
-    use ipaddress::IPAddress;
-    use ipaddress::ipv4;
-    use std::collections::HashMap;
-    use std::sync::{Arc, Mutex};
-    use std::ops::Deref;
-
-    #[derive(Debug)]
-    struct IPv4Prefix {
-        pub ip: String,
-        pub prefix: usize,
+    type IPv4Prefix struct {
+        ip string,
+        prefix uint
     }
 
-    struct IPv4Test {
+    type IPv4Test struct {
         pub valid_ipv4: HashMap<&'static str, IPv4Prefix>,
         pub invalid_ipv4: Vec<&'static str>,
         pub valid_ipv4_range: Vec<&'static str>,
@@ -34,7 +23,8 @@ mod tests {
         pub class_c: IPAddress,
         pub classful: HashMap<&'static str, usize>,
     }
-    fn setup()IPv4Test {
+
+    func setup() IPv4Test {
         let mut ipv4t = IPv4Test {
             valid_ipv4: HashMap::new(),
             // , "10.0.0", "10.0"
@@ -123,9 +113,10 @@ mod tests {
     }
 
 
-    #[test]
-    func test_initialize() {
-        let setup = setup();
+int main() {
+  describe("", func() {
+    it("test_initialize", func() {
+        setup := setup();
         for i in setup.valid_ipv4.keys() {
             let ip = IPAddress::parse(i.to_string()).unwrap();
             assert!(ip.is_ipv4() && !ip.is_ipv6());
@@ -133,37 +124,32 @@ mod tests {
         assert_eq!(32, setup.ip.prefix.ip_bits.bits);
         assert!(IPAddress::parse("1.f.13.1/-3").is_err());
         assert!(IPAddress::parse("10.0.0.0/8").is_ok());
-    }
-    #[test]
-    func test_initialize_format_error() {
+    })
+    it("test_initialize_format_error", func() {
         for i in setup().invalid_ipv4 {
             assert!(IPAddress::parse(i).is_err());
         }
         assert!(IPAddress::parse("10.0.0.0/asd").is_err());
-    }
-    #[test]
-    func test_initialize_without_prefix() {
+    })
+    it("test_initialize_without_prefix", func() {
         assert!(IPAddress::parse("10.10.0.0").is_ok());
         let ip = IPAddress::parse("10.10.0.0").unwrap();
         assert!(!ip.is_ipv6() && ip.is_ipv4());
         assert_eq!(32, ip.prefix.num);
-    }
-    #[test]
-    func test_attributes() {
+    })
+    it("test_attributes", func() {
         for (arg, attr) in setup().valid_ipv4 {
             let ip = IPAddress::parse(arg).unwrap();
             // println!("test_attributes:{}:{:?}", arg, attr);
             assert_eq!(attr.ip, ip.to_s());
             assert_eq!(attr.prefix, ip.prefix.num);
         }
-    }
-    #[test]
-    func test_octets() {
+    })
+    it("test_octets", func() {
         let ip = IPAddress::parse("10.1.2.3/8").unwrap();
         assert_eq!(ip.parts(), [10, 1, 2, 3]);
-    }
-    #[test]
-    func test_method_to_string() {
+    })
+    it("test_method_to_string", func() {
         for (arg, attr) in setup().valid_ipv4 {
             let ip = IPAddress::parse(arg).unwrap();
             assert_eq!(format!("{}/{}", attr.ip, attr.prefix), ip.to_string());

@@ -3,17 +3,7 @@ import "math/big"
 
 import "./ipaddress"
 
-mod tests {
-    use std::sync::{Arc, Mutex};
-    use num::bigint::BigUint;
-    use num::One;
-    use std::str::FromStr;
-    use std::collections::HashMap;
-    use ipaddress::IPAddress;
-    use ipaddress::ipv6;
-    use std::ops::Deref;
-
-    struct IPv6Test {
+    type IPv6Test struct {
         compress_addr: HashMap<&'static str, &'static str>,
         valid_ipv6: HashMap<&'static str, BigUint>,
         invalid_ipv6: Vec<&'static str>,
@@ -25,8 +15,8 @@ mod tests {
     }
 
 
-    fn setup()IPv6Test {
-        let mut ip6t = IPv6Test {
+    func setup() IPv6Test {
+        ip6t = IPv6Test {
             compress_addr: HashMap::new(),
             valid_ipv6: HashMap::new(),
             invalid_ipv6: vec![":1:2:3:4:5:6:7", ":1:2:3:4:5:6:7", "2002:516:2:200", "dd"],
@@ -88,13 +78,14 @@ mod tests {
         return ip6t;
     }
 
-    #[test]
-    fn test_attribute_address() {
+int main() {
+
+  describe("", func() {
+    it("test_attribute_address", func() {
         let addr = "2001:0db8:0000:0000:0008:0800:200c:417a";
         assert_eq!(addr, setup().ip.to_s_uncompressed());
-    }
-    #[test]
-    fn test_initialize() {
+    })
+    it("test_initialize", func() {
         assert_eq!(false, setup().ip.is_ipv4());
 
         for ip in setup().valid_ipv6.keys() {
@@ -106,24 +97,21 @@ mod tests {
         assert_eq!(64, setup().ip.prefix.num);
 
         assert_eq!(false, IPAddress::parse("::10.1.1.1").is_err());
-    }
-    #[test]
-    fn test_attribute_groups() {
+    })
+    it("test_attribute_groups", func() {
         let setup = setup();
         assert_eq!(setup.arr, setup.ip.parts())
-    }
-    #[test]
-    fn test_method_hexs() {
+    })
+    it("test_method_hexs", func() {
         assert_eq!(setup().ip.parts_hex_str(),
                    ["2001", "0db8", "0000", "0000", "0008", "0800", "200c", "417a"]);
-    }
+    })
 
-    #[test]
-    fn test_method_to_i() {
+    it ("test_method_to_i", func() {
         for (ip, num) in setup().valid_ipv6 {
             assert_eq!(num, IPAddress::parse(ip).unwrap().host_address)
         }
-    }
+    })
     // #[test]
     // fn test_method_bits() {
     //     let bits = "0010000000000001000011011011100000000000000000000" +
@@ -131,62 +119,53 @@ mod tests {
     //                "0000011000100000101111010";
     //     assert_eq!(bits, setup().ip.host_address.to_str_radix(2));
     // }
-    #[test]
-    fn test_method_set_prefix() {
+    it("test_method_set_prefix", func() {
         let ip = IPAddress::parse("2001:db8::8:800:200c:417a").unwrap();
         assert_eq!(128, ip.prefix.num);
         assert_eq!("2001:db8::8:800:200c:417a/128", ip.to_string());
         let nip = ip.change_prefix(64).unwrap();
         assert_eq!(64, nip.prefix.num);
         assert_eq!("2001:db8::8:800:200c:417a/64", nip.to_string());
-    }
-    #[test]
-    fn test_method_mapped() {
+    })
+    it("test_method_mapped", func() {
         assert_eq!(false, setup().ip.is_mapped());
         let ip6 = IPAddress::parse("::ffff:1234:5678").unwrap();
         assert_eq!(true, ip6.is_mapped());
-    }
+    })
     // #[test]
     // fn test_method_literal() {
     //     let str = "2001-0db8-0000-0000-0008-0800-200c-417a.ipv6-literal.net";
     //     assert_eq!(str, setup().ip.literal());
     // }
-    #[test]
-    fn test_method_group() {
+    it("test_method_group", func() {
         let s = setup();
         assert_eq!(s.ip.parts(), s.arr);
-    }
-    #[test]
-    fn test_method_ipv4() {
+    })
+    it ("test_method_ipv4", func() {
         assert_eq!(false, setup().ip.is_ipv4());
-    }
-    #[test]
-    fn test_method_ipv6() {
+    })
+    it ("test_method_ipv6", func() {
         assert_eq!(true, setup().ip.is_ipv6());
-    }
-    #[test]
-    fn test_method_network_known() {
+    })
+    it ("test_method_network_known", func() {
         assert_eq!(true, setup().network.is_network());
         assert_eq!(false, setup().ip.is_network());
-    }
-    #[test]
-    fn test_method_network_u128() {
+    })
+    it ("test_method_network_u128", func() {
         assert_eq!(ipv6::from_int(BigUint::from_str("42540766411282592856903984951653826560")
                                       .unwrap(),
                                   64)
                        .unwrap(),
                    setup().ip.network());
-    }
-    #[test]
-    fn test_method_broadcast_u128() {
+    })
+    it ("test_method_broadcast_u128", func() {
         assert_eq!(ipv6::from_int(BigUint::from_str("42540766411282592875350729025363378175")
                                       .unwrap(),
                                   64)
                        .unwrap(),
                    setup().ip.broadcast());
-    }
-    #[test]
-    fn test_method_size() {
+    })
+    it ("test_method_size", func() {
         let mut ip = IPAddress::parse("2001:db8::8:800:200c:417a/64").unwrap();
         assert_eq!(BigUint::one() << 64, ip.size());
         ip = IPAddress::parse("2001:db8::8:800:200c:417a/32").unwrap();
@@ -195,9 +174,8 @@ mod tests {
         assert_eq!(BigUint::one() << 8, ip.size());
         ip = IPAddress::parse("2001:db8::8:800:200c:417a/124").unwrap();
         assert_eq!(BigUint::one() << 4, ip.size());
-    }
-    #[test]
-    fn test_method_includes() {
+    })
+    it ("test_method_includes", func() {
         let ip = setup().ip;
         assert_eq!(true, ip.includes(&ip));
         // test prefix on same address
@@ -215,32 +193,26 @@ mod tests {
         not_included = IPAddress::parse("2001:db8:1::8:800:200c:417a/76").unwrap();
         assert_eq!(true, ip.includes(&included));
         assert_eq!(false, ip.includes(&not_included));
-    }
-    #[test]
-    fn test_method_to_hex() {
+    })
+    it ("test_method_to_hex", func() {
         assert_eq!(setup().hex, setup().ip.to_hex());
-    }
-    #[test]
-    fn test_method_to_s() {
+    })
+    it ("test_method_to_s", func() {
         assert_eq!("2001:db8::8:800:200c:417a", setup().ip.to_s());
-    }
-    #[test]
-    fn test_method_to_string() {
+    })
+    it("test_method_to_string", func() {
         assert_eq!("2001:db8::8:800:200c:417a/64", setup().ip.to_string());
-    }
-    #[test]
-    fn test_method_to_string_uncompressed() {
+    })
+    it("test_method_to_string_uncompressed", func() {
         let str = "2001:0db8:0000:0000:0008:0800:200c:417a/64";
         assert_eq!(str, setup().ip.to_string_uncompressed());
-    }
-    #[test]
-    fn test_method_reverse() {
+    })
+    it ("test_method_reverse", func() {
         let str = "f.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.0.0.0.5.0.5.0.e.f.f.3.ip6.arpa";
         assert_eq!(str,
                    IPAddress::parse("3ffe:505:2::f").unwrap().dns_reverse());
-    }
-    #[test]
-    fn test_method_dns_rev_domains() {
+    })
+    it ("test_method_dns_rev_domains", func() {
         assert_eq!(IPAddress::parse("f000:f100::/3").unwrap().dns_rev_domains(),
                    ["e.ip6.arpa", "f.ip6.arpa"]);
         assert_eq!(IPAddress::parse("fea3:f120::/15").unwrap().dns_rev_domains(),
@@ -257,9 +229,8 @@ mod tests {
                     "5.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
                     "6.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
                     "7.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa"]);
-    }
-    #[test]
-    fn test_method_compressed() {
+    })
+    it ("test_method_compressed", func() {
         assert_eq!("1:1:1::1",
                    IPAddress::parse("1:1:1:0:0:0:0:1").unwrap().to_s());
         assert_eq!("1:0:1::1",
@@ -274,26 +245,22 @@ mod tests {
                    IPAddress::parse("1:0:0:0:1:0:0:1").unwrap().to_s());
         assert_eq!("1::1", IPAddress::parse("1:0:0:0:0:0:0:1").unwrap().to_s());
         // assert_eq!("1:1::1:2:0:0:1", IPAddress::parse("1:1:0:1:2::1").unwrap().to_s
-    }
-    #[test]
-    fn test_method_unspecified() {
+    })
+    it ("test_method_unspecified", func() {
         assert_eq!(true, IPAddress::parse("::").unwrap().is_unspecified());
         assert_eq!(false, setup().ip.is_unspecified());
-    }
-    #[test]
-    fn test_method_loopback() {
+    })
+    it ("test_method_loopback", func() {
         assert_eq!(true, IPAddress::parse("::1").unwrap().is_loopback());
         assert_eq!(false, setup().ip.is_loopback());
-    }
-    #[test]
-    fn test_method_network() {
+    })
+    it ("test_method_network", func() {
         for (addr, net) in setup().networks {
             let ip = IPAddress::parse(addr).unwrap();
             assert_eq!(net, ip.network().to_string());
         }
-    }
-    #[test]
-    fn test_method_each() {
+    })
+    it ("test_method_each", func() {
         let ip = IPAddress::parse("2001:db8::4/125").unwrap();
         let arr = Arc::new(Mutex::new(Vec::new()));
         ip.each(|i| arr.lock().unwrap().push(i.to_s()));
@@ -306,9 +273,8 @@ mod tests {
                     "2001:db8::5",
                     "2001:db8::6",
                     "2001:db8::7"]);
-    }
-    #[test]
-    fn test_method_each_net() {
+    })
+    it ("test_method_each_net", func() {
         let test_addrs = vec!["0000:0000:0000:0000:0000:0000:0000:0000",
                                   "1111:1111:1111:1111:1111:1111:1111:1111",
                                   "2222:2222:2222:2222:2222:2222:2222:2222",
@@ -347,9 +313,8 @@ mod tests {
             ret1.push(i.to_string());
         }
         assert_eq!(ret1, ["3a03:2f80:f::/48"]);
-    }
-    #[test]
-    fn test_method_compare() {
+    })
+    it("test_method_compare", func() {
         let ip1 = IPAddress::parse("2001:db8:1::1/64").unwrap();
         let ip2 = IPAddress::parse("2001:db8:2::1/64").unwrap();
         let ip3 = IPAddress::parse("2001:db8:1::2/64").unwrap();
@@ -383,7 +348,7 @@ mod tests {
                     "2001:db8:1::1/65",
                     "2001:db8:1::2/64",
                     "2001:db8:2::1/64"]);
-    }
+    })
 
     // fn test_classmethod_expand() {
     //   let compressed = "2001:db8:0:cd30::";
@@ -393,8 +358,7 @@ mod tests {
     //   assert_eq!(expanded, @klass.expand("2001:0db8::cd30"));
     //   assert_eq!(expanded, @klass.expand("2001:0db8::cd3"));
     // }
-    #[test]
-    fn test_classmethod_compress() {
+    it ("test_classmethod_compress", func() {
         let compressed = "2001:db8:0:cd30::";
         let expanded = "2001:0db8:0000:cd30:0000:0000:0000:0000";
         assert_eq!(compressed, IPAddress::parse(expanded).unwrap().to_s());
@@ -404,18 +368,17 @@ mod tests {
                    IPAddress::parse("2001:0db8::cd30").unwrap().to_s());
         assert_eq!("2001:db8::cd3",
                    IPAddress::parse("2001:0db8::cd3").unwrap().to_s());
-    }
-    #[test]
-    fn test_classhmethod_parse_u128() {
+    })
+    it ("test_classhmethod_parse_u128", func() {
         for (ip, num) in setup().valid_ipv6 {
             println!(">>>{}==={}", ip, num);
             assert_eq!(IPAddress::parse(String::from(ip)).unwrap().to_s(),
                        ipv6::from_int(num, 128).unwrap().to_s());
         }
-    }
-    #[test]
-    fn test_classmethod_parse_hex() {
+    })
+    it ("test_classmethod_parse_hex", func() {
         assert_eq!(setup().ip.to_string(),
                    ipv6::from_str(setup().hex, 16, 64).unwrap().to_string());
-    }
+    })
+  })
 }

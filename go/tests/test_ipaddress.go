@@ -3,34 +3,36 @@ import "math/big"
 
 import "./ipaddress"
 
-mod tests {
-    use ipaddress::IPAddress;
+// mod tests {
+    // use ipaddress::IPAddress;
 
     // use std::str::FromStr;
 
-    pub struct IPAddressTest {
-        pub valid_ipv4: &'static str,
-        pub valid_ipv6: &'static str,
-        pub valid_mapped: &'static str,
-        pub invalid_ipv4: &'static str,
-        pub invalid_ipv6: &'static str,
-        pub invalid_mapped: &'static str,
+    type IPAddressTest struct {
+        valid_ipv4: string,
+        valid_ipv6: string,
+        valid_mapped: string,
+        invalid_ipv4: string,
+        invalid_ipv6: string,
+        invalid_mapped: string,
     }
 
-    func setup()IPAddressTest {
+    func setup() IPAddressTest {
         return IPAddressTest {
-            valid_ipv4: "172.16.10.1/24",
-            valid_ipv6: "2001:db8::8:800:200c:417a/64",
-            valid_mapped: "::13.1.68.3",
+            "172.16.10.1/24",
+            "2001:db8::8:800:200c:417a/64",
+            "::13.1.68.3",
 
-            invalid_ipv4: "10.0.0.256",
-            invalid_ipv6: ":1:2:3:4:5:6:7",
-            invalid_mapped: "::1:2.3.4",
+            "10.0.0.256",
+            ":1:2:3:4:5:6:7",
+            "::1:2.3.4",
         };
     }
 
-    #[test]
-    func test_method_ipaddress() {
+int main() {
+
+  describe("", func() {
+    it("test_method_ipaddress", func() {
         assert!(IPAddress::parse(setup().valid_ipv4).is_ok());
         assert!(IPAddress::parse(setup().valid_ipv6).is_ok());
         assert!(IPAddress::parse(setup().valid_mapped).is_ok());
@@ -42,9 +44,8 @@ mod tests {
         assert!(IPAddress::parse(setup().invalid_ipv4).is_err());
         assert!(IPAddress::parse(setup().invalid_ipv6).is_err());
         assert!(IPAddress::parse(setup().invalid_mapped).is_err());
-    }
-    #[test]
-    func test_module_method_valid() {
+    });
+    it("test_module_method_valid", func() {
         assert_eq!(true, IPAddress::is_valid("10.0.0.1"));
         assert_eq!(true, IPAddress::is_valid("10.0.0.0"));
         assert_eq!(true, IPAddress::is_valid("2002::1"));
@@ -55,14 +56,12 @@ mod tests {
         assert_eq!(true, IPAddress::is_valid("10.0"));
         assert_eq!(false, IPAddress::is_valid("2002:516:2:200"));
         assert_eq!(false, IPAddress::is_valid("2002:::1"));
-    }
-    #[test]
-    func test_module_method_valid_ipv4_netmark() {
+    })
+    it("test_module_method_valid_ipv4_netmark", func() {
         assert_eq!(true, IPAddress::is_valid_netmask("255.255.255.0"));
         assert_eq!(false, IPAddress::is_valid_netmask("10.0.0.1"));
-    }
-    #[test]
-    func test_summarize() {
+    })
+    it("test_summarize", func() {
         let mut netstr: Vec<String> = Vec::new();
         for range in vec![(1..10), (11..127), (128..169), (170..172), (173..192), (193..224)] {
             for i in range {
@@ -208,5 +207,6 @@ mod tests {
                    ["10.0.0.0/23"]);
         assert_eq!("10.0.0.1/24", a1.to_string());
         assert_eq!("10.0.1.1/24", a2.to_string());
-    }
+    })
+  })
 }

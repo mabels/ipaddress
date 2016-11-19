@@ -10,7 +10,7 @@ type IPAddress struct {
     Vt_to_ipv6: func(*IPAddress) IPAddress
 }
 
-func(self IPAddress) String() string {
+func(self *IPAddress) String() string {
   return fmt.Sprintf("IPAddress: %s", self.To_string());
 }
 
@@ -18,7 +18,7 @@ const RE_MAPPED : Regex = regex.MustCompile(":.+\\.");
 const RE_IPV4 : Regex = regex.MustCompile("\\.");
 const RE_IPV6 : Regex = regex.MustCompile(":");
 
-func (self IPAddress) cmp(oth IPAddress) uint {
+func (self *IPAddress) cmp(oth IPAddress) uint {
     if self.ip_bits.version != oth.ip_bits.version {
         if self.ip_bits.version == IpVersion::V6 {
           return 1
@@ -35,11 +35,11 @@ func (self IPAddress) cmp(oth IPAddress) uint {
 }
 
 
-func (self IPAddress) Equal(other IPAddress) bool {
+func (self *IPAddress) Equal(other IPAddress) bool {
     return self.ip_bits.version == other.ip_bits.version &&
         self.prefix == other.prefix &&
         self.host_address == other.host_address &&
-        self.Mapped.Equal(&other.mapped)
+        self.Mapped.Equal(other.mapped)
 }
 
     /// Parse the argument string to create a new
@@ -75,7 +75,7 @@ func (self IPAddress) Equal(other IPAddress) bool {
         return _, fmt.Sprintf("Unknown IP Address %s", str);
     }
 
-    func (self IPAddress) Split_at_slash(str string) (string, *string) {
+    func (self *IPAddress) Split_at_slash(str string) (string, *string) {
         slash := strings.Split(strings.TrimSpace(), "/")
         addr := "";
         if len(slash) >= 1 {
@@ -88,7 +88,7 @@ func (self IPAddress) Equal(other IPAddress) bool {
         }
     }
 
-    func (self IPAddress) From(addr big.Int, prefix Prefix) IPAddress {
+    func (self *IPAddress) From(addr big.Int, prefix Prefix) IPAddress {
         return IPAddress {
             self.Ip_bits,
             addr.clone(),
@@ -107,7 +107,7 @@ func (self IPAddress) Equal(other IPAddress) bool {
     ///   ip.ipv4?
     ///     //-> true
     ///
-    func (self IPAddress) Is_ipv4() bool {
+    func (self *IPAddress) Is_ipv4() bool {
         return self.ip_bits.version == IpVersion.V4
     }
 
@@ -118,7 +118,7 @@ func (self IPAddress) Equal(other IPAddress) bool {
     ///   ip.ipv6?
     ///     //-> false
     ///
-    func (self IPAddress) Is_ipv6() bool {
+    func (self *IPAddress) Is_ipv6() bool {
       return self.ip_bits.version == IpVersion.V6
     }
 
@@ -163,7 +163,7 @@ func (self IPAddress) Equal(other IPAddress) bool {
 
     func split_to_u32(addr string) (*uint32, *string) {
         ip := 0
-        shift = 24
+        shift := 24
         split_addr := strings.Split(strings.TrimSpace(addr), ".")
         split_addr_len := len(split_add);
         if split_addr_len > 4 {
@@ -1246,7 +1246,7 @@ func (self IPAddress) Equal(other IPAddress) bool {
     ///      ///  "ac10:0a01"
     ///
 
-    func (self IPAddress) to_ipv6() IPAddress {
+    func (self *IPAddress) to_ipv6() IPAddress {
         return (self.vt_to_ipv6)(self);
     }
 
@@ -1254,7 +1254,7 @@ func (self IPAddress) Equal(other IPAddress) bool {
     //  private methods
     //
 
-    func (self IPAddress) Newprefix(num uint)(*Prefix, *string) {
+    func (self *IPAddress) Newprefix(num uint)(*Prefix, *string) {
         for i := range num..self.ip_bits.bits {
             let a = ((i as f64).log2() as usize) as f64;
             if a == (i as f64).log2() {

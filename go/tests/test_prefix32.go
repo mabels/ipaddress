@@ -3,35 +3,25 @@ import "math/big"
 
 import "./ipaddress"
 
-mod tests {
-    use ipaddress::IPAddress;
-    use ipaddress::prefix32;
-    use ipaddress::ipv4;
-    use std::collections::HashMap;
-    // use num::bigint::BigUint;
-    use num_traits::cast::ToPrimitive;
-
-
-
-    pub struct Prefix32Test {
-        netmask0: String,
-        netmask8: String,
-        netmask16: String,
-        netmask24: String,
-        netmask30: String,
-        netmasks: Vec<String>,
-        prefix_hash: HashMap<String, usize>,
-        octets_hash: HashMap<Vec<u16>, usize>,
-        u32_hash: HashMap<usize, u32>,
+    type Prefix32Test struct {
+        netmask0 string,
+        netmask8 string,
+        netmask16 string,
+        netmask24 string,
+        netmask30 string,
+        netmasks Vec<String>,
+        prefix_hash HashMap<String, usize>,
+        octets_hash HashMap<Vec<u16>, usize>,
+        u32_hash HashMap<usize, u32>,
     }
 
-    func setup()Prefix32Test {
-        let mut p32t = Prefix32Test {
-            netmask0: String::from("0.0.0.0"),
-            netmask8: String::from("255.0.0.0"),
-            netmask16: String::from("255.255.0.0"),
-            netmask24: String::from("255.255.255.0"),
-            netmask30: String::from("255.255.255.252"),
+    func setup() Prefix32Test {
+        p32t := Prefix32Test {
+            "0.0.0.0",
+            "255.0.0.0",
+            "255.255.0.0",
+            "255.255.255.0",
+            "255.255.255.252",
             netmasks: Vec::new(),
             prefix_hash: HashMap::new(),
             octets_hash: HashMap::new(),
@@ -60,96 +50,74 @@ mod tests {
         return p32t;
     }
 
-
-    #[allow(unused_attributes)]
-    #[test]
-    func test_attributes() {
+int main() {
+  describe("", func() {
+    it("test_attributes", func() {
         for num in setup().prefix_hash.values() {
             let prefix = prefix32::new(*num).unwrap();
             assert_eq!(*num, prefix.num)
         }
-    }
+    })
 
 
-    #[allow(unused_attributes)]
-    #[test]
-    func test_parse_netmask_to_prefix() {
+    it("test_parse_netmask_to_prefix", func() {
         for (netmask, num) in setup().prefix_hash {
             let prefix = IPAddress::parse_netmask_to_prefix(netmask).unwrap();
             assert_eq!(num, prefix);
         }
-    }
-
-    #[allow(unused_attributes)]
-    #[test]
-    func test_method_to_ip() {
+    })
+    it ("test_method_to_ip", func() {
         for (netmask, num) in setup().prefix_hash {
             let prefix = prefix32::new(num).unwrap();
             assert_eq!(*netmask, prefix.to_ip_str())
         }
-    }
+    })
 
-    #[allow(unused_attributes)]
-    #[test]
-    func test_method_to_s() {
+    it ("test_method_to_s", func() {
         let prefix = prefix32::new(8).unwrap();
         assert_eq!("8", prefix.to_s())
-    }
+    })
 
-    #[allow(unused_attributes)]
-    #[test]
-    func test_method_bits() {
+    it ("test_method_bits", func() {
         let prefix = prefix32::new(16).unwrap();
         assert_eq!("11111111111111110000000000000000", prefix.bits())
-    }
+    })
 
-    #[allow(unused_attributes)]
-    #[test]
-    func test_method_to_u32() {
+    it ("test_method_to_u32", func() {
         for (num, ip32) in setup().u32_hash {
             assert_eq!(ip32,
                        prefix32::new(num).unwrap().netmask().to_u32().unwrap())
         }
-    }
+    })
 
-    #[allow(unused_attributes)]
-    #[test]
-    func test_method_plus() {
+    it ("test_method_plus", func() {
         let p1 = prefix32::new(8).unwrap();
         let p2 = prefix32::new(10).unwrap();
         assert_eq!(18, p1.add_prefix(&p2).unwrap().num);
         assert_eq!(12, p1.add(4).unwrap().num)
-    }
+    })
 
-    #[allow(unused_attributes)]
-    #[test]
-    func test_method_minus() {
+    it ("test_method_minus", func() {
         let p1 = prefix32::new(8).unwrap();
         let p2 = prefix32::new(24).unwrap();
         assert_eq!(16, p1.sub_prefix(&p2).unwrap().num);
         assert_eq!(16, p2.sub_prefix(&p1).unwrap().num);
         assert_eq!(20, p2.sub(4).unwrap().num);
-    }
+    })
 
-    #[allow(unused_attributes)]
-    #[test]
-    func test_initialize() {
+    it ("test_initialize", func() {
         assert!(prefix32::new(33).is_err());
         assert!(prefix32::new(8).is_ok());
-    }
+    })
 
-    #[allow(unused_attributes)]
-    #[test]
-    func test_method_octets() {
+    it ("test_method_octets", func() {
         for (arr, pref) in setup().octets_hash {
             let prefix = prefix32::new(pref).unwrap();
             assert_eq!(prefix.ip_bits.parts(&prefix.netmask()), arr);
         }
-    }
+    })
 
-    #[allow(unused_attributes)]
-    #[test]
-    func test_method_brackets() {
+    it ("test_method_brackets", func() {
         for (arr, pref) in setup().octets_hash {
             let prefix = prefix32::new(pref).unwrap();
             for index in 0..arr.len() {
@@ -157,13 +125,12 @@ mod tests {
                 assert_eq!(prefix.ip_bits.parts(&prefix.netmask()).get(index), oct)
             }
         }
-    }
+    })
 
-    #[allow(unused_attributes)]
-    #[test]
-    func test_method_hostmask() {
+    it ("test_method_hostmask", func() {
         let prefix = prefix32::new(8).unwrap();
         assert_eq!("0.255.255.255",
                    ipv4::from_u32(prefix.host_mask().to_u32().unwrap(), 0).unwrap().to_s());
-    }
+    })
+  })
 }

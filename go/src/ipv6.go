@@ -173,6 +173,6 @@ func ipv6_is_loopback(my *IPAddress) bool {
 }
 
 
-func ipv6_is_private(my *IPAddress)bool {
+func ipv6_is_private(my *IPAddress) bool {
     return IPAddress.parse("fd00::/8").Includes(my);
 }

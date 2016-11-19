@@ -3,32 +3,27 @@ import "math/big"
 
 import "./ipaddress"
 
-mod tests {
-    use ipaddress::IPAddress;
-    use ipaddress::ipv6_unspec;
-    use num::bigint::BigUint;
-    use num::Zero;
-
-    pub struct IPv6UnspecifiedTest {
-        pub ip: IPAddress,
-        pub to_s: String,
-        pub to_string: String,
-        pub to_string_uncompressed: String,
-        pub num: BigUint,
+    type IPv6UnspecifiedTest struct {
+        ip: IPAddress,
+        to_s: string,
+        to_string: string,
+        to_string_uncompressed: string,
+        num: big.Int,
     }
 
-    fn setup()IPv6UnspecifiedTest {
+    func setup() IPv6UnspecifiedTest {
         return IPv6UnspecifiedTest {
-            ip: ipv6_unspec::new(),
-            to_s: String::from("::"),
-            to_string: String::from("::/128"),
-            to_string_uncompressed: String::from("0000:0000:0000:0000:0000:0000:0000:0000/128"),
-            num: BigUint::zero(),
+            ip: ipv6_unspec.New(),
+            to_s: "::",
+            to_string: "::/128",
+            to_string_uncompressed: "0000:0000:0000:0000:0000:0000:0000:0000/128",
+            num: big.Int.New()
         };
     }
 
-    #[test]
-    func test_attributes() {
+int main() {
+  describe("", func() {
+    it("test_attributes", func() {
         assert_eq!(setup().ip.host_address, setup().num);
         assert_eq!(128, setup().ip.prefix().get_prefix());
         assert_eq!(true, setup().ip.is_unspecified());
@@ -36,9 +31,9 @@ mod tests {
         assert_eq!(setup().to_string, setup().ip.to_string());
         assert_eq!(setup().to_string_uncompressed,
                    setup().ip.to_string_uncompressed());
-    }
-    #[test]
-    func test_method_ipv6() {
+    })
+    it("test_method_ipv6", func() {
         assert_eq!(true, setup().ip.is_ipv6());
-    }
+    })
+  }
 }
