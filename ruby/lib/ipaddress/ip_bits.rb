@@ -34,10 +34,10 @@ class IPAddress
     def parts(bu)
       vec = []
       my = bu.clone
-      part_mod = Crunchy.one().shl(self.part_bits)
+      #part_mod = Crunchy.one().shl(self.part_bits)
       i = 0
       while i < (self.bits / self.part_bits)
-        vec.push(my.mod(part_mod).num)
+        vec.push(my.mod(@part_mod).num)
         my = my.shr(self.part_bits)
         i = i + 1
       end
@@ -71,7 +71,7 @@ class IPAddress
         8,
         8,
         "in-addr.arpa",
-        1 << 8,
+        Crunchy.from_number(1 << 8),
         Crunchy.one()
       )
     end
@@ -85,7 +85,7 @@ class IPAddress
         16,
         4,
         "ip6.arpa",
-        1 << 16,
+        Crunchy.from_number(1 << 16),
         Crunchy.zero()
       )
     end

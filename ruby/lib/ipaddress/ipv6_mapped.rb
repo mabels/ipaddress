@@ -114,7 +114,7 @@ class IPAddress
         #mapped = Some(ipv4.unwrap())
         addr = ipv4
         ipv6_bits = IpBits.v6()
-        part_mod = Crunchy.from_number(ipv6_bits.part_mod)
+        part_mod = ipv6_bits.part_mod #Crunchy.from_number(ipv6_bits.part_mod)
         up_addr = addr.host_address.clone()
         down_addr = addr.host_address.clone()
 
