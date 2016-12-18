@@ -11,16 +11,13 @@ type Prefix struct {
     Vt_from func(prefix *Prefix, n uint8)(*Prefix, *string)
 }
 
-// impl Clone for Prefix {
-//     fn clone(&self)Prefix {
-//         Prefix {
-//             num: self.num,
-//             ip_bits: self.ip_bits.clone(),
-//             net_mask: self.net_mask.clone(),
-//             vt_from: self.vt_from
-//         }
-//     }
-// }
+    func (self *Prefix) Clone() Prefix {
+        return Prefix {
+            self.Num,
+            self.Ip_bits,
+            self.Net_mask,
+            self.Vt_from }
+    }
 
 func (self *Prefix) Equal(other Prefix) bool {
     return self.Ip_bits.Version == other.Ip_bits.Version &&

@@ -1019,3 +1019,38 @@ func parse_classful(ip_si string) (*IPAddress, *string) {
 //    }
 //    return dup.reverse()
 // }
+
+
+func netmask_to_prefix(nm big.Int, bits uint) (*uint, *string) {
+	prefix := uint(0)
+	addr := nm
+	in_host_part := true
+	two := big.NewInt(2)
+	for i := uint(0); i < bits; i++ {
+		bit := big.NewInt(0).Rem(&addr, two).Uint64()
+		if in_host_part && bit == 0 {
+			prefix = prefix + 1
+		} else if in_host_part && bit == 1 {
+			in_host_part = false
+		} else if !in_host_part && bit == 0 {
+      err := fmt.Sprintf("this is not a net mask %s", nm)
+			return nil, &err
+		}
+		addr.Rsh(&addr, 1)
+	}
+  prefix = bits - prefix
+	return &prefix, nil
+}
+
+func Parse_netmask_to_prefix(netmask *string) (*uint, *string) {
+	is_number, err := strconv.ParseUint(netmask, 10, 64)
+	if err == nil {
+    ret := uint(is_number)
+		return &ret, nil
+	}
+	my_ip, err := ipaddress.Parse(netmask)
+	if err {
+		return nil, fmt.Sprintf("illegal netmask %s", netmask)
+	}
+	return ipaddress.netmask_to_prefix(my_ip.Host_address, my_ip.Ip_bits.Bits)
+}
