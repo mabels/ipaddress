@@ -1,5 +1,6 @@
+package prefix
 
-import "./prefix"
+// import "./prefix"
 import "../ip_bits"
 import "fmt"
 
@@ -22,10 +23,10 @@ func New(num uint) (*Prefix, *string) {
         return &Prefix {
             num,
             ip_bits,
-            Prefix::New_netmask(num, bits),
+            Prefix.New_netmask(num, bits),
             from,
             //vt_to_ip_str: _TO_IP_STR,
-        }), nil;
+        }, nil;
     }
     return nil, fmt.Sprintf("Prefix must be in range 0..32, got: %d", num);
 }

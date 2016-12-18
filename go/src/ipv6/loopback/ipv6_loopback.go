@@ -1,5 +1,6 @@
+package ipaddress
 
-import "ipaddress"
+// import "ipaddress"
 
 ///    The loopback  address is a unicast localhost address. If an
 ///  application in a host sends packets to this address, the IPv6 stack

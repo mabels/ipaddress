@@ -79,15 +79,15 @@ func TestRleCode(t *testing.T) {
 	// // [Bob: 31 John: 42 Michael: 17 Jenny: 26]
 	// // [Michael: 17 Jenny: 26 Bob: 31 John: 42]
 
-	cmpRle(t, "-1", Code([]uint32{}), []Rle{})
-  cmpRle(t, "-2", Code([]uint32{4711}), []Rle{ Rle{4711, 0, 1, true} })
-  cmpRle(t, "-3", Code([]uint32{4711, 4711}), []Rle{ Rle{
+	cmpRle(t, "-1", Code([]uint16{}), []Rle{})
+  cmpRle(t, "-2", Code([]uint16{4711}), []Rle{ Rle{4711, 0, 1, true} })
+  cmpRle(t, "-3", Code([]uint16{4711, 4711}), []Rle{ Rle{
                   4711,
                   0,
                   2,
                   true,
               }});
-  cmpRle(t, "-4", Code([]uint32{4711, 4711, 4811}), []Rle{ Rle{
+  cmpRle(t, "-4", Code([]uint16{4711, 4711, 4811}), []Rle{ Rle{
                   4711,
                   0,
                   2,
@@ -99,7 +99,7 @@ func TestRleCode(t *testing.T) {
                   1,
                   true,
               } });
-  cmpRle(t, "-5", Code([]uint32{4711, 4711, 4811, 4711, 4711}), []Rle{ Rle{
+  cmpRle(t, "-5", Code([]uint16{4711, 4711, 4811, 4711, 4711}), []Rle{ Rle{
                   4711,
                   0,
                   2,
@@ -117,16 +117,16 @@ func TestRleCode(t *testing.T) {
                   2,
                   true,
               } });
-  cmpRle(t, "-6", Code([]uint32{4711, 4711, 4711, 4811, 4711, 4711}),
+  cmpRle(t, "-6", Code([]uint16{4711, 4711, 4711, 4811, 4711, 4711}),
     []Rle{ Rle { 4711, 0, 3, true },Rle { 4811, 1, 1, true },Rle { 4711, 2, 2, false } });
-  cmpRle(t, "-7", Code([]uint32{4711, 4711, 4711, 4811, 4711, 4711, 4911, 4911, 4911}),
+  cmpRle(t, "-7", Code([]uint16{4711, 4711, 4711, 4811, 4711, 4711, 4911, 4911, 4911}),
     []Rle{ Rle{ 4711, 0, 3, true, },
                  Rle { 4811, 1, 1, true, },
                  Rle { 4711, 2, 2, false, },
                  Rle { 4911, 3, 3, true, } });
 
 
- cmpRle(t, "--8", Code([]uint32{0x2001, 0x888, 0, 0x6630, 0, 0, 0, 0}),
+ cmpRle(t, "--8", Code([]uint16{0x2001, 0x888, 0, 0x6630, 0, 0, 0, 0}),
   []Rle{ Rle{ 0x2001, 0, 1, true },
          Rle { 0x888, 1, 1, true },
          Rle { 0, 2, 1, false },

@@ -1,5 +1,6 @@
+package ipaddress
 
-import "ipaddress"
+// import "ipaddress"
 
 //  Ac
 ///  It is usually identified as a IPv4 mapped IPv6 address, a particular

@@ -1,8 +1,9 @@
-
-import "ipaddress"
-import "math/bigInt"
-import "prefix/prefix128"
-import "ipv4"
+package ipaddress
+// import "ipaddress"
+import "math/big"
+import "fmt"
+// import "../prefix"
+// import "./ipv4"
 
 ///  =Name
 ///
@@ -60,9 +61,10 @@ import "ipv4"
 ///  portion.
 ///
 ///
-func From_str(str string, radix uint32, prefix uint32) (*IPAddress, *string) {
-    var num bigInt
-    num, err = num.SetString(str, radix);
+func From_str(str string, radix int, prefix uint) (*IPAddress, *string) {
+    var num big.Int
+    var err bool
+    _, err = num.SetString(str, radix);
     if err {
         return nil, fmt.Sprintf("unparsable %s", str);
     }
@@ -78,7 +80,7 @@ func enhance_if_mapped(ip *IPAddress) (*IPAddress, *string) {
     if ipv6_top_96bit == bigInt.new(0xffff) {
         // println!("enhance_if_mapped-1:{}", );
         num := bigInt.Rem(ip.host_address, bigInt.Lsh(bigInt.new(1), 32));
-        if num == BigUint::zero() {
+        if num == big.NewInt(0) {
             return ip, nil;
         }
         //println!("ip:{},{:x}", ip.to_string(), num);
@@ -98,7 +100,7 @@ func enhance_if_mapped(ip *IPAddress) (*IPAddress, *string) {
     return ip, nil
 }
 
-func From_int(adr bigUInt, prefix uint) (*IPAddress, *string) {
+func From_int(adr big.Int, prefix uint) (*IPAddress, *string) {
     prefix, err := prefix128.New(prefix)
     if err {
         return nil, err
@@ -130,8 +132,8 @@ func From_int(adr bigUInt, prefix uint) (*IPAddress, *string) {
 ///
 ///    ip6 = IPAddress "2001:db8::8:800:200c:417a/64"
 ///
-func New(str: string) (*IPAddress, *string) {
-    ip, o_netmask := IPAddress::split_at_slash(str);
+func New(str string) (*IPAddress, *string) {
+    ip, o_netmask := ipaddress.split_at_slash(str);
     if IPAddress.Is_valid_ipv6(ip) {
         o_num, err := IPAddress.Split_to_num(ip);
         if err {
@@ -140,11 +142,11 @@ func New(str: string) (*IPAddress, *string) {
         netmask := 128;
         if o_netmask {
             network := o_netmask
-            num_mask, err = strconv::parseInt(network, 8, 10);
+            num_mask, err = strconv.parseInt(network, 8, 10);
             if err {
                 return nil, fmt.Sprintf("can not parse:%s", network)
             }
-            netmask = network.parse::<usize>().unwrap();
+            netmask, err = strconv.parseInt(network, 8, 10);
         }
         prefix, err := prefix128.New(netmask);
         if err {
@@ -157,8 +159,7 @@ func New(str: string) (*IPAddress, *string) {
             nul,
             ipv6_is_private,
             ipv6_is_loopback,
-            to_ipv6
-        });
+            to_ipv6 });
     } else {
         return nil, fmt.Sprintf("Invalid IP %s", str);
     }
