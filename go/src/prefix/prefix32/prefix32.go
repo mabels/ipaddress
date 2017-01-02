@@ -1,12 +1,14 @@
-package prefix
+package prefix32
 
 // import "./prefix"
-import "../ip_bits"
+import "../../ip_bits"
+import "../../prefix"
 import "fmt"
 
 
-func From(my Prefix, num uint) (*Prefix, *string) {
-    return New(num);
+
+func From(my *prefix.Prefix, num uint8) prefix.ResultPrefix {
+    return New(uint(num));
 }
 ///  Gives the prefix in IPv4 dotted decimal format,
 ///  i.e. the canonical netmask we're all used to
@@ -16,17 +18,19 @@ func From(my Prefix, num uint) (*Prefix, *string) {
 ///    prefix.to_ip
 ///      ///  "255.255.255.0"
 ///
-func New(num uint) (*Prefix, *string) {
+func New(num uint) prefix.ResultPrefix {
     if num <= 32 {
         ipBits := ip_bits.V4();
-        bits := ipBits.bits;
-        return &Prefix {
-            num,
-            ip_bits,
-            Prefix.New_netmask(num, bits),
-            from,
+        bits := ipBits.Bits;
+        tmp := prefix.New_netmask(uint8(num), bits)
+        return &prefix.Ok{&prefix.Prefix {
+            uint8(num),
+            ipBits,
+            *tmp,
+            From,
             //vt_to_ip_str: _TO_IP_STR,
-        }, nil;
+        }};
     }
-    return nil, fmt.Sprintf("Prefix must be in range 0..32, got: %d", num);
+    tmp := fmt.Sprintf("Prefix must be in range 0..32, got: %d", num)
+    return &prefix.Error{&tmp}
 }

@@ -6,6 +6,14 @@ import "math/big"
 
 // import "../ipaddress"
 
+import "../ipaddress_impl"
+
+import "../prefix"
+import "../prefix/prefix32"
+import "../ip_bits"
+
+// import "math/big"
+
 // struct IPv4 {
 //     address: String,
 //     prefix: Prefix32,
@@ -13,7 +21,7 @@ import "math/big"
 // }
 //   // class IPv4
 //
-//   include IPAddress
+//   include ipaddress_impl.IPAddress
 //   include Enumerable
 //   include Comparable
 //
@@ -56,30 +64,31 @@ import "math/big"
 //
 // mod IPv4 {
 
-func From_u32(addr uint32, _prefix uint32) (*IPAddress, *string) {
-    prefix, err := prefix32.New(_prefix);
-    if err {
-        return nil, err
+func From_u32(addr uint32, _prefix uint) (*ipaddress_impl.IPAddress, *string) {
+    prefix := prefix32.New(_prefix);
+    if prefix.IsErr() {
+        return nil, prefix.UnwrapErr()
     }
-    return ipaddress.IPAddress {
+    big_addr := big.NewInt(int64(addr))
+    return ipaddress_impl.IPAddress {
         ip_bits.V4(),
-        bigInt.New(addr),
-        prefix,
+        *big_addr,
+        *prefix.Unwrap(),
         nil,
         ipv4_is_private,
         ipv4_is_loopback,
         to_ipv6}, nil;
 }
 
-func New(str string) (*ipaddress.IPAddress, *string) {
-    ip, netmask := ipaddress.IPAddress.Split_at_slash(str)
-    if !ipaddress.IPAddress.Is_valid_ipv4(ip) {
+func New(str string) (*ipaddress_impl.IPAddress, *string) {
+    ip, netmask := ipaddress_impl.IPAddress.Split_at_slash(str)
+    if !ipaddress_impl.IPAddress.Is_valid_ipv4(ip) {
         return nil, fmt.Sprintf("Invalid IP %s", str);
     }
     ip_prefix_num := 32;
     if netmask != nil {
         //  netmask is defined
-        ip_prefix_num, err := ipaddress.IPAddress.Parse_netmask_to_prefix(netmask)
+        ip_prefix_num, err := ipaddress_impl.IPAddress.Parse_netmask_to_prefix(netmask)
         if err {
             return nil, err
         }
@@ -89,11 +98,11 @@ func New(str string) (*ipaddress.IPAddress, *string) {
     if ip_prefix == nil {
         return nil, Err(ip_prefix.unwrap_err());
     }
-    split_u32, err := ipaddress.IPAddress.Split_to_u32(&ip);
+    split_u32, err := ipaddress_impl.IPAddress.Split_to_u32(&ip);
     if err {
         return nil, err
     }
-    return ipaddress.IPAddress {
+    return ipaddress_impl.IPAddress {
         ip_bits.V4(),
         big.NewInt(split_u32),
         ip_prefix.unwrap(),
@@ -103,12 +112,12 @@ func New(str string) (*ipaddress.IPAddress, *string) {
         to_ipv6}, nil;
 }
 
-var ipv4_private_networks = []ipaddress.IPAddress{
-  ipaddress.IPAddress.parse("10.0.0.0/8"),
-  ipaddress.IPAddress.parse("172.16.0.0/12"),
-  ipaddress.IPAddress.parse("192.168.0.0/16")};
+var ipv4_private_networks = []ipaddress_impl.IPAddress{
+  ipaddress_impl.IPAddress.parse("10.0.0.0/8"),
+  ipaddress_impl.IPAddress.parse("172.16.0.0/12"),
+  ipaddress_impl.IPAddress.parse("192.168.0.0/16")};
 
-func ipv4_is_private(my *ipaddress.IPAddress) bool {
+func ipv4_is_private(my *ipaddress_impl.IPAddress) bool {
   for ip := range ipv4_private_networks {
     if (ip.Includes(my)) {
       return true
@@ -117,12 +126,12 @@ func ipv4_is_private(my *ipaddress.IPAddress) bool {
   return false
 }
 
-func ipv4_is_loopback(my *ipaddress.IPAddress)  bool {
-    return ipaddress.IPAddress.parse("127.0.0.0/8").Includes(my);
+func ipv4_is_loopback(my *ipaddress_impl.IPAddress)  bool {
+    return ipaddress_impl.IPAddress.parse("127.0.0.0/8").Includes(my);
 }
 
-func to_ipv6(ia *ipaddress.IPAddress) ipaddress.IPAddress {
-        return ipaddress.IPAddress {
+func to_ipv6(ia *ipaddress_impl.IPAddress) ipaddress_impl.IPAddress {
+        return ipaddress_impl.IPAddress {
             ip_bits.V6(),
             ia.host_address,
             prefix128.New(ia.prefix.num),
@@ -783,7 +792,7 @@ func to_ipv6(ia *ipaddress.IPAddress) ipaddress.IPAddress {
 //    ip.a?
 //      // => true
 //
-func is_class_a(my *IPAddress) bool {
+func is_class_a(my *ipaddress_impl.IPAddress) bool {
     return my.is_ipv4() && my.host_address.Cmp(big.NewInt(0x80000000)) < 0
 }
 
@@ -798,7 +807,7 @@ func is_class_a(my *IPAddress) bool {
 //    ip.b?
 //      // => true
 //
-func is_class_b(my *IPAddress) bool {
+func is_class_b(my *ipaddress_impl.IPAddress) bool {
     return my.is_ipv4() &&
         big.NewInt(0x80000000).Cmp(my.host_address) <= 0 &&
         my.host_address.Cmp(big.NewInt(0xc0000000)) < 0;
@@ -815,7 +824,7 @@ func is_class_b(my *IPAddress) bool {
 //    ip.c?
 //      // => true
 //
-func is_class_c(my *IPAddress) bool {
+func is_class_c(my *ipaddress_impl.IPAddress) bool {
     return my.is_ipv4() &&
         big.NewInt(0xc0000000).Cmp(my.host_address) <= 0 &&
         my.host_address.Cmp(big.NewInt(0xe0000000)) < 0
@@ -978,7 +987,7 @@ func is_class_c(my *IPAddress) bool {
 //  Note that classes C, D and E will all have a default
 //  prefix of /24 or 255.255.255.0
 //
-func parse_classful(ip_si string) (*IPAddress, *string) {
+func parse_classful(ip_si string) (*ipaddress_impl.IPAddress, *string) {
     if !IPAddress.is_valid_ipv4(ip_si) {
         return nil, fmt.Sprintf("Invalid IP %s", ip_si);
     }
@@ -988,11 +997,11 @@ func parse_classful(ip_si string) (*IPAddress, *string) {
     }
     ip := o_ip;
     if ipv4.is_class_a(ip) {
-        ip.prefix = prefix32.new(8);
+        ip.prefix = prefix32.New(8);
     } else if ipv4.is_class_b(ip) {
-        ip.prefix = prefix32.new(16);
+        ip.prefix = prefix32.New(16);
     } else if ipv4.is_class_c(ip) {
-        ip.prefix = prefix32.new(24);
+        ip.prefix = prefix32.New(24);
     }
     return ip, nil;
 }

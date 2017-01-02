@@ -2,6 +2,8 @@ package ipaddress
 // import "ipaddress"
 import "math/big"
 import "fmt"
+
+import "../ipaddress_impl"
 // import "../prefix"
 // import "./ipv4"
 
@@ -61,7 +63,7 @@ import "fmt"
 ///  portion.
 ///
 ///
-func From_str(str string, radix int, prefix uint) (*IPAddress, *string) {
+func From_str(str string, radix int, prefix uint) (*ipaddress_impl.IPAddress, *string) {
     var num big.Int
     var err bool
     _, err = num.SetString(str, radix);
@@ -71,7 +73,7 @@ func From_str(str string, radix int, prefix uint) (*IPAddress, *string) {
     return From_int(num, prefix)
 }
 
-func enhance_if_mapped(ip *IPAddress) (*IPAddress, *string) {
+func enhance_if_mapped(ip *ipaddress_impl.IPAddress) (*ipaddress_impl.IPAddress, *string) {
     // println!("real mapped {:x} {:x}", &ip.host_address, ip.host_address.clone().shr(32));
     if ip.is_mapped() {
         return ip, nil
@@ -100,12 +102,12 @@ func enhance_if_mapped(ip *IPAddress) (*IPAddress, *string) {
     return ip, nil
 }
 
-func From_int(adr big.Int, prefix uint) (*IPAddress, *string) {
+func From_int(adr big.Int, prefix uint) (*ipaddress_impl.IPAddress, *string) {
     prefix, err := prefix128.New(prefix)
     if err {
         return nil, err
     }
-    return enhance_if_mapped(IPAddress {
+    return enhance_if_mapped(ipaddress_impl.IPAddress {
         ip_bits.v6(),
         adr.clone(),
         prefix,
@@ -132,10 +134,10 @@ func From_int(adr big.Int, prefix uint) (*IPAddress, *string) {
 ///
 ///    ip6 = IPAddress "2001:db8::8:800:200c:417a/64"
 ///
-func New(str string) (*IPAddress, *string) {
+func New(str string) (*ipaddress_impl.IPAddress, *string) {
     ip, o_netmask := ipaddress.split_at_slash(str);
-    if IPAddress.Is_valid_ipv6(ip) {
-        o_num, err := IPAddress.Split_to_num(ip);
+    if ipaddress_impl.IPAddress.Is_valid_ipv6(ip) {
+        o_num, err := ipaddress_impl.IPAddress.Split_to_num(ip);
         if err {
             return nil, err
         }
@@ -152,7 +154,7 @@ func New(str string) (*IPAddress, *string) {
         if err {
             return nil, err
         }
-        return enhance_if_mapped(IPAddress {
+        return enhance_if_mapped(ipaddress_impl.IPAddress {
             ip_bits.V6(),
             o_num,
             prefix,
@@ -165,15 +167,15 @@ func New(str string) (*IPAddress, *string) {
     }
 }
 
-func to_ipv6(ia *IPAddress) IPAddress {
+func to_ipv6(ia *ipaddress_impl.IPAddress) ipaddress_impl.IPAddress {
     return ia.clone();
 }
 
-func ipv6_is_loopback(my *IPAddress) bool {
+func ipv6_is_loopback(my *ipaddress_impl.IPAddress) bool {
     return my.host_address == bigInt.new(1);
 }
 
 
-func ipv6_is_private(my *IPAddress) bool {
+func ipv6_is_private(my *ipaddress_impl.IPAddress) bool {
     return IPAddress.parse("fd00::/8").Includes(my);
 }

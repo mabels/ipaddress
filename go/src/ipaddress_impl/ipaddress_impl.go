@@ -4,6 +4,8 @@ import "strings"
 
 // import "strconv"
 import "math/big"
+import "math"
+import "sort"
 
 // import "regexp"
 import "fmt"
@@ -18,16 +20,92 @@ import "bytes"
 // import "../ipv4"
 // import "../ipv6"
 
+type ResultIPAddress interface {
+  IsOk() bool
+  IsErr() bool
+  Unwrap() *IPAddress
+  UnwrapErr() *string
+}
+
+type ResultIPAddresses interface {
+  IsOk() bool
+  IsErr() bool
+  Unwrap() *[]IPAddress
+  UnwrapErr() *string
+}
+
 type IPAddress struct {
 	Ip_bits                    *ip_bits.IpBits
 	Host_address               big.Int
-	prefix                     prefix.Prefix
+	Prefix                     prefix.Prefix
 	Mapped                     *IPAddress
 	Vt_is_private              func(*IPAddress) bool
 	Vt_is_loopback             func(*IPAddress) bool
 	Vt_to_ipv6                 func(*IPAddress) IPAddress
 	Vt_parse_netmask           func(*string) (*uint8, *string)
 	Vt_aggregate               func(*[]IPAddress) []IPAddress
+  // Vt_sum_first_found
+}
+
+type Error struct {
+  err *string
+}
+func (self *Error) IsOk()  bool { return false }
+func (self *Error) IsErr() bool { return true }
+func (self *Error) Unwrap() *IPAddress { return nil }
+func (self *Error) UnwrapErr() *string { return self.err }
+// func Error(err *string) *ErrorIsh {
+//     return &ErrorIsh{err}
+// }
+
+type Ok struct {
+  ipaddress *IPAddress
+}
+func (self *Ok) IsOk()  bool { return true }
+func (self *Ok) IsErr() bool { return false }
+func (self *Ok) Unwrap() *IPAddress { return self.ipaddress }
+func (self *Ok) UnwrapErr() *string { return nil }
+
+
+type Errors struct {
+  err *string
+}
+func (self *Errors) IsOk()  bool { return false }
+func (self *Errors) IsErr() bool { return true }
+func (self *Errors) Unwrap() *[]IPAddress { return nil }
+func (self *Errors) UnwrapErr() *string { return self.err }
+// func Error(err *string) *ErrorIsh {
+//     return &ErrorIsh{err}
+// }
+
+type Oks struct {
+  ipaddresses *[]IPAddress
+}
+func (self *Oks) IsOk()  bool { return true }
+func (self *Oks) IsErr() bool { return false }
+func (self *Oks) Unwrap() *[]IPAddress { return self.ipaddresses }
+func (self *Oks) UnwrapErr() *string { return nil }
+
+
+
+
+func (self *IPAddress) Clone() IPAddress {
+  mapped := self.Mapped
+  if self.Mapped != nil {
+    tmp := *self.Mapped
+    tmp2 := tmp.Clone();
+    mapped = &tmp2;
+  }
+  return IPAddress {
+    self.Ip_bits,
+    self.Host_address,
+    self.Prefix,
+    mapped,
+    self.Vt_is_private,
+    self.Vt_is_loopback,
+    self.Vt_to_ipv6,
+    self.Vt_parse_netmask,
+    self.Vt_aggregate}
 }
 
 func (self *IPAddress) String() string {
@@ -47,12 +125,12 @@ func (self *IPAddress) Cmp(oth *IPAddress) int {
 	} else if self.Host_address.Cmp(&oth.Host_address) > 0 {
 		return 1
 	}
-	return self.prefix.Cmp(&oth.prefix)
+	return self.Prefix.Cmp(&oth.Prefix)
 }
 
 func (self *IPAddress) Equal(other IPAddress) bool {
 	return self.Ip_bits.Version == other.Ip_bits.Version &&
-		self.prefix.Cmp(&other.prefix) == 0 &&
+		self.Prefix.Cmp(&other.Prefix) == 0 &&
 		self.Host_address.Cmp(&other.Host_address) == 0 &&
 		((self.Mapped == nil && self.Mapped == other.Mapped) ||
 			self.Mapped.Equal(*other.Mapped))
@@ -159,7 +237,7 @@ func (self *IPAddress) dns_reverse() string {
 	var ret bytes.Buffer
 	dot := ""
 	dns_parts := self.dns_parts()
-	for i := ((self.prefix.Host_prefix() + (self.Ip_bits.Dns_bits - 1)) / self.Ip_bits.Dns_bits); i <= uint8(len(dns_parts)); i++ {
+	for i := ((self.Prefix.Host_prefix() + (self.Ip_bits.Dns_bits - 1)) / self.Ip_bits.Dns_bits); i <= uint8(len(dns_parts)); i++ {
 		ret.WriteString(dot)
 		ret.WriteString(self.Ip_bits.Dns_part_format(dns_parts[i]))
 		dot = "."
@@ -185,7 +263,7 @@ func (self *IPAddress) dns_parts() []uint8 {
 func (self *IPAddress) dns_networks() []IPAddress {
 	// +self.ip_bits.dns_bits-1
 	next_bit_mask := self.Ip_bits.Bits -
-		(((self.prefix.Host_prefix()) / self.Ip_bits.Dns_bits) * self.Ip_bits.Dns_bits)
+		(((self.Prefix.Host_prefix()) / self.Ip_bits.Dns_bits) * self.Ip_bits.Dns_bits)
 	if next_bit_mask <= 0 {
 		return []IPAddress{self.Network()}
 	}
@@ -197,10 +275,10 @@ func (self *IPAddress) dns_networks() []IPAddress {
 	}
 	var ret []IPAddress
 	step := self.Network().Host_address
-	prefix, _ := self.prefix.From(next_bit_mask)
+	resPrefix := self.Prefix.From(next_bit_mask)
 	baddr := self.Broadcast().Host_address
 	for baddr.Cmp(&step) > 0 {
-		ret = append(ret, self.From(&step, prefix))
+		ret = append(ret, self.From(&step, resPrefix.Unwrap()))
 		step.Add(&step, step_bit_net)
 	}
 	return ret
@@ -246,16 +324,16 @@ func (self *IPAddress) Is_mapped() bool {
 ///
 ///    ip = IPAddress("172.16.100.4/22")
 ///
-///    ip.prefix
+///    ip.Prefix
 ///      ///  22
 ///
-///    ip.prefix.class
+///    ip.Prefix.class
 ///      ///  IPAddress::Prefix32
 ///
 
-func (self *IPAddress) Prefix() prefix.Prefix {
-	return self.prefix
-}
+// func (self *IPAddress) Prefix() prefix.Prefix {
+// 	return self.Prefix
+// }
 
 /// Checks if the argument is a valid IPv4 netmask
 /// expressed in dotted decimal format.
@@ -276,24 +354,24 @@ func (self *IPAddress) Prefix() prefix.Prefix {
 ///    puts ip
 ///      ///  172.16.100.4/16
 ///
-///    ip.prefix = 22
+///    ip.Prefix = 22
 ///
 ///    puts ip
 ///      ///  172.16.100.4/22
 ///
-func (self *IPAddress) Change_prefix(num uint8) (*IPAddress, *string) {
-	prefix, err := self.prefix.From(num)
-	if err != nil {
-		return nil, err
+func (self *IPAddress) Change_prefix(num uint8) ResultIPAddress {
+	prefix := self.Prefix.From(num)
+	if prefix.IsErr() {
+		return &Error{prefix.UnwrapErr()}
 	}
-	from := self.From(&self.Host_address, prefix)
-	return &from, nil
+	from := self.From(&self.Host_address, prefix.Unwrap())
+	return &Ok{&from}
 }
 
-func (self *IPAddress) Change_netmask(my_str *string) (*IPAddress, *string) {
+func (self *IPAddress) Change_netmask(my_str *string) ResultIPAddress {
 	nm, err := self.Vt_parse_netmask(my_str)
-	if err == nil {
-		return nil, err
+	if err != nil {
+		return &Error{err}
 	}
 	return self.Change_prefix(*nm)
 }
@@ -311,7 +389,7 @@ func (self *IPAddress) To_string() string {
 	var ret bytes.Buffer
 	ret.WriteString(self.To_s())
 	ret.WriteString("/")
-	ret.WriteString(self.prefix.To_s())
+	ret.WriteString(self.Prefix.To_s())
 	return ret.String()
 }
 
@@ -323,7 +401,7 @@ func (self *IPAddress) To_string_uncompressed() string {
 	var ret bytes.Buffer
 	ret.WriteString(self.To_s_uncompressed())
 	ret.WriteString("/")
-	ret.WriteString(self.prefix.To_s())
+	ret.WriteString(self.Prefix.To_s())
 	return ret.String()
 }
 
@@ -343,7 +421,7 @@ func (self *IPAddress) to_string_mapped() string {
 		mapped := self.Mapped
 		return fmt.Sprintf("%s/%d",
 			self.To_s_mapped(),
-			mapped.prefix.Num)
+			mapped.Prefix.Num)
 	}
 	return self.To_string()
 }
@@ -372,8 +450,8 @@ func (self *IPAddress) To_hex() string {
 }
 
 func (self *IPAddress) Netmask() IPAddress {
-	nm := self.prefix.Netmask()
-	return self.From(&nm, &self.prefix)
+	nm := self.Prefix.Netmask()
+	return self.From(&nm, &self.Prefix)
 }
 
 ///  Returns the broadcast address for the given IP.
@@ -388,8 +466,8 @@ func (self *IPAddress) Broadcast() IPAddress {
 	size := self.Size()
   h_a := self.Network().Host_address
 	return self.From(big.NewInt(0).Add(&h_a,
-		big.NewInt(0).Sub(&size, big.NewInt(1))), &self.prefix)
-	// IPv4::parse_u32(self.broadcast_u32, self.prefix)
+		big.NewInt(0).Sub(&size, big.NewInt(1))), &self.Prefix)
+	// IPv4::parse_u32(self.broadcast_u32, self.Prefix)
 }
 
 ///  Checks if the IP address is actually a network
@@ -407,7 +485,7 @@ func (self *IPAddress) Broadcast() IPAddress {
 
 func (self *IPAddress) Is_network() bool {
 	net := self.Network().Host_address
-	return self.prefix.Num != self.Ip_bits.Bits &&
+	return self.Prefix.Num != self.Ip_bits.Bits &&
 		self.Host_address.Cmp(&net) == 0
 }
 
@@ -421,8 +499,8 @@ func (self *IPAddress) Is_network() bool {
 ///
 
 func (self *IPAddress) Network() IPAddress {
-	to_n := To_network(&self.Host_address, self.prefix.Host_prefix())
-	return self.From(&to_n, &self.prefix)
+	to_n := To_network(&self.Host_address, self.Prefix.Host_prefix())
+	return self.From(&to_n, &self.Prefix)
 }
 
 func To_network(adr *big.Int, host_prefix uint8) big.Int {
@@ -464,7 +542,7 @@ func (self *IPAddress) Add(other *IPAddress) []IPAddress {
 ///
 func (self *IPAddress) First() IPAddress {
 	ha := self.Network().Host_address
-	return self.From(big.NewInt(0).Add(&ha, &self.Ip_bits.Host_ofs), &self.prefix)
+	return self.From(big.NewInt(0).Add(&ha, &self.Ip_bits.Host_ofs), &self.Prefix)
 }
 
 ///  Like its sibling method IPv4/// first, this method
@@ -490,7 +568,7 @@ func (self *IPAddress) First() IPAddress {
 
 func (self *IPAddress) Last() IPAddress {
 	ha := self.Broadcast().Host_address
-	return self.From(big.NewInt(0).Sub(&ha, &self.Ip_bits.Host_ofs), &self.prefix)
+	return self.From(big.NewInt(0).Sub(&ha, &self.Ip_bits.Host_ofs), &self.Prefix)
 }
 
 ///  Iterates over all the hosts IP addresses for the given
@@ -513,7 +591,7 @@ func (self *IPAddress) Each_host(fn func(*IPAddress)) {
 	i := self.First().Host_address
 	last := self.Last().Host_address
 	for i.Cmp(&last) < 0 {
-    ip := self.From(&i, &self.prefix)
+    ip := self.From(&i, &self.Prefix)
 		fn(&ip)
 		i.Add(&i, big.NewInt(1))
 	}
@@ -544,7 +622,7 @@ func (self *IPAddress) Each(fn func(*IPAddress)) {
 	i := self.Network().Host_address
   broad := self.Broadcast().Host_address
 	for broad.Cmp(&i) > 0 {
-    ip := self.From(&i, &self.prefix)
+    ip := self.From(&i, &self.Prefix)
 		fn(&ip)
 		i.Add(&i, big.NewInt(1))
 	}
@@ -593,7 +671,7 @@ func (self *IPAddress) Each(fn func(*IPAddress)) {
 
 func (self *IPAddress) Size() big.Int {
   ret := big.NewInt(1)
-	ret.Lsh(ret, uint(self.prefix.Host_prefix()))
+	ret.Lsh(ret, uint(self.Prefix.Host_prefix()))
   return *ret
 }
 
@@ -618,10 +696,10 @@ func (self *IPAddress) Is_same_kind(oth *IPAddress) bool {
 ///
 
 func (self *IPAddress) Includes(oth *IPAddress) bool {
-  to_n := To_network(&oth.Host_address, self.prefix.Host_prefix())
+  to_n := To_network(&oth.Host_address, self.Prefix.Host_prefix())
   h_a := self.Network().Host_address
 	ret := self.Is_same_kind(oth) &&
-		self.prefix.Num <= oth.prefix.Num &&
+		self.Prefix.Num <= oth.Prefix.Num &&
 		h_a.Cmp(&to_n) == 0
 	// println!("includes:{}=={}=>{}", self.to_string(), oth.to_string(), ret);
 	return ret
@@ -694,37 +772,22 @@ func (self *IPAddress) Is_private() bool {
 ///  Returns an array of IPv4 objects
 ///
 
-func (self *IPAddress) Sum_first_found(arr *[]IPAddress) []IPAddress {
-	var dup []IPAddress
-	copy(dup[:], *arr)
-	if len(dup) < 2 {
-		return dup
-	}
-	for i := len(dup) - 1; i >= 0; i-- {
-		a := IPAddress.Summarize([]IPAddress{dup[i].clone(), dup[i+1].clone()})
-		// println!("dup:{}:{}:{}", dup.len(), i, a.len());
-		if len(a) == 1 {
-			dup[i] = a[0].clone()
-			remove(dup, i+1)
-			break
-		}
-	}
-	return dup
-}
 
-func (self *IPAddress) split(subnets uint) (*[]IPAddress, *string) {
+func (self *IPAddress) split(subnets uint) ResultIPAddresses {
 	if subnets == 0 || (1<<self.Prefix.Host_prefix()) <= subnets {
-		return fmt.Sprintf("Value %s out of range", subnets)
+		out := fmt.Sprintf("Value %s out of range", subnets)
+		return &Errors{&out}
 	}
-	networks, err := self.Subnet(self.Newprefix(subnets).num)
-	if err {
-		return nil, err
+  prefix, _ := self.Newprefix(subnets)
+	networks := self.Subnet(prefix.Num)
+	if networks.IsErr() {
+		return networks
 	}
-	net := networks
-	for len(net) != subnets {
-		net = self.Sum_first_found(net)
+	for uint(len(*networks.Unwrap())) != subnets {
+    tmp := Sum_first_found(networks.Unwrap())
+		networks = &Oks{&tmp}
 	}
-	return net, nil
+	return networks
 }
 
 ///  Returns a new IPv4 object from the supernetting
@@ -751,17 +814,21 @@ func (self *IPAddress) split(subnets uint) (*[]IPAddress, *string) {
 ///  If +new_prefix+ is less than 1, returns 0.0.0.0/0
 ///
 
-func (self *IPAddress) Supernet(new_prefix uint8) (*IPAddress, *string) {
+func (self *IPAddress) Supernet(new_prefix uint8) ResultIPAddress {
 	if new_prefix >= self.Prefix.Num {
-		return nil, fmt.Sprintf("New prefix must be smaller than existing prefix: %d >= %d",
-			new_prefix,
-			self.Prefix.Num)
+    ret := fmt.Sprintf("New prefix must be smaller than existing prefix: %d >= %d",
+			new_prefix, self.Prefix.Num)
+		return &Error{&ret}
 	}
 	// let mut new_ip = self.host_address.clone();
-	// for _ in new_prefix..self.prefix.num {
+	// for _ in new_prefix..self.Prefix.num {
 	//     new_ip = new_ip << 1;
 	// }
-	return self.From(self.Host_address, self.Prefix.From(new_prefix)).Network()
+  tmp := self.Host_address
+  tmp3:= self.Prefix.From(new_prefix).Unwrap();
+  tmp2:= self.From(&tmp, tmp3)
+  tmp4:= tmp2.Network()
+	return &Ok{&tmp4}
 }
 
 ///  This method implements the subnetting function
@@ -786,23 +853,25 @@ func (self *IPAddress) Supernet(new_prefix uint8) (*IPAddress, *string) {
 ///  a power of two.
 ///
 
-func (self *IPAddress) Subnet(subprefix uint8) (*[]IPAddress, string) {
-	if subprefix < self.prefix.num || self.ip_bits.bits < subprefix {
-		return nil, fmt.Sprintf("New prefix must be between prefix%d %d and %d",
-			self.Prefix.Num,
-			subprefix,
-			self.Ip_bits.Bits)
+func (self *IPAddress) Subnet(subprefix uint8) ResultIPAddresses  {
+	if subprefix < self.Prefix.Num || self.Ip_bits.Bits < subprefix {
+    tmp := fmt.Sprintf("New prefix must be between prefix%d %d and %d",
+      self.Prefix.Num,
+      subprefix,
+      self.Ip_bits.Bits)
+    return &Errors{ &tmp }
 	}
 	var ret []IPAddress
 	net := self.Network()
-	net.prefix = net.Prefix.From(subprefix)
+	net.Prefix = *net.Prefix.From(subprefix).Unwrap()
 	for i := 0; i < (1 << (subprefix - self.Prefix.Num)); i++ {
-		ret = append(ret, net.clone())
-		net = net.From(net.Host_address, net.Prefix)
+		ret = append(ret, net.Clone())
+    pre := net.Prefix
+		net = net.From(&net.Host_address, &pre)
 		size := net.Size()
-		net.Host_address = net.Host_address + size
+		net.Host_address.Add(&net.Host_address, &size)
 	}
-	return ret, nil
+	return &Oks{&ret}
 }
 
 ///  Return the ip address in a format compatible
@@ -817,18 +886,332 @@ func (self *IPAddress) Subnet(subprefix uint8) (*[]IPAddress, string) {
 ///
 
 func (self *IPAddress) to_ipv6() IPAddress {
-	return (self.vt_to_ipv6)(self)
+	return (self.Vt_to_ipv6)(self)
 }
 
 //  private methods
 //
 
 func (self *IPAddress) Newprefix(num uint) (*prefix.Prefix, *string) {
-	for i := num; i < self.Ip_bits.Bits; i++ {
-		a := float(uint(math.log2(float64(i))))
-		if a == Math.log2(float(i)) {
-			return self.Prefix.Add(uint(a))
+	for i := uint8(num); i < self.Ip_bits.Bits; i++ {
+		a := float64(uint(math.Log2(float64(i))))
+		if a == math.Log2(float64(i)) {
+			return self.Prefix.Add(uint8(a)).Unwrap(), nil
 		}
 	}
-	return nil, fmt.Sprintf("newprefix not found %d:%d", num, self.Ip_bits.Bits)
+  ret := fmt.Sprintf("newprefix not found %d:%d", num, self.Ip_bits.Bits)
+	return nil, &ret
+}
+
+
+
+
+type ipaddressSorter struct {
+	ipaddress []IPAddress
+	by        func(ip1, ip2 *IPAddress) bool // Closure used in the Less method.
+}
+func (s *ipaddressSorter) Len() int {
+	return len(s.ipaddress)
+}
+
+// Swap is part of sort.Interface.
+func (s *ipaddressSorter) Swap(i, j int) {
+	s.ipaddress[i], s.ipaddress[j] = s.ipaddress[j], s.ipaddress[i]
+}
+
+// Less is part of sort.Interface. It is implemented by calling the "by" closure in the sorter.
+func (s *ipaddressSorter) Less(i, j int) bool {
+	return s.ipaddress[i].Cmp(&s.ipaddress[j]) < 0
+}
+
+
+
+func sorting(ips []IPAddress) {
+	s := &ipaddressSorter{
+		ipaddress: ips,
+		by: func(ip1, ip2 *IPAddress) bool {
+			return ip1.Cmp(ip2) < 0
+		}}
+	sort.Sort(s)
+}
+
+func remove(stack []IPAddress, idx int) []IPAddress {
+	var p []IPAddress
+	for i, v := range stack {
+		if i != idx {
+			p = append(p, v)
+		}
+	}
+	return p
+}
+
+/// private helper for summarize
+/// assumes that networks is output from reduce_networks
+/// means it should be sorted lowers first and uniq
+///
+
+func pos_to_idx(pos int, len int) int {
+	ilen := len
+	// let ret = pos % ilen;
+	rem := ((pos % ilen) + ilen) % ilen
+	// println!("pos_to_idx:{}:{}=>{}:{}", pos, len, ret, rem);
+	return rem
+}
+
+
+func Aggregate(networks *[]IPAddress) []IPAddress {
+	if len(*networks) == 0 {
+		return []IPAddress{}
+	}
+	if len(*networks) == 1 {
+		return []IPAddress{(*networks)[0].Network()}
+	}
+	var stack []IPAddress
+	for _, i := range *networks {
+		stack = append(stack, i.Network())
+	}
+	sorting(stack)
+	// for i in 0..networks.len() {
+	//     println!("{}==={}", &networks[i].to_string_uncompressed(),
+	//         &stack[i].to_string_uncompressed());
+	// }
+	pos := 0
+	for true {
+		if pos < 0 {
+			pos = 0
+		}
+		stack_len := len(stack) // borrow checker
+		// println!("loop:{}:{}", pos, stack_len);
+		// if stack_len == 1 {
+		//     println!("exit 1");
+		//     break;
+		// }
+		if pos >= stack_len {
+			// println!("exit first:{}:{}", stack_len, pos);
+			break
+		}
+		first := pos_to_idx(pos, stack_len)
+		pos = pos + 1
+		if pos >= stack_len {
+			// println!("exit second:{}:{}", stack_len, pos);
+			break
+		}
+		second := pos_to_idx(pos, stack_len)
+		pos = pos + 1
+		//let mut firstUnwrap = first.unwrap();
+		if stack[first].Includes(&stack[second]) {
+			pos = pos - 2
+			// println!("remove:1:{}:{}:{}=>{}", first, second, stack_len, pos + 1);
+			remove(stack, pos_to_idx(pos+1, stack_len))
+		} else {
+			tmp := stack[first].Prefix.Sub(1)
+			stack[first].Prefix = *tmp.Unwrap()
+			// println!("complex:{}:{}:{}:{}:P1:{}:P2:{}", pos, stack_len,
+			// first, second,
+			// stack[first].to_string(), stack[second].to_string());
+			if (stack[first].Prefix.Num+1) == stack[second].Prefix.Num &&
+				stack[first].Includes(&stack[second]) {
+				pos = pos - 2
+				idx := pos_to_idx(pos, stack_len)
+				stack[idx] = stack[first].Clone() // kaputt
+				remove(stack, pos_to_idx(pos+1, stack_len))
+				// println!("remove-2:{}:{}", pos + 1, stack_len);
+				pos = pos - 1 // backtrack
+			} else {
+        tmp := stack[first].Prefix.Add(1)
+				stack[first].Prefix = *tmp.Unwrap() //reset prefix
+				// println!("easy:{}:{}=>{}", pos, stack_len, stack[first].to_string());
+				pos = pos - 1 // do it with second as first
+			}
+		}
+	}
+	// println!("agg={}:{}", pos, stack.len());
+	var ret []IPAddress
+	for i := 0; i <= len(stack); i++ {
+		ret = append(ret, stack[i].Network())
+	}
+	return ret
+}
+
+/// Summarization (or aggregation) is the process when two or more
+/// networks are taken together to check if a supernet, including all
+/// and only these networks, exists. If it exists then this supernet
+/// is called the summarized (or aggregated) network.
+///
+/// It is very important to understand that summarization can only
+/// occur if there are no holes in the aggregated network, or, in other
+/// words, if the given networks fill completely the address space
+/// of the supernet. So the two rules are:
+///
+/// 1) The aggregate network must contain +all+ the IP addresses of the
+///    original networks;
+/// 2) The aggregate network must contain +only+ the IP addresses of the
+///    original networks;
+///
+/// A few examples will help clarify the above. Let's consider for
+/// instance the following two networks:
+///
+///   ip1 = IPAddress("172.16.10.0/24")
+///   ip2 = IPAddress("172.16.11.0/24")
+///
+/// These two networks can be expressed using only one IP address
+/// network if we change the prefix. Let Ruby do the work:
+///
+///   IPAddress::IPv4::summarize(ip1,ip2).to_s
+///     ///  "172.16.10.0/23"
+///
+/// We note how the network "172.16.10.0/23" includes all the addresses
+/// specified in the above networks, and (more important) includes
+/// ONLY those addresses.
+///
+/// If we summarized +ip1+ and +ip2+ with the following network:
+///
+///   "172.16.0.0/16"
+///
+/// we would have satisfied rule /// 1 above, but not rule /// 2. So "172.16.0.0/16"
+/// is not an aggregate network for +ip1+ and +ip2+.
+///
+/// If it's not possible to compute a single aggregated network for all the
+/// original networks, the method returns an array with all the aggregate
+/// networks found. For example, the following four networks can be
+/// aggregated in a single /22:
+///
+///   ip1 = IPAddress("10.0.0.1/24")
+///   ip2 = IPAddress("10.0.1.1/24")
+///   ip3 = IPAddress("10.0.2.1/24")
+///   ip4 = IPAddress("10.0.3.1/24")
+///
+///   IPAddress::IPv4::summarize(ip1,ip2,ip3,ip4).to_string
+///     ///  "10.0.0.0/22",
+///
+/// But the following networks can't be summarized in a single network:
+///
+///   ip1 = IPAddress("10.0.1.1/24")
+///   ip2 = IPAddress("10.0.2.1/24")
+///   ip3 = IPAddress("10.0.3.1/24")
+///   ip4 = IPAddress("10.0.4.1/24")
+///
+///   IPAddress::IPv4::summarize(ip1,ip2,ip3,ip4).map{|i| i.to_string}
+///     ///  ["10.0.1.0/24","10.0.2.0/23","10.0.4.0/24"]
+///
+///
+///  Summarization (or aggregation) is the process when two or more
+///  networks are taken together to check if a supernet, including all
+///  and only these networks, exists. If it exists then this supernet
+///  is called the summarized (or aggregated) network.
+///
+///  It is very important to understand that summarization can only
+///  occur if there are no holes in the aggregated network, or, in other
+///  words, if the given networks fill completely the address space
+///  of the supernet. So the two rules are:
+///
+///  1) The aggregate network must contain +all+ the IP addresses of the
+///     original networks;
+///  2) The aggregate network must contain +only+ the IP addresses of the
+///     original networks;
+///
+///  A few examples will help clarify the above. Let's consider for
+///  instance the following two networks:
+///
+///    ip1 = IPAddress("2000:0::4/32")
+///    ip2 = IPAddress("2000:1::6/32")
+///
+///  These two networks can be expressed using only one IP address
+///  network if we change the prefix. Let Ruby do the work:
+///
+///    IPAddress::IPv6::summarize(ip1,ip2).to_s
+///      ///  "2000:0::/31"
+///
+///  We note how the network "2000:0::/31" includes all the addresses
+///  specified in the above networks, and (more important) includes
+///  ONLY those addresses.
+///
+///  If we summarized +ip1+ and +ip2+ with the following network:
+///
+///    "2000::/16"
+///
+///  we would have satisfied rule /// 1 above, but not rule /// 2. So "2000::/16"
+///  is not an aggregate network for +ip1+ and +ip2+.
+///
+///  If it's not possible to compute a single aggregated network for all the
+///  original networks, the method returns an array with all the aggregate
+///  networks found. For example, the following four networks can be
+///  aggregated in a single /22:
+///
+///    ip1 = IPAddress("2000:0::/32")
+///    ip2 = IPAddress("2000:1::/32")
+///    ip3 = IPAddress("2000:2::/32")
+///    ip4 = IPAddress("2000:3::/32")
+///
+///    IPAddress::IPv6::summarize(ip1,ip2,ip3,ip4).to_string
+///      ///  ""2000:3::/30",
+///
+///  But the following networks can't be summarized in a single network:
+///
+///    ip1 = IPAddress("2000:1::/32")
+///    ip2 = IPAddress("2000:2::/32")
+///    ip3 = IPAddress("2000:3::/32")
+///    ip4 = IPAddress("2000:4::/32")
+///
+///    IPAddress::IPv4::summarize(ip1,ip2,ip3,ip4).map{|i| i.to_string}
+///      ///  ["2000:1::/32","2000:2::/31","2000:4::/32"]
+///
+
+func Sum_first_found(arr *[]IPAddress) []IPAddress {
+	var dup []IPAddress
+	copy(dup[:], *arr)
+	if len(dup) < 2 {
+		return dup
+	}
+	for i := len(dup) - 1; i >= 0; i-- {
+		a := Summarize(&[]IPAddress{dup[i], dup[i+1]})
+		// println!("dup:{}:{}:{}", dup.len(), i, a.len());
+		if len(a) == 1 {
+			dup[i] = (a)[0].Clone()
+			remove(dup, i+1)
+			break
+		}
+	}
+	return dup
+}
+
+
+func Summarize(networks *[]IPAddress) []IPAddress {
+	return Aggregate(networks)
+}
+func Summarize_str(netstr []string) ResultIPAddresses {
+	vec := To_ipaddress_vec(netstr)
+	if vec.IsErr() {
+		return vec
+	}
+  tmp := Aggregate(vec.Unwrap())
+	return &Oks{&tmp}
+}
+
+func To_s_vec(vec *[]IPAddress) []string {
+	var ret []string
+	for _,i := range *vec {
+		ret = append(ret, i.To_s())
+	}
+	return ret
+}
+
+func To_string_vec(vec []IPAddress) []string {
+	var ret []string
+	for _,i := range vec {
+		ret = append(ret, i.To_string())
+	}
+	return ret
+}
+
+func To_ipaddress_vec(vec []string) ResultIPAddresses {
+	var ret []IPAddress
+	// for ipstr := range vec {
+	// 	ipa, err := nil, "Hello" //IPAddress.Parse(ipstr)
+	// 	if err != nil {
+	// 		return &Errors{&err}
+	// 	}
+	// 	ret = append(ret, ipa)
+	// }
+	return &Oks{&ret}
 }
