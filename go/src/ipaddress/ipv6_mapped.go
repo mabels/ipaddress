@@ -1,5 +1,12 @@
 package ipaddress
 
+import "fmt"
+import "strings"
+import "bytes"
+import "math/big"
+
+import "../ip_bits"
+
 // import "ipaddress"
 
 //  Ac
@@ -78,12 +85,13 @@ package ipaddress
 ///    ip6.to_string
 ///      ///  "::ffff:13.1.68.3"
 ///
-func New(str string) (*IPAddress, *string) {
-    ip, o_netmask := IPAddress.split_at_slash(str);
-    split_colon := ip.split(":");
+func Ipv6MappedNew(str *string) ResultIPAddress {
+    ip, o_netmask := Split_at_slash(str);
+    split_colon := strings.Split(ip, ":");
     if len(split_colon) <= 1 {
         // println!("---1");
-        return null, fmt.Sprintf("not mapped format-1: %s", string);
+        tmp := fmt.Sprintf("not mapped format-1: %s", str);
+        return &Error{&tmp}
     }
     // if split_colon.get(0).unwrap().len() > 0 {
     //     // println!("---1a");
@@ -91,58 +99,60 @@ func New(str string) (*IPAddress, *string) {
     // }
     // let mapped: Option<IPAddress> = None;
     netmask := "";
-    if o_netmask != null {
+    if o_netmask != nil {
         netmask = fmt.Sprintf("/%s", o_netmask);
     }
     ipv4_str := split_colon[len(split_colon)-1]
-    if IPAddress::is_valid_ipv4(ipv4_str) {
-        ipv4 := IPAddress::parse(fmt.Sprintf("%s%s", ipv4_str, netmask));
-        if ipv4 == nil {
+    if Is_valid_ipv4(&ipv4_str) {
+        ipv4_str = fmt.Sprintf("%s%s", ipv4_str, netmask)
+        ipv4 := Parse(&ipv4_str);
+        if ipv4.IsErr()  {
             fmt.Sprintf("---2");
             return ipv4;
         }
         //mapped = Some(ipv4.unwrap());
-        addr := ipv4;
-        ipv6_bits := ip_bits::v6();
-        part_mod := ipv6_bits.part_mod;
-        up_addr := addr.host_address;
-        down_addr := addr.host_address;
+        addr := ipv4.Unwrap();
+        ipv6_bits := ip_bits.V6();
+        part_mod := ipv6_bits.Part_mod;
+        up_addr := addr.Host_address;
+        down_addr := addr.Host_address;
 
-        let mut rebuild_ipv6 = String::new();
+        var rebuild_ipv6 bytes.Buffer
         colon := "";
-        for i in 0..split_colon.len()-1 {
-            rebuild_ipv6.push_str(colon);
-            rebuild_ipv6.push_str(split_colon[i]);
+        for i := 0 ; i < len(split_colon)-1; i++ {
+            rebuild_ipv6.WriteString(colon);
+            rebuild_ipv6.WriteString(split_colon[i]);
             colon = ":";
         }
-        rebuild_ipv6.push_str(colon);
-        rebuild_ipv4 := fmt.Sprintf("{:x}:{:x}/{}",
-            up_addr.shr(::ip_bits::v6().part_bits).mod_floor(&part_mod).to_u16().unwrap(),
-            down_addr.mod_floor(&part_mod).to_u16().unwrap(),
-            ipv6_bits.bits-addr.prefix.host_prefix());
-        rebuild_ipv6.push_str(&rebuild_ipv4);
-        let r_ipv6 = IPAddress::parse(rebuild_ipv6.clone());
-        if r_ipv6.is_err() {
+        rebuild_ipv6.WriteString(colon);
+        shl := up_addr.Lsh(&up_addr, uint(ip_bits.V6().Part_bits))
+        rebuild_ipv4 := fmt.Sprintf("%x:%x/%d",
+            shl.Rem(shl, &part_mod).Uint64(),
+            down_addr.Rem(&down_addr, &part_mod).Uint64(),
+            ipv6_bits.Bits-addr.Prefix.Host_prefix());
+        rebuild_ipv6.WriteString(rebuild_ipv4);
+        rebuild_ipv6_str := rebuild_ipv6.String()
+        r_ipv6 := Parse(&rebuild_ipv6_str);
+        if r_ipv6.IsErr() {
             // println!("---3|{}", &rebuild_ipv6);
-            return r_ipv6, nil;
+            return r_ipv6
         }
-        if r_ipv6.clone().unwrap().is_mapped() {
-            return r_ipv6, nil;
+        if r_ipv6.Unwrap().Is_mapped() {
+            return r_ipv6
         }
-        ipv6 := r_ipv6.unwrap();
-        p96bit := ipv6.host_address.clone().shr(32);
-        if  p96bit != BigUint::zero() {
+        ipv6 := r_ipv6.Unwrap();
+        p96bit := big.NewInt(0).Rsh(&ipv6.Host_address, 32);
+        if p96bit != big.NewInt(0) {
             // println!("---4|%s", &rebuild_ipv6);
-            return nil, fmt.Sprintf("is not a mapped address:%s", rebuild_ipv6);
+            tmp := fmt.Sprintf("is not a mapped address:%s", rebuild_ipv6);
+            return &Error{&tmp}
         }
         {
-            r_ipv6 := IPAddress::parse(format!("::ffff:%s", rebuild_ipv4));
-            if r_ipv6 == nil {
-                // fmt.Sprintf("---3|%s", rebuild_ipv6);
-                return r_ipv6, nil;
-            }
-            return r_ipv6, nil;
+            ipv6_ipv4_str := fmt.Sprintf("::ffff:%s", rebuild_ipv4)
+            r_ipv6 := Parse(&ipv6_ipv4_str);
+            return r_ipv6
         }
     }
-    return nil, fmt.Sprintf("unknown mapped format:%s", str);
+    tmp := fmt.Sprintf("unknown mapped format:%s", str)
+    return &Error{&tmp}
 }

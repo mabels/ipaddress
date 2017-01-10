@@ -1,4 +1,4 @@
-package ipaddress
+package loopback
 
 // import "ipaddress"
 

@@ -2,10 +2,13 @@ package ipaddress
 // import "ipaddress"
 import "math/big"
 import "fmt"
+import "strconv"
 
-import "../ipaddress_impl"
-// import "../prefix"
+// import "../ipaddress/data"
+import "../prefix/prefix128"
 // import "./ipv4"
+
+import "../ip_bits"
 
 ///  =Name
 ///
@@ -63,58 +66,62 @@ import "../ipaddress_impl"
 ///  portion.
 ///
 ///
-func From_str(str string, radix int, prefix uint) (*ipaddress_impl.IPAddress, *string) {
+func From_str(str string, radix int, prefix uint8) ResultIPAddress {
     var num big.Int
     var err bool
     _, err = num.SetString(str, radix);
     if err {
-        return nil, fmt.Sprintf("unparsable %s", str);
+      tmp := fmt.Sprintf("unparsable %s", str)
+      return &Error{&tmp}
     }
-    return From_int(num, prefix)
+    return From_int(&num, prefix)
 }
 
-func enhance_if_mapped(ip *ipaddress_impl.IPAddress) (*ipaddress_impl.IPAddress, *string) {
+func enhance_if_mapped(ip *IPAddress) ResultIPAddress {
     // println!("real mapped {:x} {:x}", &ip.host_address, ip.host_address.clone().shr(32));
-    if ip.is_mapped() {
-        return ip, nil
+    if ip.Is_mapped() {
+        return &Ok{ip}
     }
-    ipv6_top_96bit := bigInt.Rsh(ip.host_address, 32)
-    if ipv6_top_96bit == bigInt.new(0xffff) {
+    ipv6_top_96bit := big.NewInt(0).Rsh(&ip.Host_address, 32)
+    one := big.NewInt(1)
+    if ipv6_top_96bit.Cmp(big.NewInt(0xffff))==0 {
         // println!("enhance_if_mapped-1:{}", );
-        num := bigInt.Rem(ip.host_address, bigInt.Lsh(bigInt.new(1), 32));
-        if num == big.NewInt(0) {
-            return ip, nil;
+        num := big.NewInt(0).Rem(&ip.Host_address,
+                big.NewInt(0).Lsh(one, 32));
+        if num.Cmp(big.NewInt(0)) == 0 {
+            return &Ok{ip}
         }
         //println!("ip:{},{:x}", ip.to_string(), num);
         ipv4_bits := ip_bits.V4();
-        if ipv4_bits.bits < ip.prefix.host_prefix() {
+        if ipv4_bits.Bits < ip.Prefix.Host_prefix() {
             // println!("enhance_if_mapped-2:{}:{}", ip.to_string(), ip.prefix.host_prefix());
-            return nil, fmt.Sprintf("enhance_if_mapped prefix not ipv4 compatible %d", ip.prefix.host_prefix());
+            tmp := fmt.Sprintf("enhance_if_mapped prefix not ipv4 compatible %d", ip.Prefix.Host_prefix())
+            return &Error{&tmp}
         }
-        mapped, err := ipv4.From_u32(num.to_u32(), ipv4_bits.bits-ip.prefix.host_prefix());
-        if err {
+        mapped := From_u32(uint32(num.Uint64()), ipv4_bits.Bits-ip.Prefix.Host_prefix());
+        if mapped.IsErr() {
             // fm!("enhance_if_mapped-3");
             return mapped;
         }
         // println!("real mapped!!!!!={}", mapped.clone().unwrap().to_string());
-        ip.mapped = mapped
+        ip.Mapped = mapped.Unwrap()
     }
-    return ip, nil
+    return &Ok{ip}
 }
 
-func From_int(adr big.Int, prefix uint) (*ipaddress_impl.IPAddress, *string) {
-    prefix, err := prefix128.New(prefix)
-    if err {
-        return nil, err
+func From_int(adr *big.Int, _prefix uint8) ResultIPAddress {
+    prefix := prefix128.New(_prefix)
+    if prefix.IsErr() {
+        return &Error{prefix.UnwrapErr()}
     }
-    return enhance_if_mapped(ipaddress_impl.IPAddress {
-        ip_bits.v6(),
-        adr.clone(),
-        prefix,
+    return enhance_if_mapped(&IPAddress {
+        ip_bits.V6(),
+        *adr,
+        *prefix.Unwrap(),
         nil,
         ipv6_is_private,
         ipv6_is_loopback,
-        to_ipv6,
+        ipv6_to_ipv6,
     });
 }
 
@@ -134,48 +141,54 @@ func From_int(adr big.Int, prefix uint) (*ipaddress_impl.IPAddress, *string) {
 ///
 ///    ip6 = IPAddress "2001:db8::8:800:200c:417a/64"
 ///
-func New(str string) (*ipaddress_impl.IPAddress, *string) {
-    ip, o_netmask := ipaddress.split_at_slash(str);
-    if ipaddress_impl.IPAddress.Is_valid_ipv6(ip) {
-        o_num, err := ipaddress_impl.IPAddress.Split_to_num(ip);
-        if err {
-            return nil, err
+func Ipv6New(str *string) ResultIPAddress {
+    ip, o_netmask := Split_at_slash(str);
+    if Is_valid_ipv6(&ip) {
+        o_num, err := split_to_num(&ip);
+        if err != nil {
+            return &Error{err}
         }
-        netmask := 128;
-        if o_netmask {
+        netmask := uint8(128);
+        if o_netmask != nil {
             network := o_netmask
-            num_mask, err = strconv.parseInt(network, 8, 10);
-            if err {
-                return nil, fmt.Sprintf("can not parse:%s", network)
+            num_mask, err := strconv.ParseInt(*network, 8, 10);
+            if err != nil {
+                tmp := fmt.Sprintf("can not parse:%s", network)
+                return &Error{&tmp}
             }
-            netmask, err = strconv.parseInt(network, 8, 10);
+            netmask = uint8(num_mask)
         }
-        prefix, err := prefix128.New(netmask);
-        if err {
-            return nil, err
+        prefix := prefix128.New(netmask);
+        if prefix.IsErr() {
+            return &Error{prefix.UnwrapErr()}
         }
-        return enhance_if_mapped(ipaddress_impl.IPAddress {
+        return enhance_if_mapped(&IPAddress {
             ip_bits.V6(),
-            o_num,
-            prefix,
-            nul,
+            *o_num,
+            *prefix.Unwrap(),
+            nil,
             ipv6_is_private,
             ipv6_is_loopback,
-            to_ipv6 });
+            ipv6_to_ipv6 });
     } else {
-        return nil, fmt.Sprintf("Invalid IP %s", str);
+        tmp := fmt.Sprintf("Invalid IP %s", str)
+        return &Error{&tmp}
     }
 }
 
-func to_ipv6(ia *ipaddress_impl.IPAddress) ipaddress_impl.IPAddress {
-    return ia.clone();
+func ipv6_to_ipv6(ia *IPAddress) IPAddress {
+    return ia.Clone();
 }
 
-func ipv6_is_loopback(my *ipaddress_impl.IPAddress) bool {
-    return my.host_address == bigInt.new(1);
+func ipv6_is_loopback(my *IPAddress) bool {
+    return my.Host_address.Cmp(big.NewInt(1)) == 0
 }
 
-
-func ipv6_is_private(my *ipaddress_impl.IPAddress) bool {
-    return IPAddress.parse("fd00::/8").Includes(my);
+var ipv6_private_str = "fd00::/8"
+var ipv6_private *IPAddress
+func ipv6_is_private(my *IPAddress) bool {
+  if ipv6_private == nil {
+    ipv6_private = Parse(&ipv6_private_str).Unwrap()
+  }
+    return ipv6_private.Includes(my);
 }

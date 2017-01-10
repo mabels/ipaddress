@@ -1,4 +1,4 @@
-package ipaddress_impl
+package ipaddress
 
 import "strings"
 
@@ -10,9 +10,10 @@ import "sort"
 // import "regexp"
 import "fmt"
 
-import "../ip_bits"
+// import "../ip_bits"
 import "../ip_version"
 import "../prefix"
+// import "./data"
 import "bytes"
 
 // import "../ip_version"
@@ -20,32 +21,6 @@ import "bytes"
 // import "../ipv4"
 // import "../ipv6"
 
-type ResultIPAddress interface {
-  IsOk() bool
-  IsErr() bool
-  Unwrap() *IPAddress
-  UnwrapErr() *string
-}
-
-type ResultIPAddresses interface {
-  IsOk() bool
-  IsErr() bool
-  Unwrap() *[]IPAddress
-  UnwrapErr() *string
-}
-
-type IPAddress struct {
-	Ip_bits                    *ip_bits.IpBits
-	Host_address               big.Int
-	Prefix                     prefix.Prefix
-	Mapped                     *IPAddress
-	Vt_is_private              func(*IPAddress) bool
-	Vt_is_loopback             func(*IPAddress) bool
-	Vt_to_ipv6                 func(*IPAddress) IPAddress
-	Vt_parse_netmask           func(*string) (*uint8, *string)
-	Vt_aggregate               func(*[]IPAddress) []IPAddress
-  // Vt_sum_first_found
-}
 
 type Error struct {
   err *string
@@ -103,9 +78,7 @@ func (self *IPAddress) Clone() IPAddress {
     mapped,
     self.Vt_is_private,
     self.Vt_is_loopback,
-    self.Vt_to_ipv6,
-    self.Vt_parse_netmask,
-    self.Vt_aggregate}
+    self.Vt_to_ipv6}
 }
 
 func (self *IPAddress) String() string {
@@ -154,8 +127,8 @@ func (self *IPAddress) Equal(other IPAddress) bool {
 ///   //=> IPAddress::IPv6::Mapped
 ///
 
-func (self *IPAddress) Split_at_slash(str string) (string, *string) {
-	trimmed := strings.TrimSpace(str)
+func Split_at_slash(str *string) (string, *string) {
+	trimmed := strings.TrimSpace(*str)
 	slash := strings.Split(trimmed, "/")
 	addr := ""
 	if len(slash) >= 1 {
@@ -177,9 +150,7 @@ func (self *IPAddress) From(addr *big.Int, prefix *prefix.Prefix) IPAddress {
 		self.Mapped,
 		self.Vt_is_private,
 		self.Vt_is_loopback,
-		self.Vt_to_ipv6,
-		self.Vt_parse_netmask,
-		self.Vt_aggregate}
+		self.Vt_to_ipv6}
 }
 
 /// True if the object is an IPv4 address
@@ -369,7 +340,7 @@ func (self *IPAddress) Change_prefix(num uint8) ResultIPAddress {
 }
 
 func (self *IPAddress) Change_netmask(my_str *string) ResultIPAddress {
-	nm, err := self.Vt_parse_netmask(my_str)
+	nm, err := Parse_netmask_to_prefix(my_str)
 	if err != nil {
 		return &Error{err}
 	}
@@ -518,7 +489,7 @@ func (self *IPAddress) sub(other *IPAddress) big.Int {
 }
 
 func (self *IPAddress) Add(other *IPAddress) []IPAddress {
-	return self.Vt_aggregate(&[]IPAddress{*self, *other})
+	return Aggregate(&[]IPAddress{*self, *other})
 }
 
 ///  Returns a new IPv4 object with the
@@ -935,7 +906,7 @@ func sorting(ips []IPAddress) {
 	sort.Sort(s)
 }
 
-func remove(stack []IPAddress, idx int) []IPAddress {
+func remove_ipaddress(stack []IPAddress, idx int) []IPAddress {
 	var p []IPAddress
 	for i, v := range stack {
 		if i != idx {
@@ -1002,7 +973,7 @@ func Aggregate(networks *[]IPAddress) []IPAddress {
 		if stack[first].Includes(&stack[second]) {
 			pos = pos - 2
 			// println!("remove:1:{}:{}:{}=>{}", first, second, stack_len, pos + 1);
-			remove(stack, pos_to_idx(pos+1, stack_len))
+			remove_ipaddress(stack, pos_to_idx(pos+1, stack_len))
 		} else {
 			tmp := stack[first].Prefix.Sub(1)
 			stack[first].Prefix = *tmp.Unwrap()
@@ -1014,7 +985,7 @@ func Aggregate(networks *[]IPAddress) []IPAddress {
 				pos = pos - 2
 				idx := pos_to_idx(pos, stack_len)
 				stack[idx] = stack[first].Clone() // kaputt
-				remove(stack, pos_to_idx(pos+1, stack_len))
+				remove_ipaddress(stack, pos_to_idx(pos+1, stack_len))
 				// println!("remove-2:{}:{}", pos + 1, stack_len);
 				pos = pos - 1 // backtrack
 			} else {
@@ -1168,7 +1139,7 @@ func Sum_first_found(arr *[]IPAddress) []IPAddress {
 		// println!("dup:{}:{}:{}", dup.len(), i, a.len());
 		if len(a) == 1 {
 			dup[i] = (a)[0].Clone()
-			remove(dup, i+1)
+			remove_ipaddress(dup, i+1)
 			break
 		}
 	}

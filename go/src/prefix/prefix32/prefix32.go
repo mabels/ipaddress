@@ -8,7 +8,7 @@ import "fmt"
 
 
 func From(my *prefix.Prefix, num uint8) prefix.ResultPrefix {
-    return New(uint(num));
+    return New(num);
 }
 ///  Gives the prefix in IPv4 dotted decimal format,
 ///  i.e. the canonical netmask we're all used to
@@ -18,7 +18,7 @@ func From(my *prefix.Prefix, num uint8) prefix.ResultPrefix {
 ///    prefix.to_ip
 ///      ///  "255.255.255.0"
 ///
-func New(num uint) prefix.ResultPrefix {
+func New(num uint8) prefix.ResultPrefix {
     if num <= 32 {
         ipBits := ip_bits.V4();
         bits := ipBits.Bits;

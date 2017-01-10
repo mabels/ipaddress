@@ -1,5 +1,5 @@
 
-package ipaddress
+package unspec
 
 // import "ipaddress"
 ///  The address with all zero bits is called the +unspecified+ address
