@@ -293,6 +293,8 @@ describe('Ipv4Test', () => {
     );
     it("test_method_private", () => {
         assert.equal(true,
+            IPAddress.parse("169.254.99.4/24").is_private());
+        assert.equal(true,
             IPAddress.parse("192.168.10.50/24").is_private());
         assert.equal(true,
             IPAddress.parse("192.168.10.50/16").is_private());

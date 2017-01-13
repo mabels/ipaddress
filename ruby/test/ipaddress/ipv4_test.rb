@@ -265,6 +265,7 @@ class IPv4Test < Test::Unit::TestCase
   end
 
   def test_method_private?
+    assert_equal true, IPAddress.parse("169.254.10.50/24").private?
     assert_equal true, IPAddress.parse("192.168.10.50/24").private?
     assert_equal true, IPAddress.parse("192.168.10.50/16").private?
     assert_equal true, IPAddress.parse("172.16.77.40/24").private?

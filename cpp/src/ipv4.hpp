@@ -74,6 +74,7 @@ class Ipv4 {
 
     static bool ipv4_is_private(const IPAddress &my) {
         for (auto ipa : {IPAddress::parse("10.0.0.0/8").unwrap(),
+            IPAddress::parse("169.254.0.0/16").unwrap(),
             IPAddress::parse("172.16.0.0/12").unwrap(),
             IPAddress::parse("192.168.0.0/16").unwrap()}) {
                 if (ipa.includes(my)) {

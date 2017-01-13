@@ -79,6 +79,7 @@ class IPAddress
 
     def self.ipv4_is_private(my)
       return !!([IPAddress.parse("10.0.0.0/8"),
+              IPAddress.parse("169.254.0.0/16"),
               IPAddress.parse("172.16.0.0/12"),
               IPAddress.parse("192.168.0.0/16")]
         .find{|i|  i.includes(my)})

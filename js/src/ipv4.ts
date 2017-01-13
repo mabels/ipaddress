@@ -67,6 +67,7 @@ export class Ipv4 {
 
     public static ipv4_is_private(my: IPAddress): boolean {
         return [IPAddress.parse("10.0.0.0/8"),
+            IPAddress.parse("169.254.0.0/16"),
             IPAddress.parse("172.16.0.0/12"),
             IPAddress.parse("192.168.0.0/16")]
             .find(i => i.includes(my)) != null;

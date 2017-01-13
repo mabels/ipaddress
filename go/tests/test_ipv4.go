@@ -294,6 +294,8 @@ int main() {
     #[test]
     func test_method_private() {
         assert_eq!(true,
+                   IPAddress::parse("169.254.10.50/24").unwrap().is_private());
+        assert_eq!(true,
                    IPAddress::parse("192.168.10.50/24").unwrap().is_private());
         assert_eq!(true,
                    IPAddress::parse("192.168.10.50/16").unwrap().is_private());

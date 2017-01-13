@@ -119,6 +119,7 @@ pub fn new<S: Into<String>>(_str: S) -> Result<IPAddress, String> {
 
 fn ipv4_is_private(my: &IPAddress) -> bool {
     return [IPAddress::parse("10.0.0.0/8").unwrap(),
+     IPAddress::parse("169.254.0.0/16").unwrap(),
      IPAddress::parse("172.16.0.0/12").unwrap(),
      IPAddress::parse("192.168.0.0/16").unwrap()]
      .iter().find(|i| i.includes(my)).is_some();

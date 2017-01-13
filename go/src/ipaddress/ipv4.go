@@ -69,97 +69,100 @@ import "strconv"
 // mod IPv4 {
 
 func From_u32(addr uint32, _prefix uint8) ResultIPAddress {
-    prefix := prefix32.New(_prefix);
-    if prefix.IsErr() {
-        return &Error{prefix.UnwrapErr()}
-    }
-    big_addr := big.NewInt(int64(addr))
-    return &Ok{&IPAddress {
-        ip_bits.V4(),
-        *big_addr,
-        *prefix.Unwrap(),
-        nil,
-        ipv4_is_private,
-        ipv4_is_loopback,
-        ipv4_to_ipv6}}
+	prefix := prefix32.New(_prefix)
+	if prefix.IsErr() {
+		return &Error{prefix.UnwrapErr()}
+	}
+	big_addr := big.NewInt(int64(addr))
+	return &Ok{&IPAddress{
+		ip_bits.V4(),
+		*big_addr,
+		*prefix.Unwrap(),
+		nil,
+		ipv4_is_private,
+		ipv4_is_loopback,
+		ipv4_to_ipv6}}
 }
 
 func Ipv4New(str *string) ResultIPAddress {
-    ip, netmask := Split_at_slash(str)
-    if !Is_valid_ipv4(&ip) {
-        tmp := fmt.Sprintf("Invalid IP %s", str);
-        return &Error{&tmp}
-    }
-    ip_prefix_num := uint8(32);
-    if netmask != nil {
-        //  netmask is defined
-        ipn, err := Parse_netmask_to_prefix(netmask)
-        if err != nil {
-            return &Error{err}
-        }
-        ip_prefix_num = *ipn
-        //if ip_prefix.ip_bits.version
-    }
-    ip_prefix := prefix32.New(ip_prefix_num);
-    if ip_prefix == nil {
-        return &Error{ip_prefix.UnwrapErr()};
-    }
-    split_u32, err := split_to_u32(&ip);
-    if err != nil {
-        return &Error{err}
-    }
-    return &Ok{&IPAddress {
-        ip_bits.V4(),
-        *big.NewInt(int64(*split_u32)),
-        *ip_prefix.Unwrap(),
-        nil,
-        ipv4_is_private,
-        ipv4_is_loopback,
-        ipv4_to_ipv6}}
+	ip, netmask := Split_at_slash(str)
+	if !Is_valid_ipv4(&ip) {
+		tmp := fmt.Sprintf("Invalid IP %s", str)
+		return &Error{&tmp}
+	}
+	ip_prefix_num := uint8(32)
+	if netmask != nil {
+		//  netmask is defined
+		ipn, err := Parse_netmask_to_prefix(netmask)
+		if err != nil {
+			return &Error{err}
+		}
+		ip_prefix_num = *ipn
+		//if ip_prefix.ip_bits.version
+	}
+	ip_prefix := prefix32.New(ip_prefix_num)
+	if ip_prefix == nil {
+		return &Error{ip_prefix.UnwrapErr()}
+	}
+	split_u32, err := split_to_u32(&ip)
+	if err != nil {
+		return &Error{err}
+	}
+	return &Ok{&IPAddress{
+		ip_bits.V4(),
+		*big.NewInt(int64(*split_u32)),
+		*ip_prefix.Unwrap(),
+		nil,
+		ipv4_is_private,
+		ipv4_is_loopback,
+		ipv4_to_ipv6}}
 }
 
 var ipv4_10_8 = "10.0.0.0/8"
+var ipv4_169_254_16 = "169.254.0.0/16"
 var ipv4_172_16_12 = "172.16.0.0/12"
 var ipv4_192_168_16 = "192.168.0.0/16"
 var ipv4_private_networks_val []IPAddress
 
 func ipv4_private_networks() *[]IPAddress {
-  if ipv4_private_networks_val == nil {
-    ipv4_private_networks_val = []IPAddress{
-      *Parse(&ipv4_10_8).Unwrap(),
-      *Parse(&ipv4_172_16_12).Unwrap(),
-      *Parse(&ipv4_192_168_16).Unwrap()};
-  }
-  return &ipv4_private_networks_val
+	if ipv4_private_networks_val == nil {
+		ipv4_private_networks_val = []IPAddress{
+			*Parse(&ipv4_10_8).Unwrap(),
+			*Parse(&ipv4_169_254_16).Unwrap(),
+			*Parse(&ipv4_172_16_12).Unwrap(),
+			*Parse(&ipv4_192_168_16).Unwrap()}
+	}
+	return &ipv4_private_networks_val
 }
 
 func ipv4_is_private(my *IPAddress) bool {
-  for _,ip := range *ipv4_private_networks() {
-    if (ip.Includes(my)) {
-      return true
-    }
-  }
-  return false
+	for _, ip := range *ipv4_private_networks() {
+		if ip.Includes(my) {
+			return true
+		}
+	}
+	return false
 }
 
 var ipv4_loopback_str = "127.0.0.0/8"
 var ipv4_loopback *IPAddress
-func ipv4_is_loopback(my *IPAddress)  bool {
-  if ipv4_loopback == nil {
-    ipv4_loopback = Parse(&ipv4_loopback_str).Unwrap()
-  }
-  return ipv4_loopback.Includes(my);
+
+func ipv4_is_loopback(my *IPAddress) bool {
+	if ipv4_loopback == nil {
+		ipv4_loopback = Parse(&ipv4_loopback_str).Unwrap()
+	}
+	return ipv4_loopback.Includes(my)
 }
 
 func ipv4_to_ipv6(ia *IPAddress) IPAddress {
-        return IPAddress {
-            ip_bits.V6(),
-            ia.Host_address,
-            *prefix128.New(ia.Prefix.Num).Unwrap(),
-            nil,
-            ipv6_is_private,
-            ipv6_is_loopback,
-            ipv6_to_ipv6 }
+	return IPAddress{
+		ip_bits.V6(),
+		ia.Host_address,
+		*prefix128.New(ia.Prefix.Num).Unwrap(),
+		nil,
+		ipv6_is_private,
+		ipv6_is_loopback,
+		ipv6_to_ipv6}
 }
 
 // func is_private(my: &IPAddress) -> bool {
@@ -650,7 +653,6 @@ func ipv4_to_ipv6(ia *IPAddress) IPAddress {
 //      // => true
 //
 
-
 //  Returns the IP address in in-addr.arpa format
 //  for DNS lookups
 //
@@ -801,7 +803,6 @@ func ipv4_to_ipv6(ia *IPAddress) IPAddress {
 //   return ret
 // }
 
-
 //  Checks whether the ip address belongs to a
 //  RFC 791 CLASS A network, no matter
 //  what the subnet mask is.
@@ -814,7 +815,7 @@ func ipv4_to_ipv6(ia *IPAddress) IPAddress {
 //      // => true
 //
 func Is_class_a(my *IPAddress) bool {
-    return my.Is_ipv4() && my.Host_address.Cmp(big.NewInt(0x80000000)) < 0
+	return my.Is_ipv4() && my.Host_address.Cmp(big.NewInt(0x80000000)) < 0
 }
 
 //  Checks whether the ip address belongs to a
@@ -829,9 +830,9 @@ func Is_class_a(my *IPAddress) bool {
 //      // => true
 //
 func Is_class_b(my *IPAddress) bool {
-    return my.Is_ipv4() &&
-        big.NewInt(0x80000000).Cmp(&my.Host_address) <= 0 &&
-        my.Host_address.Cmp(big.NewInt(0xc0000000)) < 0;
+	return my.Is_ipv4() &&
+		big.NewInt(0x80000000).Cmp(&my.Host_address) <= 0 &&
+		my.Host_address.Cmp(big.NewInt(0xc0000000)) < 0
 }
 
 //  Checks whether the ip address belongs to a
@@ -846,9 +847,9 @@ func Is_class_b(my *IPAddress) bool {
 //      // => true
 //
 func Is_class_c(my *IPAddress) bool {
-    return my.Is_ipv4() &&
-        big.NewInt(0xc0000000).Cmp(&my.Host_address) <= 0 &&
-        my.Host_address.Cmp(big.NewInt(0xe0000000)) < 0
+	return my.Is_ipv4() &&
+		big.NewInt(0xc0000000).Cmp(&my.Host_address) <= 0 &&
+		my.Host_address.Cmp(big.NewInt(0xe0000000)) < 0
 }
 
 //  Return the ip address in a format compatible
@@ -1009,23 +1010,23 @@ func Is_class_c(my *IPAddress) bool {
 //  prefix of /24 or 255.255.255.0
 //
 func parse_classful(ip_si *string) ResultIPAddress {
-    if !Is_valid_ipv4(ip_si) {
-        tmp := fmt.Sprintf("Invalid IP %s", ip_si)
-        return &Error{&tmp}
-    }
-    o_ip := Parse(ip_si)
-    if o_ip.IsErr() {
-        return o_ip
-    }
-    ip := o_ip.Unwrap();
-    if Is_class_a(ip) {
-        ip.Prefix = *prefix32.New(8).Unwrap();
-    } else if Is_class_b(ip) {
-        ip.Prefix = *prefix32.New(16).Unwrap();
-    } else if Is_class_c(ip) {
-        ip.Prefix = *prefix32.New(24).Unwrap();
-    }
-    return &Ok{ip};
+	if !Is_valid_ipv4(ip_si) {
+		tmp := fmt.Sprintf("Invalid IP %s", ip_si)
+		return &Error{&tmp}
+	}
+	o_ip := Parse(ip_si)
+	if o_ip.IsErr() {
+		return o_ip
+	}
+	ip := o_ip.Unwrap()
+	if Is_class_a(ip) {
+		ip.Prefix = *prefix32.New(8).Unwrap()
+	} else if Is_class_b(ip) {
+		ip.Prefix = *prefix32.New(16).Unwrap()
+	} else if Is_class_c(ip) {
+		ip.Prefix = *prefix32.New(24).Unwrap()
+	}
+	return &Ok{ip}
 }
 
 //  private methods
@@ -1051,7 +1052,6 @@ func parse_classful(ip_si *string) ResultIPAddress {
 //    return dup.reverse()
 // }
 
-
 func netmask_to_prefix(nm *big.Int, bits uint8) (*uint8, *string) {
 	prefix := uint8(0)
 	addr := nm
@@ -1064,24 +1064,24 @@ func netmask_to_prefix(nm *big.Int, bits uint8) (*uint8, *string) {
 		} else if in_host_part && bit == 1 {
 			in_host_part = false
 		} else if !in_host_part && bit == 0 {
-      err := fmt.Sprintf("this is not a net mask %s", nm)
+			err := fmt.Sprintf("this is not a net mask %s", nm)
 			return nil, &err
 		}
 		addr.Rsh(addr, 1)
 	}
-  prefix = bits - prefix
+	prefix = bits - prefix
 	return &prefix, nil
 }
 
 func Parse_netmask_to_prefix(netmask *string) (*uint8, *string) {
 	is_number, err := strconv.ParseUint(*netmask, 10, 64)
 	if err == nil {
-    ret := uint8(is_number)
+		ret := uint8(is_number)
 		return &ret, nil
 	}
 	my_ip := Parse(netmask)
 	if my_ip.IsErr() {
-    tmp := fmt.Sprintf("illegal netmask %s", netmask)
+		tmp := fmt.Sprintf("illegal netmask %s", netmask)
 		return nil, &tmp
 	}
 	return netmask_to_prefix(&my_ip.Unwrap().Host_address, my_ip.Unwrap().Ip_bits.Bits)
