@@ -19,19 +19,24 @@ var re_MAPPED = regexp.MustCompile(":.+\\.")
 var re_IPV4 = regexp.MustCompile("\\.")
 var re_IPV6 = regexp.MustCompile(":")
 
-func Parse(str *string) ResultIPAddress {
-	if re_MAPPED.MatchString(*str) {
+func Parse(str string) ResultIPAddress {
+	fmt.Printf("p-1\n");
+	if re_MAPPED.MatchString(str) {
+		fmt.Printf("p-2\n");
 		// println!("mapped:{}", string);
 		return Ipv6MappedNew(str)
 	} else {
-		if re_IPV4.MatchString(*str) {
+		if re_IPV4.MatchString(str) {
+			fmt.Printf("p-3\n");
 			// println!("ipv4:{}", string);
 			return Ipv4New(str)
-		} else if re_IPV6.MatchString(*str) {
+		} else if re_IPV6.MatchString(str) {
+			fmt.Printf("p-7\n");
 			// println!("ipv6:{}", string);
 			return Ipv6New(str)
 		}
 	}
+	fmt.Printf("p-8\n");
   tmp := fmt.Sprintf("Unknown IP Address %s", str)
 	return &Error{&tmp}
 }
@@ -47,11 +52,11 @@ func Parse(str *string) ResultIPAddress {
 ///  IPAddress::valid? "10.0.0.256"
 ///    //=> false
 ///
-func Is_valid(addr *string) bool {
+func Is_valid(addr string) bool {
 	return Is_valid_ipv4(addr) || Is_valid_ipv6(addr)
 }
 
-func Is_valid_netmask(addr *string) bool {
+func Is_valid_netmask(addr string) bool {
 	ret, _ := Parse_netmask_to_prefix(addr)
   return ret != nil
 }
@@ -67,8 +72,8 @@ func Is_valid_netmask(addr *string) bool {
 ///   IPAddress::valid_ipv4? "172.16.10.1"
 ///     //=> true
 ///
-func parse_ipv4_part(i *string, addr *string) (*uint32, *string) {
-	part, err := strconv.ParseUint(*i, 10, 32)
+func parse_ipv4_part(i string, addr string) (*uint32, *string) {
+	part, err := strconv.ParseUint(i, 10, 32)
 	if err == nil {
     tmp := fmt.Sprintf("IP must contain numbers %s", addr)
 		return nil, &tmp
@@ -91,17 +96,17 @@ func remove_string(stack []string, idx int) []string {
 	return p
 }
 
-func split_to_u32(addr *string) (*uint32, *string) {
+func split_to_u32(addr string) (*uint32, *string) {
 	ip := uint32(0)
 	shift := uint(24)
-	split_addr := strings.Split(strings.TrimSpace(*addr), ".")
+	split_addr := strings.Split(strings.TrimSpace(addr), ".")
 	split_addr_len := len(split_addr)
 	if split_addr_len > 4 {
     tmp := fmt.Sprintf("IP has not the right format:%s", addr)
 		return nil, &tmp
 	}
 	if split_addr_len < 4 {
-		_, err := parse_ipv4_part(&split_addr[split_addr_len-1], addr)
+		_, err := parse_ipv4_part(split_addr[split_addr_len-1], addr)
 		if err != nil {
 			return nil, err
 		}
@@ -109,7 +114,7 @@ func split_to_u32(addr *string) (*uint32, *string) {
 		split_addr = remove_string(split_addr, split_addr_len-1)
 	}
 	for _, i := range split_addr {
-		part, err := parse_ipv4_part(&i, addr)
+		part, err := parse_ipv4_part(i, addr)
 		if err != nil {
 			return nil, err
 		}
@@ -120,7 +125,7 @@ func split_to_u32(addr *string) (*uint32, *string) {
 	return &ip, nil
 }
 
-func Is_valid_ipv4(addr *string) bool {
+func Is_valid_ipv4(addr string) bool {
 	_, err := split_to_u32(addr)
 	return err != nil
 }
@@ -135,8 +140,8 @@ func Is_valid_ipv4(addr *string) bool {
 ///   IPAddress::valid_ipv6? "2002::DEAD::BEEF"
 ///     // => false
 ///
-func split_on_colon(addr *string) (*big.Int, *string, uint) {
-	parts := strings.Split(strings.TrimSpace(*addr), ":")
+func split_on_colon(addr string) (*big.Int, *string, uint) {
+	parts := strings.Split(strings.TrimSpace(addr), ":")
 	ip := big.NewInt(0)
 	parts_len := uint(len(parts))
 	if parts_len == 1 && parts[0] != "" {
@@ -162,20 +167,20 @@ func split_on_colon(addr *string) (*big.Int, *string, uint) {
 	return ip, nil, parts_len
 }
 
-func split_to_num(addr *string) (*big.Int, *string) {
+func split_to_num(addr string) (*big.Int, *string) {
 	//let mut ip = 0;
-	pre_post := strings.Split(strings.TrimSpace(*addr), "::")
+	pre_post := strings.Split(strings.TrimSpace(addr), "::")
 	if len(pre_post) > 2 {
     tmp := fmt.Sprintf("IPv6 only allow one :: %s", addr)
 		return nil, &tmp
 	}
 	if len(pre_post) == 2 {
 		//println!("{}=::={}", pre_post[0], pre_post[1]);
-		pre, err, pre_parts := split_on_colon(&pre_post[0])
+		pre, err, pre_parts := split_on_colon(pre_post[0])
 		if err != nil {
 			return nil, err
 		}
-		post, err, _ := split_on_colon(&pre_post[1])
+		post, err, _ := split_on_colon(pre_post[1])
 		if err != nil {
 			return nil, err
 		}
@@ -194,7 +199,7 @@ func split_to_num(addr *string) (*big.Int, *string) {
 	return ret, nil
 }
 
-func Is_valid_ipv6(addr *string) bool {
+func Is_valid_ipv6(addr string) bool {
 	_, err := split_to_num(addr)
 	return err != nil
 }

@@ -5,15 +5,15 @@ import (
 )
 
 type Prefix32Test struct {
-    netmask0 string,
-    netmask8 string,
-    netmask16 string,
-    netmask24 string,
-    netmask30 string,
-    netmasks Vec<String>,
-    prefix_hash HashMap<String, usize>,
-    octets_hash HashMap<Vec<u16>, usize>,
-    u32_hash HashMap<usize, u32>,
+    netmask0 string;
+    netmask8 string;
+    netmask16 string;
+    netmask24 string;
+    netmask30 string;
+    netmasks Vec<String>;
+    prefix_hash HashMap<String, usize>;
+    octets_hash HashMap<Vec<u16>, usize>;
+    u32_hash HashMap<usize, u32>;
 }
 
 func setup() Prefix32Test {
@@ -55,83 +55,83 @@ func TestRleCode(t *testing.T) {
   describe("", func() {
     it("test_attributes", func() {
         for num in setup().prefix_hash.values() {
-            let prefix = prefix32::new(*num).unwrap();
-            assert_eq!(*num, prefix.num)
+            let prefix = prefix32::new(*num).Unwrap();
+            assert_eq(*num, prefix.num)
         }
     })
 
 
     it("test_parse_netmask_to_prefix", func() {
         for (netmask, num) in setup().prefix_hash {
-            let prefix = IPAddress::parse_netmask_to_prefix(netmask).unwrap();
-            assert_eq!(num, prefix);
+            let prefix = IPAddress::parse_netmask_to_prefix(netmask).Unwrap();
+            assert_eq(num, prefix);
         }
     })
     it ("test_method_to_ip", func() {
         for (netmask, num) in setup().prefix_hash {
-            let prefix = prefix32::new(num).unwrap();
-            assert_eq!(*netmask, prefix.to_ip_str())
+            let prefix = prefix32::new(num).Unwrap();
+            assert_eq(*netmask, prefix.to_ip_str())
         }
     })
 
     it ("test_method_to_s", func() {
-        let prefix = prefix32::new(8).unwrap();
-        assert_eq!("8", prefix.to_s())
+        let prefix = prefix32::new(8).Unwrap();
+        assert_eq("8", prefix.to_s())
     })
 
     it ("test_method_bits", func() {
-        let prefix = prefix32::new(16).unwrap();
-        assert_eq!("11111111111111110000000000000000", prefix.bits())
+        let prefix = prefix32::new(16).Unwrap();
+        assert_eq("11111111111111110000000000000000", prefix.bits())
     })
 
     it ("test_method_to_u32", func() {
         for (num, ip32) in setup().u32_hash {
-            assert_eq!(ip32,
-                       prefix32::new(num).unwrap().netmask().to_u32().unwrap())
+            assert_eq(ip32,
+                       prefix32::new(num).Unwrap().netmask().to_u32().Unwrap())
         }
     })
 
     it ("test_method_plus", func() {
-        let p1 = prefix32::new(8).unwrap();
-        let p2 = prefix32::new(10).unwrap();
-        assert_eq!(18, p1.add_prefix(&p2).unwrap().num);
-        assert_eq!(12, p1.add(4).unwrap().num)
+        let p1 = prefix32::new(8).Unwrap();
+        let p2 = prefix32::new(10).Unwrap();
+        assert_eq(18, p1.add_prefix(&p2).Unwrap().num);
+        assert_eq(12, p1.add(4).Unwrap().num)
     })
 
     it ("test_method_minus", func() {
-        let p1 = prefix32::new(8).unwrap();
-        let p2 = prefix32::new(24).unwrap();
-        assert_eq!(16, p1.sub_prefix(&p2).unwrap().num);
-        assert_eq!(16, p2.sub_prefix(&p1).unwrap().num);
-        assert_eq!(20, p2.sub(4).unwrap().num);
+        let p1 = prefix32::new(8).Unwrap();
+        let p2 = prefix32::new(24).Unwrap();
+        assert_eq(16, p1.sub_prefix(&p2).Unwrap().num);
+        assert_eq(16, p2.sub_prefix(&p1).Unwrap().num);
+        assert_eq(20, p2.sub(4).Unwrap().num);
     })
 
     it ("test_initialize", func() {
-        assert!(prefix32::new(33).is_err());
+        assert!(prefix32::new(33).IsErr());
         assert!(prefix32::new(8).is_ok());
     })
 
     it ("test_method_octets", func() {
         for (arr, pref) in setup().octets_hash {
-            let prefix = prefix32::new(pref).unwrap();
-            assert_eq!(prefix.ip_bits.parts(&prefix.netmask()), arr);
+            let prefix = prefix32::new(pref).Unwrap();
+            assert_eq(prefix.ip_bits.parts(&prefix.netmask()), arr);
         }
     })
 
     it ("test_method_brackets", func() {
         for (arr, pref) in setup().octets_hash {
-            let prefix = prefix32::new(pref).unwrap();
+            let prefix = prefix32::new(pref).Unwrap();
             for index in 0..arr.len() {
                 let oct = arr.get(index);
-                assert_eq!(prefix.ip_bits.parts(&prefix.netmask()).get(index), oct)
+                assert_eq(prefix.ip_bits.parts(&prefix.netmask()).get(index), oct)
             }
         }
     })
 
     it ("test_method_hostmask", func() {
-        let prefix = prefix32::new(8).unwrap();
-        assert_eq!("0.255.255.255",
-                   ipv4::from_u32(prefix.host_mask().to_u32().unwrap(), 0).unwrap().to_s());
+        let prefix = prefix32::new(8).Unwrap();
+        assert_eq("0.255.255.255",
+                   ipv4::from_u32(prefix.host_mask().to_u32().Unwrap(), 0).Unwrap().to_s());
     })
   })
 }

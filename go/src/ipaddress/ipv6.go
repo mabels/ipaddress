@@ -103,7 +103,7 @@ func enhance_if_mapped(ip *IPAddress) ResultIPAddress {
             // fm!("enhance_if_mapped-3");
             return mapped;
         }
-        // println!("real mapped!!!!!={}", mapped.clone().unwrap().to_string());
+        // println!("real mapped!!!!!={}", mapped.clone().Unwrap().to_string());
         ip.Mapped = mapped.Unwrap()
     }
     return &Ok{ip}
@@ -141,10 +141,10 @@ func From_int(adr *big.Int, _prefix uint8) ResultIPAddress {
 ///
 ///    ip6 = IPAddress "2001:db8::8:800:200c:417a/64"
 ///
-func Ipv6New(str *string) ResultIPAddress {
+func Ipv6New(str string) ResultIPAddress {
     ip, o_netmask := Split_at_slash(str);
-    if Is_valid_ipv6(&ip) {
-        o_num, err := split_to_num(&ip);
+    if Is_valid_ipv6(ip) {
+        o_num, err := split_to_num(ip);
         if err != nil {
             return &Error{err}
         }
@@ -188,7 +188,7 @@ var ipv6_private_str = "fd00::/8"
 var ipv6_private *IPAddress
 func ipv6_is_private(my *IPAddress) bool {
   if ipv6_private == nil {
-    ipv6_private = Parse(&ipv6_private_str).Unwrap()
+    ipv6_private = Parse(ipv6_private_str).Unwrap()
   }
     return ipv6_private.Includes(my);
 }

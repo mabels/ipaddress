@@ -85,7 +85,7 @@ import "../ip_bits"
 ///    ip6.to_string
 ///      ///  "::ffff:13.1.68.3"
 ///
-func Ipv6MappedNew(str *string) ResultIPAddress {
+func Ipv6MappedNew(str string) ResultIPAddress {
     ip, o_netmask := Split_at_slash(str);
     split_colon := strings.Split(ip, ":");
     if len(split_colon) <= 1 {
@@ -93,7 +93,7 @@ func Ipv6MappedNew(str *string) ResultIPAddress {
         tmp := fmt.Sprintf("not mapped format-1: %s", str);
         return &Error{&tmp}
     }
-    // if split_colon.get(0).unwrap().len() > 0 {
+    // if split_colon.get(0).Unwrap().len() > 0 {
     //     // println!("---1a");
     //     return Err(format!("not mapped format-2: {}", string));
     // }
@@ -103,14 +103,14 @@ func Ipv6MappedNew(str *string) ResultIPAddress {
         netmask = fmt.Sprintf("/%s", o_netmask);
     }
     ipv4_str := split_colon[len(split_colon)-1]
-    if Is_valid_ipv4(&ipv4_str) {
+    if Is_valid_ipv4(ipv4_str) {
         ipv4_str = fmt.Sprintf("%s%s", ipv4_str, netmask)
-        ipv4 := Parse(&ipv4_str);
+        ipv4 := Parse(ipv4_str);
         if ipv4.IsErr()  {
             fmt.Sprintf("---2");
             return ipv4;
         }
-        //mapped = Some(ipv4.unwrap());
+        //mapped = Some(ipv4.Unwrap());
         addr := ipv4.Unwrap();
         ipv6_bits := ip_bits.V6();
         part_mod := ipv6_bits.Part_mod;
@@ -132,7 +132,7 @@ func Ipv6MappedNew(str *string) ResultIPAddress {
             ipv6_bits.Bits-addr.Prefix.Host_prefix());
         rebuild_ipv6.WriteString(rebuild_ipv4);
         rebuild_ipv6_str := rebuild_ipv6.String()
-        r_ipv6 := Parse(&rebuild_ipv6_str);
+        r_ipv6 := Parse(rebuild_ipv6_str);
         if r_ipv6.IsErr() {
             // println!("---3|{}", &rebuild_ipv6);
             return r_ipv6
@@ -149,7 +149,7 @@ func Ipv6MappedNew(str *string) ResultIPAddress {
         }
         {
             ipv6_ipv4_str := fmt.Sprintf("::ffff:%s", rebuild_ipv4)
-            r_ipv6 := Parse(&ipv6_ipv4_str);
+            r_ipv6 := Parse(ipv6_ipv4_str);
             return r_ipv6
         }
     }

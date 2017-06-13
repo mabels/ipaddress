@@ -66,32 +66,32 @@ func ipv6_as_uncompressed(ip_bits *IpBits, host_address big.Int) string {
 }
 
 
-func v4const() IpBits {
-  return IpBits {
-    ip_version.V4,
-    ipv4_as_compressed,
-    ipv4_as_compressed,
-    32,
-    8,
-    8,
-    "in-addr.arpa",
-    *big.NewInt(1<<8),
-    *big.NewInt(1),
-  };
+func v4const() *IpBits {
+  ret := new(IpBits)
+  ret.Version = ip_version.V4
+  ret.Vt_as_compressed_string = ipv4_as_compressed
+  ret.Vt_as_uncompressed_string = ipv4_as_compressed
+  ret.Bits = 32
+  ret.Part_bits = 8
+  ret.Dns_bits = 8
+  ret.Rev_domain = "in-addr.arpa"
+  ret.Part_mod = *big.NewInt(1<<8)
+  ret.Host_ofs = *big.NewInt(1)
+  return ret;
 }
 
-func v6const() IpBits {
-  return IpBits {
-    ip_version.V6,
-    ipv6_as_compressed,
-    ipv6_as_uncompressed,
-    128,
-    16,
-    4,
-    "ip6.arpa",
-    *big.NewInt(1<<16),
-    *big.NewInt(0),
-  }
+func v6const() *IpBits {
+  ret := new(IpBits)
+  ret.Version = ip_version.V6
+  ret.Vt_as_compressed_string = ipv6_as_compressed
+  ret.Vt_as_uncompressed_string = ipv6_as_compressed
+  ret.Bits = 128
+  ret.Part_bits = 16
+  ret.Dns_bits = 4
+  ret.Rev_domain = "ip6.arpa"
+  ret.Part_mod = *big.NewInt(1<<16)
+  ret.Host_ofs = *big.NewInt(0)
+  return ret
 };
 
 func (ipb IpBits) String() string {
@@ -142,10 +142,16 @@ func (self *IpBits) Dns_part_format(i  uint8) string {
 
 var v4ref *IpBits;
 func V4() *IpBits {
+  if v4ref == nil {
+    v4ref = v4const()
+  }
   return v4ref;
 }
 
 var v6ref *IpBits;
 func V6() *IpBits {
+  if v6ref == nil {
+    v6ref = v6const()
+  }
   return v6ref;
 }

@@ -85,6 +85,18 @@ func (self *IPAddress) String() string {
 	return fmt.Sprintf("IPAddress: %s", self.To_string())
 }
 
+func (self *IPAddress) Eq(oth *IPAddress) bool {
+  return self.Cmp(oth) == 0;
+}
+
+func (self *IPAddress) Lt(oth *IPAddress) bool {
+  return self.Cmp(oth) < 0;
+}
+
+func (self *IPAddress) Gt(oth *IPAddress) bool {
+  return self.Cmp(oth) > 0;
+}
+
 func (self *IPAddress) Cmp(oth *IPAddress) int {
 	if self.Ip_bits.Version != oth.Ip_bits.Version {
 		if self.Ip_bits.Version == ip_version.V6 {
@@ -127,8 +139,8 @@ func (self *IPAddress) Equal(other IPAddress) bool {
 ///   //=> IPAddress::IPv6::Mapped
 ///
 
-func Split_at_slash(str *string) (string, *string) {
-	trimmed := strings.TrimSpace(*str)
+func Split_at_slash(str string) (string, *string) {
+	trimmed := strings.TrimSpace(str)
 	slash := strings.Split(trimmed, "/")
 	addr := ""
 	if len(slash) >= 1 {
@@ -175,13 +187,13 @@ func (self *IPAddress) Is_ipv6() bool {
 	return self.Ip_bits.Version == ip_version.V6
 }
 
-func (self *IPAddress) parts() []uint16 {
+func (self *IPAddress) Parts() []uint16 {
 	return self.Ip_bits.Parts(self.Host_address)
 }
 
 func (self *IPAddress) parts_hex_str() []string {
 	var ret []string
-	for i := range self.parts() {
+	for i := range self.Parts() {
 		ret = append(ret, fmt.Sprintf("{:04x}", i))
 	}
 	return ret
@@ -199,12 +211,12 @@ func (self *IPAddress) Dns_rev_domains() []string {
 	var ret []string
 	for _, net := range self.dns_networks() {
 		// println!("dns_rev_domains:{}:{}", self.to_string(), net.to_string());
-		ret = append(ret, net.dns_reverse())
+		ret = append(ret, net.Dns_reverse())
 	}
 	return ret
 }
 
-func (self *IPAddress) dns_reverse() string {
+func (self *IPAddress) Dns_reverse() string {
 	var ret bytes.Buffer
 	dot := ""
 	dns_parts := self.dns_parts()
@@ -339,7 +351,7 @@ func (self *IPAddress) Change_prefix(num uint8) ResultIPAddress {
 	return &Ok{&from}
 }
 
-func (self *IPAddress) Change_netmask(my_str *string) ResultIPAddress {
+func (self *IPAddress) Change_netmask(my_str string) ResultIPAddress {
 	nm, err := Parse_netmask_to_prefix(my_str)
 	if err != nil {
 		return &Error{err}
@@ -480,15 +492,15 @@ func To_network(adr *big.Int, host_prefix uint8) big.Int {
   return *num
 }
 
-func (self *IPAddress) sub(other *IPAddress) big.Int {
-	var ret big.Int
+func (self *IPAddress) Sub(other *IPAddress) big.Int {
+	ret := big.NewInt(0)
 	if self.Host_address.Cmp(&other.Host_address) > 0 {
 		return *ret.Sub(&self.Host_address, &other.Host_address)
 	}
 	return *ret.Sub(&other.Host_address, &self.Host_address)
 }
 
-func (self *IPAddress) Add(other *IPAddress) []IPAddress {
+func (self *IPAddress) Add(other *IPAddress) *[]IPAddress {
 	return Aggregate(&[]IPAddress{*self, *other})
 }
 
@@ -744,7 +756,7 @@ func (self *IPAddress) Is_private() bool {
 ///
 
 
-func (self *IPAddress) split(subnets uint) ResultIPAddresses {
+func (self *IPAddress) Split(subnets uint) ResultIPAddresses {
 	if subnets == 0 || (1<<self.Prefix.Host_prefix()) <= subnets {
 		out := fmt.Sprintf("Value %s out of range", subnets)
 		return &Errors{&out}
@@ -756,7 +768,7 @@ func (self *IPAddress) split(subnets uint) ResultIPAddresses {
 	}
 	for uint(len(*networks.Unwrap())) != subnets {
     tmp := Sum_first_found(networks.Unwrap())
-		networks = &Oks{&tmp}
+		networks = &Oks{tmp}
 	}
 	return networks
 }
@@ -856,7 +868,7 @@ func (self *IPAddress) Subnet(subprefix uint8) ResultIPAddresses  {
 ///      ///  "ac10:0a01"
 ///
 
-func (self *IPAddress) to_ipv6() IPAddress {
+func (self *IPAddress) To_ipv6() IPAddress {
 	return (self.Vt_to_ipv6)(self)
 }
 
@@ -930,12 +942,12 @@ func pos_to_idx(pos int, len int) int {
 }
 
 
-func Aggregate(networks *[]IPAddress) []IPAddress {
+func Aggregate(networks *[]IPAddress) *[]IPAddress {
 	if len(*networks) == 0 {
-		return []IPAddress{}
+		return &[]IPAddress{}
 	}
 	if len(*networks) == 1 {
-		return []IPAddress{(*networks)[0].Network()}
+		return &[]IPAddress{(*networks)[0].Network()}
 	}
 	var stack []IPAddress
 	for _, i := range *networks {
@@ -969,7 +981,7 @@ func Aggregate(networks *[]IPAddress) []IPAddress {
 		}
 		second := pos_to_idx(pos, stack_len)
 		pos = pos + 1
-		//let mut firstUnwrap = first.unwrap();
+		//let mut firstUnwrap = first.Unwrap();
 		if stack[first].Includes(&stack[second]) {
 			pos = pos - 2
 			// println!("remove:1:{}:{}:{}=>{}", first, second, stack_len, pos + 1);
@@ -1001,7 +1013,7 @@ func Aggregate(networks *[]IPAddress) []IPAddress {
 	for i := 0; i <= len(stack); i++ {
 		ret = append(ret, stack[i].Network())
 	}
-	return ret
+	return &ret
 }
 
 /// Summarization (or aggregation) is the process when two or more
@@ -1128,26 +1140,26 @@ func Aggregate(networks *[]IPAddress) []IPAddress {
 ///      ///  ["2000:1::/32","2000:2::/31","2000:4::/32"]
 ///
 
-func Sum_first_found(arr *[]IPAddress) []IPAddress {
+func Sum_first_found(arr *[]IPAddress) *[]IPAddress {
 	var dup []IPAddress
 	copy(dup[:], *arr)
 	if len(dup) < 2 {
-		return dup
+		return &dup
 	}
 	for i := len(dup) - 1; i >= 0; i-- {
 		a := Summarize(&[]IPAddress{dup[i], dup[i+1]})
 		// println!("dup:{}:{}:{}", dup.len(), i, a.len());
-		if len(a) == 1 {
-			dup[i] = (a)[0].Clone()
+		if len(*a) == 1 {
+			dup[i] = (*a)[0].Clone()
 			remove_ipaddress(dup, i+1)
 			break
 		}
 	}
-	return dup
+	return &dup
 }
 
 
-func Summarize(networks *[]IPAddress) []IPAddress {
+func Summarize(networks *[]IPAddress) *[]IPAddress {
 	return Aggregate(networks)
 }
 func Summarize_str(netstr []string) ResultIPAddresses {
@@ -1156,7 +1168,7 @@ func Summarize_str(netstr []string) ResultIPAddresses {
 		return vec
 	}
   tmp := Aggregate(vec.Unwrap())
-	return &Oks{&tmp}
+	return &Oks{tmp}
 }
 
 func To_s_vec(vec *[]IPAddress) []string {
@@ -1167,9 +1179,9 @@ func To_s_vec(vec *[]IPAddress) []string {
 	return ret
 }
 
-func To_string_vec(vec []IPAddress) []string {
+func To_string_vec(vec *[]IPAddress) []string {
 	var ret []string
-	for _,i := range vec {
+	for _,i := range *vec {
 		ret = append(ret, i.To_string())
 	}
 	return ret
