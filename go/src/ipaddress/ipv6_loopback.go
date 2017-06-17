@@ -1,5 +1,6 @@
-package loopback
+package ipaddress
 
+import "math/big"
 // import "ipaddress"
 
 ///    The loopback  address is a unicast localhost address. If an
@@ -45,6 +46,6 @@ package loopback
 ///    ip.to_string
 ///      ///  "::1/128"
 ///
-func New() IPAddress {
-    return ipv6.From_int(big.NewInt(1), 128);
+func Ipv6LoopbackNew() *IPAddress {
+    return From_int(big.NewInt(1), 128).Unwrap();
 }

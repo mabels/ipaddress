@@ -143,7 +143,7 @@ func TestIpv4(t *testing.T) {
     it("test_attributes", func() {
         for arg, attr := range setup().valid_ipv4 {
             ip := Parse(arg).Unwrap();
-            // println!("test_attributes:{}:{:?}", arg, attr);
+            // fmt.Printf("test_attributes:{}:{:?}", arg, attr);
             assert_string(attr.ip, ip.To_s());
             assert_uint8(attr.prefix, ip.Prefix.Num);
         }
@@ -282,11 +282,11 @@ func TestIpv4(t *testing.T) {
 
     it("test_method_include_all", func() {
         ip := Parse("192.168.10.100/24").Unwrap();
-        addr1 := *Parse("192.168.10.102/24").Unwrap();
-        addr2 := *Parse("192.168.10.103/24").Unwrap();
-        assert_bool(true, ip.Includes_all(&[]IPAddress{addr1.Clone(), addr2}));
+        addr1 := Parse("192.168.10.102/24").Unwrap();
+        addr2 := Parse("192.168.10.103/24").Unwrap();
+        assert_bool(true, ip.Includes_all(&[]*IPAddress{addr1.Clone(), addr2}));
         assert_bool(false,
-                   ip.Includes_all(&[]IPAddress{addr1, *Parse("13.16.0.0/32").Unwrap()}));
+                   ip.Includes_all(&[]*IPAddress{addr1, Parse("13.16.0.0/32").Unwrap()}));
     })
 
     it("test_method_ipv4", func() {
@@ -416,8 +416,8 @@ func TestIpv4(t *testing.T) {
         // ip1 should be equal to ip4
         assert_bool(true, ip1.Eq(ip4));
         // test sorting
-        res := []IPAddress{*ip1, *ip2, *ip3};
-        sort.Sort(ByAddress{res});
+        res := []*IPAddress{ip1, ip2, ip3};
+        Sorting(res);
         assert_string_array(To_string_vec(&res),
                    []string{"10.1.1.1/8", "10.1.1.1/16", "172.16.1.1/14"});
         // test same prefix
@@ -425,7 +425,7 @@ func TestIpv4(t *testing.T) {
         ip2 = Parse("10.0.0.0/16").Unwrap();
         ip3 = Parse("10.0.0.0/8").Unwrap();
         {
-            res = []IPAddress{*ip1, *ip2, *ip3};
+            res = []*IPAddress{ip1, ip2, ip3};
             sort.Sort(ByAddress{res});
             assert_string_array(To_string_vec(&res),
                   []string{"10.0.0.0/8", "10.0.0.0/16", "10.0.0.0/24"});
@@ -584,92 +584,92 @@ func TestIpv4(t *testing.T) {
       s := setup();
         // Should return self if only one network given
         net := s.ip.Network();
-        addrs := []IPAddress{net}
+        addrs := []*IPAddress{net}
         assert_string_array(To_string_vec(Summarize(&addrs)), []string{});
 
         // Summarize homogeneous networks
-        ip1 := *Parse("172.16.10.1/24").Unwrap();
-        ip2 := *Parse("172.16.11.2/24").Unwrap();
-        addrs = []IPAddress{ip1, ip2};
+        ip1 := Parse("172.16.10.1/24").Unwrap();
+        ip2 := Parse("172.16.11.2/24").Unwrap();
+        addrs = []*IPAddress{ip1, ip2};
         assert_string_array(To_string_vec(Summarize(&addrs)),
                    []string{"172.16.10.0/23"});
 
         {
-            ip1 := *Parse("10.0.0.1/24").Unwrap();
-            ip2 := *Parse("10.0.1.1/24").Unwrap();
-            ip3 := *Parse("10.0.2.1/24").Unwrap();
-            ip4 := *Parse("10.0.3.1/24").Unwrap();
-            assert_string_array(To_string_vec(Summarize(&[]IPAddress{ip1, ip2, ip3, ip4})),
+            ip1 := Parse("10.0.0.1/24").Unwrap();
+            ip2 := Parse("10.0.1.1/24").Unwrap();
+            ip3 := Parse("10.0.2.1/24").Unwrap();
+            ip4 := Parse("10.0.3.1/24").Unwrap();
+            assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2, ip3, ip4})),
                        []string{"10.0.0.0/22"});
         }
         {
-            ip1 := *Parse("10.0.0.1/24").Unwrap();
-            ip2 := *Parse("10.0.1.1/24").Unwrap();
-            ip3 := *Parse("10.0.2.1/24").Unwrap();
-            ip4 := *Parse("10.0.3.1/24").Unwrap();
-            assert_string_array(To_string_vec(Summarize(&[]IPAddress{ip4, ip3, ip2, ip1})),
+            ip1 := Parse("10.0.0.1/24").Unwrap();
+            ip2 := Parse("10.0.1.1/24").Unwrap();
+            ip3 := Parse("10.0.2.1/24").Unwrap();
+            ip4 := Parse("10.0.3.1/24").Unwrap();
+            assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip4, ip3, ip2, ip1})),
                        []string{"10.0.0.0/22"});
         }
 
         // Summarize non homogeneous networks
-        ip1 = *Parse("10.0.0.0/23").Unwrap();
-        ip2 = *Parse("10.0.2.0/24").Unwrap();
-        assert_string_array(To_string_vec(Summarize(&[]IPAddress{ip1, ip2})),
+        ip1 = Parse("10.0.0.0/23").Unwrap();
+        ip2 = Parse("10.0.2.0/24").Unwrap();
+        assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2})),
                    []string{"10.0.0.0/23", "10.0.2.0/24"});
 
-        ip1 = *Parse("10.0.0.0/16").Unwrap();
-        ip2 = *Parse("10.0.2.0/24").Unwrap();
-        assert_string_array(To_string_vec(Summarize(&[]IPAddress{ip1, ip2})),
+        ip1 = Parse("10.0.0.0/16").Unwrap();
+        ip2 = Parse("10.0.2.0/24").Unwrap();
+        assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2})),
                    []string{"10.0.0.0/16"});
 
-        ip1 = *Parse("10.0.0.0/23").Unwrap();
-        ip2 = *Parse("10.1.0.0/24").Unwrap();
-        assert_string_array(To_string_vec(Summarize(&[]IPAddress{ip1, ip2})),
+        ip1 = Parse("10.0.0.0/23").Unwrap();
+        ip2 = Parse("10.1.0.0/24").Unwrap();
+        assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2})),
                    []string{"10.0.0.0/23", "10.1.0.0/24"});
 
-        ip1 = *Parse("10.0.0.0/23").Unwrap();
-        ip2 = *Parse("10.0.2.0/23").Unwrap();
-        ip3 := *Parse("10.0.4.0/24").Unwrap();
-        ip4 := *Parse("10.0.6.0/24").Unwrap();
-        assert_string_array(To_string_vec(Summarize(&[]IPAddress{ip1, ip2, ip3, ip4})),
+        ip1 = Parse("10.0.0.0/23").Unwrap();
+        ip2 = Parse("10.0.2.0/23").Unwrap();
+        ip3 := Parse("10.0.4.0/24").Unwrap();
+        ip4 := Parse("10.0.6.0/24").Unwrap();
+        assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2, ip3, ip4})),
                    []string{"10.0.0.0/22", "10.0.4.0/24", "10.0.6.0/24"});
         {
-            ip1 = *Parse("10.0.1.1/24").Unwrap();
-            ip2 = *Parse("10.0.2.1/24").Unwrap();
-            ip3 = *Parse("10.0.3.1/24").Unwrap();
-            ip4 = *Parse("10.0.4.1/24").Unwrap();
-            assert_string_array(To_string_vec(Summarize(&[]IPAddress{ip1, ip2, ip3, ip4})),
+            ip1 = Parse("10.0.1.1/24").Unwrap();
+            ip2 = Parse("10.0.2.1/24").Unwrap();
+            ip3 = Parse("10.0.3.1/24").Unwrap();
+            ip4 = Parse("10.0.4.1/24").Unwrap();
+            assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2, ip3, ip4})),
                        []string{"10.0.1.0/24", "10.0.2.0/23", "10.0.4.0/24"});
         }
         {
-            ip1 = *Parse("10.0.1.1/24").Unwrap();
-            ip2 = *Parse("10.0.2.1/24").Unwrap();
-            ip3 = *Parse("10.0.3.1/24").Unwrap();
-            ip4 = *Parse("10.0.4.1/24").Unwrap();
-            assert_string_array(To_string_vec(Summarize(&[]IPAddress{ip4, ip3, ip2, ip1})),
+            ip1 = Parse("10.0.1.1/24").Unwrap();
+            ip2 = Parse("10.0.2.1/24").Unwrap();
+            ip3 = Parse("10.0.3.1/24").Unwrap();
+            ip4 = Parse("10.0.4.1/24").Unwrap();
+            assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip4, ip3, ip2, ip1})),
                        []string{"10.0.1.0/24", "10.0.2.0/23", "10.0.4.0/24"});
         }
 
-        ip1 = *Parse("10.0.1.1/24").Unwrap();
-        ip2 = *Parse("10.10.2.1/24").Unwrap();
-        ip3 = *Parse("172.16.0.1/24").Unwrap();
-        ip4 = *Parse("172.16.1.1/24").Unwrap();
+        ip1 = Parse("10.0.1.1/24").Unwrap();
+        ip2 = Parse("10.10.2.1/24").Unwrap();
+        ip3 = Parse("172.16.0.1/24").Unwrap();
+        ip4 = Parse("172.16.1.1/24").Unwrap();
         assert_string_array(To_string_vec(Summarize(
-                  &[]IPAddress{ip1, ip2, ip3, ip4})),
+                  &[]*IPAddress{ip1, ip2, ip3, ip4})),
                   []string{"10.0.1.0/24", "10.10.2.0/24", "172.16.0.0/23"});
 
-        ips := []IPAddress{*Parse("10.0.0.12/30").Unwrap(),
-                           *Parse("10.0.100.0/24").Unwrap()};
+        ips := []*IPAddress{Parse("10.0.0.12/30").Unwrap(),
+                           Parse("10.0.100.0/24").Unwrap()};
         assert_string_array(To_string_vec(Summarize(&ips)),
                    []string{"10.0.0.12/30", "10.0.100.0/24"});
 
-        ips = []IPAddress{*Parse("172.16.0.0/31").Unwrap(),
-                   *Parse("10.10.2.1/32").Unwrap()};
+        ips = []*IPAddress{Parse("172.16.0.0/31").Unwrap(),
+                   Parse("10.10.2.1/32").Unwrap()};
         assert_string_array(To_string_vec(Summarize(&ips)),
                    []string{"10.10.2.1/32", "172.16.0.0/31"});
 
-        ips = []IPAddress{*Parse("172.16.0.0/32").Unwrap(),
-                   *Parse("10.10.2.1/32").Unwrap()};
+        ips = []*IPAddress{Parse("172.16.0.0/32").Unwrap(),
+                   Parse("10.10.2.1/32").Unwrap()};
         assert_string_array(To_string_vec(Summarize(&ips)),
                    []string{"10.10.2.1/32", "172.16.0.0/32"});
     });

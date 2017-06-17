@@ -13,6 +13,7 @@ import "fmt"
 // import "../ip_bits"
 import "../ip_version"
 import "../prefix"
+
 // import "./data"
 import "bytes"
 
@@ -21,64 +22,66 @@ import "bytes"
 // import "../ipv4"
 // import "../ipv6"
 
-
 type Error struct {
-  err *string
+	err *string
 }
-func (self *Error) IsOk()  bool { return false }
-func (self *Error) IsErr() bool { return true }
+
+func (self *Error) IsOk() bool         { return false }
+func (self *Error) IsErr() bool        { return true }
 func (self *Error) Unwrap() *IPAddress { return nil }
 func (self *Error) UnwrapErr() *string { return self.err }
+
 // func Error(err *string) *ErrorIsh {
 //     return &ErrorIsh{err}
 // }
 
 type Ok struct {
-  ipaddress *IPAddress
+	ipaddress *IPAddress
 }
-func (self *Ok) IsOk()  bool { return true }
-func (self *Ok) IsErr() bool { return false }
+
+func (self *Ok) IsOk() bool         { return true }
+func (self *Ok) IsErr() bool        { return false }
 func (self *Ok) Unwrap() *IPAddress { return self.ipaddress }
 func (self *Ok) UnwrapErr() *string { return nil }
 
-
 type Errors struct {
-  err *string
+	err *string
 }
-func (self *Errors) IsOk()  bool { return false }
-func (self *Errors) IsErr() bool { return true }
-func (self *Errors) Unwrap() *[]IPAddress { return nil }
-func (self *Errors) UnwrapErr() *string { return self.err }
+
+func (self *Errors) IsOk() bool           { return false }
+func (self *Errors) IsErr() bool          { return true }
+func (self *Errors) Unwrap() *[]*IPAddress { return nil }
+func (self *Errors) UnwrapErr() *string   { return self.err }
+
 // func Error(err *string) *ErrorIsh {
 //     return &ErrorIsh{err}
 // }
 
 type Oks struct {
-  ipaddresses *[]IPAddress
+	ipaddresses *[]*IPAddress
 }
-func (self *Oks) IsOk()  bool { return true }
-func (self *Oks) IsErr() bool { return false }
-func (self *Oks) Unwrap() *[]IPAddress { return self.ipaddresses }
-func (self *Oks) UnwrapErr() *string { return nil }
 
+func (self *Oks) IsOk() bool           { return true }
+func (self *Oks) IsErr() bool          { return false }
+func (self *Oks) Unwrap() *[]*IPAddress { return self.ipaddresses }
+func (self *Oks) UnwrapErr() *string   { return nil }
 
-
-
-func (self *IPAddress) Clone() IPAddress {
-  mapped := self.Mapped
-  if self.Mapped != nil {
-    tmp := *self.Mapped
-    tmp2 := tmp.Clone();
-    mapped = &tmp2;
-  }
-  return IPAddress {
-    self.Ip_bits,
-    self.Host_address,
-    self.Prefix,
-    mapped,
-    self.Vt_is_private,
-    self.Vt_is_loopback,
-    self.Vt_to_ipv6}
+func (self *IPAddress) Clone() *IPAddress {
+	mapped := self.Mapped
+	if self.Mapped != nil {
+		tmp := *self.Mapped
+		tmp2 := tmp.Clone()
+		mapped = tmp2
+	}
+	ret := new(IPAddress)
+	ret.Ip_bits =	self.Ip_bits
+	ret.Host_address = self.Host_address
+	ret.Prefix = self.Prefix.Clone()
+	ret.Mapped = mapped
+	ret.Vt_is_private =	self.Vt_is_private
+	ret.Vt_is_loopback = self.Vt_is_loopback
+	ret.Vt_to_ipv6 = self.Vt_to_ipv6
+	return ret;
 }
 
 func (self *IPAddress) String() string {
@@ -86,15 +89,15 @@ func (self *IPAddress) String() string {
 }
 
 func (self *IPAddress) Eq(oth *IPAddress) bool {
-  return self.Cmp(oth) == 0;
+	return self.Cmp(oth) == 0
 }
 
 func (self *IPAddress) Lt(oth *IPAddress) bool {
-  return self.Cmp(oth) < 0;
+	return self.Cmp(oth) < 0
 }
 
 func (self *IPAddress) Gt(oth *IPAddress) bool {
-  return self.Cmp(oth) > 0;
+	return self.Cmp(oth) > 0
 }
 
 func (self *IPAddress) Cmp(oth *IPAddress) int {
@@ -149,13 +152,13 @@ func Split_at_slash(str string) (string, *string) {
 	if len(slash) >= 2 {
 		tslash := strings.TrimSpace(slash[1])
 		return addr, &tslash
-	} else {
-		return addr, nil
 	}
+	return addr, nil
 }
 
-func (self *IPAddress) From(addr *big.Int, prefix *prefix.Prefix) IPAddress {
-	return IPAddress{
+func (self *IPAddress) From(addr *big.Int, prefix *prefix.Prefix) *IPAddress {
+	padr := new(IPAddress)
+	*padr = IPAddress{
 		self.Ip_bits,
 		*addr,
 		prefix.Clone(),
@@ -163,6 +166,7 @@ func (self *IPAddress) From(addr *big.Int, prefix *prefix.Prefix) IPAddress {
 		self.Vt_is_private,
 		self.Vt_is_loopback,
 		self.Vt_to_ipv6}
+	return padr
 }
 
 /// True if the object is an IPv4 address
@@ -188,10 +192,10 @@ func (self *IPAddress) Is_ipv6() bool {
 }
 
 func (self *IPAddress) Parts() []uint16 {
-	return self.Ip_bits.Parts(self.Host_address)
+	return self.Ip_bits.Parts(&self.Host_address)
 }
 
-func (self *IPAddress) parts_hex_str() []string {
+func (self *IPAddress) Parts_hex_str() []string {
 	var ret []string
 	for i := range self.Parts() {
 		ret = append(ret, fmt.Sprintf("{:04x}", i))
@@ -209,8 +213,8 @@ func (self *IPAddress) parts_hex_str() []string {
 ///
 func (self *IPAddress) Dns_rev_domains() []string {
 	var ret []string
-	for _, net := range self.dns_networks() {
-		// println!("dns_rev_domains:{}:{}", self.to_string(), net.to_string());
+	for _, net := range self.Dns_networks() {
+		// fmt.Printf("dns_rev_domains:{}:{}", self.to_string(), net.to_string());
 		ret = append(ret, net.Dns_reverse())
 	}
 	return ret
@@ -243,20 +247,20 @@ func (self *IPAddress) dns_parts() []uint8 {
 	return ret
 }
 
-func (self *IPAddress) dns_networks() []IPAddress {
+func (self *IPAddress) Dns_networks() []*IPAddress {
 	// +self.ip_bits.dns_bits-1
 	next_bit_mask := self.Ip_bits.Bits -
 		(((self.Prefix.Host_prefix()) / self.Ip_bits.Dns_bits) * self.Ip_bits.Dns_bits)
 	if next_bit_mask <= 0 {
-		return []IPAddress{self.Network()}
+		return []*IPAddress{self.Network()}
 	}
-	//  println!("dns_networks:{}:{}", self.to_string(), next_bit_mask);
+	//  fmt.Printf("dns_networks:{}:{}", self.to_string(), next_bit_mask);
 	// dns_bits
 	step_bit_net := big.NewInt(0).Lsh(big.NewInt(1), uint(self.Ip_bits.Bits-next_bit_mask))
 	if step_bit_net.Cmp(big.NewInt(0)) == 0 {
-		return []IPAddress{self.Network()}
+		return []*IPAddress{self.Network()}
 	}
-	var ret []IPAddress
+	var ret []*IPAddress
 	step := self.Network().Host_address
 	resPrefix := self.Prefix.From(next_bit_mask)
 	baddr := self.Broadcast().Host_address
@@ -298,6 +302,7 @@ func (self *IPAddress) Is_mapped() bool {
 	var num big.Int
 	mask := big.NewInt(0).Lsh(big.NewInt(1), 16)
 	var rest big.Int
+	fmt.Printf("Is_mapped:%s\n", self.Mapped)
 	return self.Mapped != nil &&
 		num.Rsh(&self.Host_address, 32).Cmp(rest.Sub(mask, big.NewInt(1))) == 0
 }
@@ -348,7 +353,7 @@ func (self *IPAddress) Change_prefix(num uint8) ResultIPAddress {
 		return &Error{prefix.UnwrapErr()}
 	}
 	from := self.From(&self.Host_address, prefix.Unwrap())
-	return &Ok{&from}
+	return &Ok{from}
 }
 
 func (self *IPAddress) Change_netmask(my_str string) ResultIPAddress {
@@ -377,7 +382,7 @@ func (self *IPAddress) To_string() string {
 }
 
 func (self *IPAddress) To_s() string {
-	return self.Ip_bits.As_compressed_string(self.Host_address)
+	return self.Ip_bits.As_compressed_string(&self.Host_address)
 }
 
 func (self *IPAddress) To_string_uncompressed() string {
@@ -389,7 +394,7 @@ func (self *IPAddress) To_string_uncompressed() string {
 }
 
 func (self *IPAddress) To_s_uncompressed() string {
-	return self.Ip_bits.As_uncompressed_string(self.Host_address)
+	return self.Ip_bits.As_uncompressed_string(&self.Host_address)
 }
 
 func (self *IPAddress) To_s_mapped() string {
@@ -399,7 +404,7 @@ func (self *IPAddress) To_s_mapped() string {
 	return self.To_s()
 }
 
-func (self *IPAddress) to_string_mapped() string {
+func (self *IPAddress) To_string_mapped() string {
 	if self.Is_mapped() {
 		mapped := self.Mapped
 		return fmt.Sprintf("%s/%d",
@@ -432,9 +437,9 @@ func (self *IPAddress) To_hex() string {
 	return self.Host_address.Text(16)
 }
 
-func (self *IPAddress) Netmask() IPAddress {
+func (self *IPAddress) Netmask() *IPAddress {
 	nm := self.Prefix.Netmask()
-	return self.From(&nm, &self.Prefix)
+	return self.From(nm, &self.Prefix)
 }
 
 ///  Returns the broadcast address for the given IP.
@@ -445,9 +450,9 @@ func (self *IPAddress) Netmask() IPAddress {
 ///      ///  "172.16.10.255"
 ///
 
-func (self *IPAddress) Broadcast() IPAddress {
+func (self *IPAddress) Broadcast() *IPAddress {
 	size := self.Size()
-  h_a := self.Network().Host_address
+	h_a := self.Network().Host_address
 	return self.From(big.NewInt(0).Add(&h_a,
 		big.NewInt(0).Sub(&size, big.NewInt(1))), &self.Prefix)
 	// IPv4::parse_u32(self.broadcast_u32, self.Prefix)
@@ -481,15 +486,18 @@ func (self *IPAddress) Is_network() bool {
 ///      ///  "172.16.10.0"
 ///
 
-func (self *IPAddress) Network() IPAddress {
+func (self *IPAddress) Network() *IPAddress {
 	to_n := To_network(&self.Host_address, self.Prefix.Host_prefix())
+	// fmt.Printf("Network:0:%s\n", self.Host_address)
+	// fmt.Printf("Network:1:%s\n", self.Host_address.String())
+	// fmt.Printf("Network:2:%s\n", to_n.String())
 	return self.From(&to_n, &self.Prefix)
 }
 
 func To_network(adr *big.Int, host_prefix uint8) big.Int {
-	num := big.NewInt(0)
-	num.Rsh(adr, uint(host_prefix)).Lsh(num, uint(host_prefix))
-  return *num
+	num := big.NewInt(0).Set(adr)
+	num.Rsh(num, uint(host_prefix)).Lsh(num, uint(host_prefix))
+	return *num
 }
 
 func (self *IPAddress) Sub(other *IPAddress) big.Int {
@@ -500,8 +508,8 @@ func (self *IPAddress) Sub(other *IPAddress) big.Int {
 	return *ret.Sub(&other.Host_address, &self.Host_address)
 }
 
-func (self *IPAddress) Add(other *IPAddress) *[]IPAddress {
-	return Aggregate(&[]IPAddress{*self, *other})
+func (self *IPAddress) Add(other *IPAddress) *[]*IPAddress {
+	return Aggregate(&[]*IPAddress{self, other})
 }
 
 ///  Returns a new IPv4 object with the
@@ -523,7 +531,7 @@ func (self *IPAddress) Add(other *IPAddress) *[]IPAddress {
 ///    ip.first.to_s
 ///      ///  "192.168.100.1"
 ///
-func (self *IPAddress) First() IPAddress {
+func (self *IPAddress) First() *IPAddress {
 	ha := self.Network().Host_address
 	return self.From(big.NewInt(0).Add(&ha, &self.Ip_bits.Host_ofs), &self.Prefix)
 }
@@ -549,7 +557,7 @@ func (self *IPAddress) First() IPAddress {
 ///      ///  "192.168.100.254"
 ///
 
-func (self *IPAddress) Last() IPAddress {
+func (self *IPAddress) Last() *IPAddress {
 	ha := self.Broadcast().Host_address
 	return self.From(big.NewInt(0).Sub(&ha, &self.Ip_bits.Host_ofs), &self.Prefix)
 }
@@ -574,8 +582,8 @@ func (self *IPAddress) Each_host(fn func(*IPAddress)) {
 	i := self.First().Host_address
 	last := self.Last().Host_address
 	for i.Cmp(&last) < 0 {
-    ip := self.From(&i, &self.Prefix)
-		fn(&ip)
+		ip := self.From(&i, &self.Prefix)
+		fn(ip)
 		i.Add(&i, big.NewInt(1))
 	}
 }
@@ -603,10 +611,10 @@ func (self *IPAddress) Each_host(fn func(*IPAddress)) {
 
 func (self *IPAddress) Each(fn func(*IPAddress)) {
 	i := self.Network().Host_address
-  broad := self.Broadcast().Host_address
+	broad := self.Broadcast().Host_address
 	for broad.Cmp(&i) > 0 {
-    ip := self.From(&i, &self.Prefix)
-		fn(&ip)
+		ip := self.From(&i, &self.Prefix)
+		fn(ip)
 		i.Add(&i, big.NewInt(1))
 	}
 }
@@ -653,9 +661,9 @@ func (self *IPAddress) Each(fn func(*IPAddress)) {
 ///
 
 func (self *IPAddress) Size() big.Int {
-  ret := big.NewInt(1)
+	ret := big.NewInt(1)
 	ret.Lsh(ret, uint(self.Prefix.Host_prefix()))
-  return *ret
+	return *ret
 }
 
 func (self *IPAddress) Is_same_kind(oth *IPAddress) bool {
@@ -679,12 +687,12 @@ func (self *IPAddress) Is_same_kind(oth *IPAddress) bool {
 ///
 
 func (self *IPAddress) Includes(oth *IPAddress) bool {
-  to_n := To_network(&oth.Host_address, self.Prefix.Host_prefix())
-  h_a := self.Network().Host_address
+	to_n := To_network(&oth.Host_address, self.Prefix.Host_prefix())
+	h_a := self.Network().Host_address
 	ret := self.Is_same_kind(oth) &&
 		self.Prefix.Num <= oth.Prefix.Num &&
 		h_a.Cmp(&to_n) == 0
-	// println!("includes:{}=={}=>{}", self.to_string(), oth.to_string(), ret);
+	// fmt.Printf("includes:{}=={}=>{}", self.to_string(), oth.to_string(), ret);
 	return ret
 }
 
@@ -700,9 +708,9 @@ func (self *IPAddress) Includes(oth *IPAddress) bool {
 ///      ///  true
 ///
 
-func (self *IPAddress) Includes_all(oths *[]IPAddress) bool {
+func (self *IPAddress) Includes_all(oths *[]*IPAddress) bool {
 	for _, oth := range *oths {
-		if !self.Includes(&oth) {
+		if !self.Includes(oth) {
 			return false
 		}
 	}
@@ -755,19 +763,18 @@ func (self *IPAddress) Is_private() bool {
 ///  Returns an array of IPv4 objects
 ///
 
-
 func (self *IPAddress) Split(subnets uint) ResultIPAddresses {
 	if subnets == 0 || (1<<self.Prefix.Host_prefix()) <= subnets {
 		out := fmt.Sprintf("Value %s out of range", subnets)
 		return &Errors{&out}
 	}
-  prefix, _ := self.Newprefix(subnets)
+	prefix, _ := self.Newprefix(subnets)
 	networks := self.Subnet(prefix.Num)
 	if networks.IsErr() {
 		return networks
 	}
 	for uint(len(*networks.Unwrap())) != subnets {
-    tmp := Sum_first_found(networks.Unwrap())
+		tmp := Sum_first_found(networks.Unwrap())
 		networks = &Oks{tmp}
 	}
 	return networks
@@ -799,7 +806,7 @@ func (self *IPAddress) Split(subnets uint) ResultIPAddresses {
 
 func (self *IPAddress) Supernet(new_prefix uint8) ResultIPAddress {
 	if new_prefix >= self.Prefix.Num {
-    ret := fmt.Sprintf("New prefix must be smaller than existing prefix: %d >= %d",
+		ret := fmt.Sprintf("New prefix must be smaller than existing prefix: %d >= %d",
 			new_prefix, self.Prefix.Num)
 		return &Error{&ret}
 	}
@@ -807,11 +814,11 @@ func (self *IPAddress) Supernet(new_prefix uint8) ResultIPAddress {
 	// for _ in new_prefix..self.Prefix.num {
 	//     new_ip = new_ip << 1;
 	// }
-  tmp := self.Host_address
-  tmp3:= self.Prefix.From(new_prefix).Unwrap();
-  tmp2:= self.From(&tmp, tmp3)
-  tmp4:= tmp2.Network()
-	return &Ok{&tmp4}
+	tmp := self.Host_address
+	tmp3 := self.Prefix.From(new_prefix).Unwrap()
+	tmp2 := self.From(&tmp, tmp3)
+	tmp4 := tmp2.Network()
+	return &Ok{tmp4}
 }
 
 ///  This method implements the subnetting function
@@ -836,20 +843,20 @@ func (self *IPAddress) Supernet(new_prefix uint8) ResultIPAddress {
 ///  a power of two.
 ///
 
-func (self *IPAddress) Subnet(subprefix uint8) ResultIPAddresses  {
+func (self *IPAddress) Subnet(subprefix uint8) ResultIPAddresses {
 	if subprefix < self.Prefix.Num || self.Ip_bits.Bits < subprefix {
-    tmp := fmt.Sprintf("New prefix must be between prefix%d %d and %d",
-      self.Prefix.Num,
-      subprefix,
-      self.Ip_bits.Bits)
-    return &Errors{ &tmp }
+		tmp := fmt.Sprintf("New prefix must be between prefix%d %d and %d",
+			self.Prefix.Num,
+			subprefix,
+			self.Ip_bits.Bits)
+		return &Errors{&tmp}
 	}
-	var ret []IPAddress
+	var ret []*IPAddress
 	net := self.Network()
 	net.Prefix = *net.Prefix.From(subprefix).Unwrap()
 	for i := 0; i < (1 << (subprefix - self.Prefix.Num)); i++ {
 		ret = append(ret, net.Clone())
-    pre := net.Prefix
+		pre := net.Prefix
 		net = net.From(&net.Host_address, &pre)
 		size := net.Size()
 		net.Host_address.Add(&net.Host_address, &size)
@@ -868,7 +875,7 @@ func (self *IPAddress) Subnet(subprefix uint8) ResultIPAddresses  {
 ///      ///  "ac10:0a01"
 ///
 
-func (self *IPAddress) To_ipv6() IPAddress {
+func (self *IPAddress) To_ipv6() *IPAddress {
 	return (self.Vt_to_ipv6)(self)
 }
 
@@ -882,17 +889,15 @@ func (self *IPAddress) Newprefix(num uint) (*prefix.Prefix, *string) {
 			return self.Prefix.Add(uint8(a)).Unwrap(), nil
 		}
 	}
-  ret := fmt.Sprintf("newprefix not found %d:%d", num, self.Ip_bits.Bits)
+	ret := fmt.Sprintf("newprefix not found %d:%d", num, self.Ip_bits.Bits)
 	return nil, &ret
 }
 
-
-
-
 type ipaddressSorter struct {
-	ipaddress []IPAddress
+	ipaddress []*IPAddress
 	by        func(ip1, ip2 *IPAddress) bool // Closure used in the Less method.
 }
+
 func (s *ipaddressSorter) Len() int {
 	return len(s.ipaddress)
 }
@@ -904,12 +909,10 @@ func (s *ipaddressSorter) Swap(i, j int) {
 
 // Less is part of sort.Interface. It is implemented by calling the "by" closure in the sorter.
 func (s *ipaddressSorter) Less(i, j int) bool {
-	return s.ipaddress[i].Cmp(&s.ipaddress[j]) < 0
+	return s.ipaddress[i].Cmp(s.ipaddress[j]) < 0
 }
 
-
-
-func sorting(ips []IPAddress) {
+func Sorting(ips []*IPAddress) {
 	s := &ipaddressSorter{
 		ipaddress: ips,
 		by: func(ip1, ip2 *IPAddress) bool {
@@ -918,8 +921,8 @@ func sorting(ips []IPAddress) {
 	sort.Sort(s)
 }
 
-func remove_ipaddress(stack []IPAddress, idx int) []IPAddress {
-	var p []IPAddress
+func remove_ipaddress(stack []*IPAddress, idx int) []*IPAddress {
+	var p []*IPAddress
 	for i, v := range stack {
 		if i != idx {
 			p = append(p, v)
@@ -937,25 +940,28 @@ func pos_to_idx(pos int, len int) int {
 	ilen := len
 	// let ret = pos % ilen;
 	rem := ((pos % ilen) + ilen) % ilen
-	// println!("pos_to_idx:{}:{}=>{}:{}", pos, len, ret, rem);
+	// fmt.Printf("pos_to_idx:{}:{}=>{}:{}", pos, len, ret, rem);
 	return rem
 }
 
-
-func Aggregate(networks *[]IPAddress) *[]IPAddress {
+func Aggregate(networks *[]*IPAddress) *[]*IPAddress {
 	if len(*networks) == 0 {
-		return &[]IPAddress{}
+		fmt.Printf("Aggregate:0\n")
+		return &[]*IPAddress{}
 	}
 	if len(*networks) == 1 {
-		return &[]IPAddress{(*networks)[0].Network()}
+		fmt.Printf("Aggregate:1a:%s\n", (*networks)[0])
+		net := (*networks)[0].Network()
+		fmt.Printf("Aggregate:1:%s:%s\n", net.To_string(), (*networks)[0].To_string())
+		return &[]*IPAddress{net}
 	}
-	var stack []IPAddress
-	for _, i := range *networks {
-		stack = append(stack, i.Network())
+	stack := make([]*IPAddress, len(*networks))
+	for idx, i := range *networks {
+		stack[idx] = i.Network()
 	}
-	sorting(stack)
+	Sorting(stack)
 	// for i in 0..networks.len() {
-	//     println!("{}==={}", &networks[i].to_string_uncompressed(),
+	//     fmt.Printf("{}==={}", &networks[i].to_string_uncompressed(),
 	//         &stack[i].to_string_uncompressed());
 	// }
 	pos := 0
@@ -964,52 +970,52 @@ func Aggregate(networks *[]IPAddress) *[]IPAddress {
 			pos = 0
 		}
 		stack_len := len(stack) // borrow checker
-		// println!("loop:{}:{}", pos, stack_len);
+		// fmt.Printf("loop:{}:{}", pos, stack_len);
 		// if stack_len == 1 {
-		//     println!("exit 1");
+		//     fmt.Printf("exit 1");
 		//     break;
 		// }
 		if pos >= stack_len {
-			// println!("exit first:{}:{}", stack_len, pos);
+			// fmt.Printf("exit first:{}:{}", stack_len, pos);
 			break
 		}
 		first := pos_to_idx(pos, stack_len)
 		pos = pos + 1
 		if pos >= stack_len {
-			// println!("exit second:{}:{}", stack_len, pos);
+			// fmt.Printf("exit second:{}:{}", stack_len, pos);
 			break
 		}
 		second := pos_to_idx(pos, stack_len)
 		pos = pos + 1
 		//let mut firstUnwrap = first.Unwrap();
-		if stack[first].Includes(&stack[second]) {
+		if stack[first].Includes(stack[second]) {
 			pos = pos - 2
-			// println!("remove:1:{}:{}:{}=>{}", first, second, stack_len, pos + 1);
-			remove_ipaddress(stack, pos_to_idx(pos+1, stack_len))
+			// fmt.Printf("remove:1:{}:{}:{}=>{}", first, second, stack_len, pos + 1);
+			stack = remove_ipaddress(stack, pos_to_idx(pos+1, stack_len))
 		} else {
 			tmp := stack[first].Prefix.Sub(1)
 			stack[first].Prefix = *tmp.Unwrap()
-			// println!("complex:{}:{}:{}:{}:P1:{}:P2:{}", pos, stack_len,
+			// fmt.Printf("complex:{}:{}:{}:{}:P1:{}:P2:{}", pos, stack_len,
 			// first, second,
 			// stack[first].to_string(), stack[second].to_string());
 			if (stack[first].Prefix.Num+1) == stack[second].Prefix.Num &&
-				stack[first].Includes(&stack[second]) {
+				stack[first].Includes(stack[second]) {
 				pos = pos - 2
 				idx := pos_to_idx(pos, stack_len)
 				stack[idx] = stack[first].Clone() // kaputt
-				remove_ipaddress(stack, pos_to_idx(pos+1, stack_len))
-				// println!("remove-2:{}:{}", pos + 1, stack_len);
+				stack = remove_ipaddress(stack, pos_to_idx(pos+1, stack_len))
+				// fmt.Printf("remove-2:{}:{}", pos + 1, stack_len);
 				pos = pos - 1 // backtrack
 			} else {
-        tmp := stack[first].Prefix.Add(1)
+				tmp := stack[first].Prefix.Add(1)
 				stack[first].Prefix = *tmp.Unwrap() //reset prefix
-				// println!("easy:{}:{}=>{}", pos, stack_len, stack[first].to_string());
+				// fmt.Printf("easy:{}:{}=>{}", pos, stack_len, stack[first].to_string());
 				pos = pos - 1 // do it with second as first
 			}
 		}
 	}
-	// println!("agg={}:{}", pos, stack.len());
-	var ret []IPAddress
+	// fmt.Printf("agg={}:{}", pos, stack.len());
+	var ret []*IPAddress
 	for i := 0; i <= len(stack); i++ {
 		ret = append(ret, stack[i].Network())
 	}
@@ -1140,61 +1146,67 @@ func Aggregate(networks *[]IPAddress) *[]IPAddress {
 ///      ///  ["2000:1::/32","2000:2::/31","2000:4::/32"]
 ///
 
-func Sum_first_found(arr *[]IPAddress) *[]IPAddress {
-	var dup []IPAddress
+func Sum_first_found(arr *[]*IPAddress) *[]*IPAddress {
+	var dup []*IPAddress
 	copy(dup[:], *arr)
 	if len(dup) < 2 {
 		return &dup
 	}
 	for i := len(dup) - 1; i >= 0; i-- {
-		a := Summarize(&[]IPAddress{dup[i], dup[i+1]})
-		// println!("dup:{}:{}:{}", dup.len(), i, a.len());
+		a := Summarize(&[]*IPAddress{dup[i], dup[i+1]})
+		// fmt.Printf("dup:{}:{}:{}", dup.len(), i, a.len());
 		if len(*a) == 1 {
 			dup[i] = (*a)[0].Clone()
-			remove_ipaddress(dup, i+1)
+			dup = remove_ipaddress(dup, i+1)
 			break
 		}
 	}
 	return &dup
 }
 
-
-func Summarize(networks *[]IPAddress) *[]IPAddress {
+func Summarize(networks *[]*IPAddress) *[]*IPAddress {
 	return Aggregate(networks)
 }
 func Summarize_str(netstr []string) ResultIPAddresses {
 	vec := To_ipaddress_vec(netstr)
 	if vec.IsErr() {
+		fmt.Printf("Summarize_str:%s:[%s]\n", vec.UnwrapErr(), netstr)
 		return vec
 	}
-  tmp := Aggregate(vec.Unwrap())
+	fmt.Printf("Summarize_str:Aggregate:0:%s:%s\n", netstr, vec.Unwrap())
+	tmp := Aggregate(vec.Unwrap())
+	fmt.Printf("Summarize_str:Aggregate:1:%s:%s\n", netstr, vec.Unwrap())
 	return &Oks{tmp}
 }
 
 func To_s_vec(vec *[]IPAddress) []string {
 	var ret []string
-	for _,i := range *vec {
+	for _, i := range *vec {
 		ret = append(ret, i.To_s())
 	}
 	return ret
 }
 
-func To_string_vec(vec *[]IPAddress) []string {
+func To_string_vec(vec *[]*IPAddress) []string {
 	var ret []string
-	for _,i := range *vec {
+	for _, i := range *vec {
 		ret = append(ret, i.To_string())
 	}
 	return ret
 }
 
 func To_ipaddress_vec(vec []string) ResultIPAddresses {
-	var ret []IPAddress
-	// for ipstr := range vec {
-	// 	ipa, err := nil, "Hello" //IPAddress.Parse(ipstr)
-	// 	if err != nil {
-	// 		return &Errors{&err}
-	// 	}
-	// 	ret = append(ret, ipa)
-	// }
+	ret := []*IPAddress{}
+	for _, ipstr := range vec {
+		ipa := Parse(ipstr)
+		if ipa.IsErr() {
+			fmt.Printf("To_ipaddress_vec:Err:%s\n", ipa.UnwrapErr())
+			return &Errors{ipa.UnwrapErr()}
+		}
+		fmt.Printf("To_ipaddress_vec:%s:%s:%s\n", ipstr,
+			ipa.Unwrap().To_string(),
+			ipa.Unwrap())
+		ret = append(ret, ipa.Unwrap())
+	}
 	return &Oks{&ret}
 }

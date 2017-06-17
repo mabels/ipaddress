@@ -34,6 +34,12 @@ func assert_string(a string, b string) {
 	}
 }
 
+func assert_ipaddress(a *IPAddress, b *IPAddress) {
+	if (!a.Eq(b)) {
+		log.Fatal(fmt.Sprintf("[%s] != [%s]", a, b))
+	}
+}
+
 func assert_int(a int, b int) {
 	if (a != b) {
 		log.Fatal(fmt.Sprintf("[%d] != [%d]", a, b))

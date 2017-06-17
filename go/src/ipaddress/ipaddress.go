@@ -24,7 +24,7 @@ type IPAddress struct {
 	Mapped                     *IPAddress
 	Vt_is_private              func(*IPAddress) bool
 	Vt_is_loopback             func(*IPAddress) bool
-	Vt_to_ipv6                 func(*IPAddress) IPAddress
+	Vt_to_ipv6                 func(*IPAddress) *IPAddress
 	// Vt_parse_netmask           func(*string) (*uint8, *string)
 	// Vt_aggregate               func(*[]IPAddress) []IPAddress
   // Vt_sum_first_found
@@ -40,6 +40,6 @@ type ResultIPAddress interface {
 type ResultIPAddresses interface {
   IsOk() bool
   IsErr() bool
-  Unwrap() *[]IPAddress
+  Unwrap() *[]*IPAddress
   UnwrapErr() *string
 }

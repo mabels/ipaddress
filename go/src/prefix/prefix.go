@@ -4,12 +4,11 @@ import "../ip_bits"
 import "math/big"
 import "fmt"
 
-
 type ResultPrefix interface {
-  IsOk() bool
-  IsErr() bool
-  Unwrap() *Prefix
-  UnwrapErr() *string
+	IsOk() bool
+	IsErr() bool
+	Unwrap() *Prefix
+	UnwrapErr() *string
 }
 
 type Prefix struct {
@@ -20,24 +19,26 @@ type Prefix struct {
 }
 
 type Error struct {
-  Err *string
+	Err *string
 }
-func (self *Error) IsOk()  bool { return false }
-func (self *Error) IsErr() bool { return true }
-func (self *Error) Unwrap() *Prefix { return nil }
+
+func (self *Error) IsOk() bool         { return false }
+func (self *Error) IsErr() bool        { return true }
+func (self *Error) Unwrap() *Prefix    { return nil }
 func (self *Error) UnwrapErr() *string { return self.Err }
+
 // func Error(err *string) *ErrorIsh {
 //     return &ErrorIsh{err}
 // }
 
 type Ok struct {
-  Prefix *Prefix
+	Prefix *Prefix
 }
-func (self *Ok) IsOk()  bool { return true }
-func (self *Ok) IsErr() bool { return false }
-func (self *Ok) Unwrap() *Prefix { return self.Prefix }
-func (self *Ok) UnwrapErr() *string { return nil }
 
+func (self *Ok) IsOk() bool         { return true }
+func (self *Ok) IsErr() bool        { return false }
+func (self *Ok) Unwrap() *Prefix    { return self.Prefix }
+func (self *Ok) UnwrapErr() *string { return nil }
 
 func (self *Prefix) Clone() Prefix {
 	return Prefix{
@@ -97,8 +98,8 @@ func New_netmask(prefix uint8, bits uint8) *big.Int {
 	return mask
 }
 
-func (self *Prefix) Netmask() big.Int {
-	return self.Net_mask
+func (self *Prefix) Netmask() *big.Int {
+	return &self.Net_mask
 }
 
 func (self *Prefix) Get_prefix() uint8 {

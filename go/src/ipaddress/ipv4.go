@@ -85,10 +85,10 @@ func From_u32(addr uint32, _prefix uint8) ResultIPAddress {
 }
 
 func Ipv4New(str string) ResultIPAddress {
-	fmt.Printf("---1\n")
+	// fmt.Printf("---1\n")
 	ip, netmask := Split_at_slash(str)
 	if !Is_valid_ipv4(ip) {
-		fmt.Printf("---2\n")
+		// fmt.Printf("---2:%s:%s:%s\n", str, ip, *netmask)
 		tmp := fmt.Sprintf("Invalid IP %s", str)
 		return &Error{&tmp}
 	}
@@ -97,7 +97,7 @@ func Ipv4New(str string) ResultIPAddress {
 		//  netmask is defined
 		ipn, err := Parse_netmask_to_prefix(*netmask)
 		if err != nil {
-			fmt.Printf("---3\n")
+			// fmt.Printf("---3\n")
 			return &Error{err}
 		}
 		ip_prefix_num = *ipn
@@ -105,14 +105,15 @@ func Ipv4New(str string) ResultIPAddress {
 	}
 	ip_prefix := prefix32.New(ip_prefix_num)
 	if ip_prefix == nil {
-		fmt.Printf("---4\n")
+		// fmt.Printf("---4\n")
 		return &Error{ip_prefix.UnwrapErr()}
 	}
 	split_u32, err := split_to_u32(ip)
 	if err != nil {
-		fmt.Printf("---5 [%s]\n", err)
+		// fmt.Printf("---5 [%s]\n", err)
 		return &Error{err}
 	}
+	fmt.Printf("Ipv4New:%d:%s\n", int64(*split_u32), str)
 	return &Ok{&IPAddress{
 		ip_bits.V4(),
 		*big.NewInt(int64(*split_u32)),
@@ -159,15 +160,16 @@ func ipv4_is_loopback(my *IPAddress) bool {
 	return ipv4_loopback.Includes(my)
 }
 
-func ipv4_to_ipv6(ia *IPAddress) IPAddress {
-	return IPAddress{
-		ip_bits.V6(),
-		ia.Host_address,
-		*prefix128.New(ia.Prefix.Num).Unwrap(),
-		nil,
-		ipv6_is_private,
-		ipv6_is_loopback,
-		ipv6_to_ipv6}
+func ipv4_to_ipv6(ia *IPAddress) *IPAddress {
+	ret := new(IPAddress)
+	ret.Ip_bits = ip_bits.V6()
+	ret.Host_address = ia.Host_address
+	ret.Prefix = *prefix128.New(ia.Prefix.Num).Unwrap()
+	ret.Mapped = nil
+	ret.Vt_is_private =	ipv6_is_private
+	ret.Vt_is_loopback = ipv6_is_loopback
+	ret.Vt_to_ipv6 = ipv6_to_ipv6
+	return ret
 }
 
 // func is_private(my: &IPAddress) -> bool {

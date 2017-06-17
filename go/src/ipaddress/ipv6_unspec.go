@@ -1,5 +1,5 @@
 
-package unspec
+package ipaddress
 
 // import "ipaddress"
 ///  The address with all zero bits is called the +unspecified+ address
@@ -51,6 +51,6 @@ package unspec
 ///    ip.to_s
 ///       ///  => "::/128"
 ///
-func New() IPAddress {
-    return IPAddress.Parse("::");
+func Ipv6UnspecNew() *IPAddress {
+    return Parse("::").Unwrap();
 }
