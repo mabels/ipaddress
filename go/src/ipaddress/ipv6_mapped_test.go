@@ -60,7 +60,7 @@ func TestIpv6Mapped(t *testing.T) {
         s := ipv6MappedSetup()
         assert_bool(true, Parse("::172.16.10.1").IsOk())
         for ip, u128 := range s.valid_mapped {
-            fmt.Printf("-%s--%s\n", ip, u128);
+            // fmt.Printf("-%s--%s\n", ip, u128);
             if Parse(ip).IsErr() {
                 fmt.Printf("%s\n", Parse(ip).UnwrapErr());
             }
@@ -68,14 +68,14 @@ func TestIpv6Mapped(t *testing.T) {
             assert_bigint(u128, Parse(ip).Unwrap().Host_address);
         }
         for ip, u128 := range s.valid_mapped_ipv6 {
-            fmt.Printf("====%s==%s", ip, u128);
+            // fmt.Printf("====%s==%s", ip, u128);
             assert_bool(true, Parse(ip).IsOk());
             assert_bigint(u128, Parse(ip).Unwrap().Host_address);
         }
     })
     it("test_mapped_from_ipv6_conversion", func() {
         for ip6, ip4 := range ipv6MappedSetup().valid_mapped_ipv6_conversion {
-            fmt.Printf("+%s--%s", ip6, ip4);
+            // fmt.Printf("+%s--%s", ip6, ip4);
             assert_string(ip4, Parse(ip6).Unwrap().Mapped.To_s());
         }
     })

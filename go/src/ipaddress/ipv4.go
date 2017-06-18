@@ -113,7 +113,7 @@ func Ipv4New(str string) ResultIPAddress {
 		// fmt.Printf("---5 [%s]\n", err)
 		return &Error{err}
 	}
-	fmt.Printf("Ipv4New:%d:%s\n", int64(*split_u32), str)
+	// fmt.Printf("Ipv4New:%x:%s\n", int64(*split_u32), str)
 	return &Ok{&IPAddress{
 		ip_bits.V4(),
 		*big.NewInt(int64(*split_u32)),
@@ -128,15 +128,15 @@ var ipv4_10_8 = "10.0.0.0/8"
 var ipv4_169_254_16 = "169.254.0.0/16"
 var ipv4_172_16_12 = "172.16.0.0/12"
 var ipv4_192_168_16 = "192.168.0.0/16"
-var ipv4_private_networks_val []IPAddress
+var ipv4_private_networks_val []*IPAddress
 
-func ipv4_private_networks() *[]IPAddress {
+func ipv4_private_networks() *[]*IPAddress {
 	if ipv4_private_networks_val == nil {
-		ipv4_private_networks_val = []IPAddress{
-			*Parse(ipv4_10_8).Unwrap(),
-			*Parse(ipv4_169_254_16).Unwrap(),
-			*Parse(ipv4_172_16_12).Unwrap(),
-			*Parse(ipv4_192_168_16).Unwrap()}
+		ipv4_private_networks_val = []*IPAddress{
+			Parse(ipv4_10_8).Unwrap(),
+			Parse(ipv4_169_254_16).Unwrap(),
+			Parse(ipv4_172_16_12).Unwrap(),
+			Parse(ipv4_192_168_16).Unwrap()}
 	}
 	return &ipv4_private_networks_val
 }

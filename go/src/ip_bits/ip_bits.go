@@ -26,7 +26,7 @@ func ipv4_as_compressed(ip_bits *IpBits, host_address *big.Int) string {
 		ret.WriteString(fmt.Sprintf("%d", part))
 		sep = "."
 	}
-	fmt.Printf("ipv4_as_compressed:%s:%s\n", ret, host_address.String())
+	//fmt.Printf("ipv4_as_compressed:%s:%s\n", ret.String(), host_address.String())
 	return ret.String()
 }
 
@@ -51,7 +51,7 @@ func ipv6_as_compressed(ip_bits *IpBits, host_address *big.Int) string {
 			}
 		}
 	}
-	fmt.Printf("ipv6_as_compressed:%s\n", ret.String())
+	// fmt.Printf("ipv6_as_compressed:%s\n", ret.String())
 	return ret.String()
 }
 
@@ -84,7 +84,7 @@ func v6const() *IpBits {
 	ret := new(IpBits)
 	ret.Version = ip_version.V6
 	ret.Vt_as_compressed_string = ipv6_as_compressed
-	ret.Vt_as_uncompressed_string = ipv6_as_compressed
+	ret.Vt_as_uncompressed_string = ipv6_as_uncompressed
 	ret.Bits = 128
 	ret.Part_bits = 16
 	ret.Dns_bits = 4

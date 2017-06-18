@@ -108,8 +108,7 @@ func Ipv6MappedNew(str string) ResultIPAddress {
         ipv4_str = fmt.Sprintf("%s%s", ipv4_str, netmask)
         ipv4 := Parse(ipv4_str);
         if ipv4.IsErr()  {
-            fmt.Sprintf("---2");
-            fmt.Printf("Ipv6MappedNew-2:%s\n")
+            // fmt.Printf("Ipv6MappedNew-2:%s\n")
             return ipv4;
         }
         //mapped = Some(ipv4.Unwrap());
@@ -140,11 +139,11 @@ func Ipv6MappedNew(str string) ResultIPAddress {
         r_ipv6 := Parse(rebuild_ipv6_str);
         if r_ipv6.IsErr() {
             // fmt.Printf("---3|{}", &rebuild_ipv6);
-            fmt.Printf("Ipv6MappedNew-3\n")
+            // fmt.Printf("Ipv6MappedNew-3\n")
             return r_ipv6
         }
         if r_ipv6.Unwrap().Is_mapped() {
-            fmt.Printf("Ipv6MappedNew-4\n")
+            // fmt.Printf("Ipv6MappedNew-4\n")
             return r_ipv6
         }
         ipv6 := r_ipv6.Unwrap();
@@ -152,17 +151,17 @@ func Ipv6MappedNew(str string) ResultIPAddress {
         if big.NewInt(0).Cmp(p96bit) != 0 {
             // fmt.Printf("---4|%s", &rebuild_ipv6);
             tmp := fmt.Sprintf("is not a mapped address:%s", rebuild_ipv6);
-            fmt.Printf("Ipv6MappedNew-5:%s:%s\n", tmp, p96bit.String())
+            // fmt.Printf("Ipv6MappedNew-5:%s:%s\n", tmp, p96bit.String())
             return &Error{&tmp}
         }
         {
             ipv6_ipv4_str := fmt.Sprintf("::ffff:%s", rebuild_ipv4)
             r_ipv6 := Parse(ipv6_ipv4_str);
-            fmt.Printf("Ipv6MappedNew-6:[%s]\n",ipv6_ipv4_str)
+            // fmt.Printf("Ipv6MappedNew-6:[%s]\n",ipv6_ipv4_str)
             return r_ipv6
         }
     }
     tmp := fmt.Sprintf("unknown mapped format:[%s]", str)
-    fmt.Printf("Ipv6MappedNew-7:%s\n", str)
+    // fmt.Printf("Ipv6MappedNew-7:%s\n", str)
     return &Error{&tmp}
 }

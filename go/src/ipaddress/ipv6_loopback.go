@@ -47,5 +47,5 @@ import "math/big"
 ///      ///  "::1/128"
 ///
 func Ipv6LoopbackNew() *IPAddress {
-    return From_int(big.NewInt(1), 128).Unwrap();
+    return Ipv6FromInt(big.NewInt(1), 128).Unwrap();
 }

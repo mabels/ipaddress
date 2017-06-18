@@ -90,10 +90,17 @@ func parse_ipv4_part(i string, addr string) (*uint32, *string) {
 }
 
 func remove_string(stack []string, idx int) []string {
-	var p []string
+	var p []string = nil
+	if (idx < len(stack)) {
+		p = make([]string, len(stack)-1);
+	} else {
+		p = make([]string, len(stack));
+	}
+	pidx := 0
 	for i, v := range stack {
 		if i != idx {
-			p = append(p, v)
+			p[pidx] = v
+			pidx++
 		}
 	}
 	return p
@@ -111,12 +118,13 @@ func split_to_u32(addr string) (*uint32, *string) {
 		return nil, &tmp
 	}
 	if split_addr_len < 4 {
-		_, err := parse_ipv4_part(split_addr[split_addr_len-1], addr)
+		part, err := parse_ipv4_part(split_addr[split_addr_len-1], addr)
 		if err != nil {
 			// fmt.Printf("u32-4\n")
 			return nil, err
 		}
-		// ip := part
+		// fmt.Printf("split_to_u32:%s:%d:%s\n", addr, split_addr_len, split_addr)
+		ip = *part
 		split_addr = remove_string(split_addr, split_addr_len-1)
 	}
 	for _, i := range split_addr {
@@ -181,23 +189,23 @@ func split_to_num(addr string) (*big.Int, *string) {
 	pre_post := strings.Split(strings.TrimSpace(addr), "::")
 	if len(pre_post) > 2 {
     tmp := fmt.Sprintf("IPv6 only allow one :: %s", addr)
-		fmt.Printf("stn-1:%s:%s\n", addr, tmp)
+		// fmt.Printf("stn-1:%s:%s\n", addr, tmp)
 		return nil, &tmp
 	}
 	if len(pre_post) == 2 {
 		//fmt.Printf("{}=::={}", pre_post[0], pre_post[1]);
 		pre, err, pre_parts := split_on_colon(pre_post[0])
 		if err != nil {
-			fmt.Printf("stn-2:%s:[%s]:%s\n", addr, pre_post[0], *err)
+			// fmt.Printf("stn-2:%s:[%s]:%s\n", addr, pre_post[0], *err)
 			return nil, err
 		}
 		post, err, _ := split_on_colon(pre_post[1])
 		if err != nil {
-			fmt.Printf("stn-3:%s:%s\n", addr, err)
+			// fmt.Printf("stn-3:%s:%s\n", addr, err)
 			return nil, err
 		}
 		// fmt.Printf("pre:{} post:{}", pre_parts, post_parts);
-		fmt.Printf("stn-4:%s\n", addr)
+		// fmt.Printf("stn-4:%s\n", addr)
 		return big.NewInt(0).Add(pre.Lsh(pre, 128-(pre_parts*16)), post), nil
 	}
 	//fmt.Printf("split_to_num:no double:{}", addr);
@@ -214,6 +222,6 @@ func split_to_num(addr string) (*big.Int, *string) {
 
 func Is_valid_ipv6(addr string) bool {
 	_, err := split_to_num(addr)
-	fmt.Printf("Is_valid_ipv6:%s:%s\n", err, addr)
+	// fmt.Printf("Is_valid_ipv6:%s:%s\n", err, addr)
 	return err == nil
 }

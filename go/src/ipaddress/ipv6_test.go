@@ -139,12 +139,12 @@ func TestIpv6(t *testing.T) {
 		})
 		it("test_method_network_u128", func() {
 			s := ipv6Setup()
-			assert_ipaddress(From_int(str2IntPtr("42540766411282592856903984951653826560", 10), 64).Unwrap(),
+			assert_ipaddress(Ipv6FromInt(str2IntPtr("42540766411282592856903984951653826560", 10), 64).Unwrap(),
 				s.ip.Network())
 		})
 		it("test_method_broadcast_u128", func() {
 			s := ipv6Setup()
-			assert_ipaddress(From_int(str2IntPtr("42540766411282592875350729025363378175", 10), 64).Unwrap(),
+			assert_ipaddress(Ipv6FromInt(str2IntPtr("42540766411282592875350729025363378175", 10), 64).Unwrap(),
 				s.ip.Broadcast())
 		})
 		it("test_method_size", func() {
@@ -285,7 +285,7 @@ func TestIpv6(t *testing.T) {
 				"ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"}
 			for prefix := uint(0); prefix < 128; prefix++ {
 				nr_networks := 1 << ((128 - prefix) % 4)
-				for adr := range test_addrs {
+				for _, adr := range test_addrs {
 					net_adr := Parse(fmt.Sprintf("%s/%d", adr, prefix)).Unwrap()
 					ret := net_adr.Dns_networks()
 					assert_uint8(ret[0].Prefix.Num%4, 0)
@@ -363,13 +363,14 @@ func TestIpv6(t *testing.T) {
 		})
 		it("test_classhmethod_parse_u128", func() {
 			for ip, num := range ipv6Setup().valid_ipv6 {
-				fmt.Printf(">>>%s===%s", ip, num)
+				// fmt.Printf(">>>%s===%s", ip, num)
 				assert_string(Parse(ip).Unwrap().To_s(),
-					From_int(&num, 128).Unwrap().To_s())
+					Ipv6FromInt(&num, 128).Unwrap().To_s())
 			}
 		})
 		it("test_classmethod_parse_hex", func() {
       s := ipv6Setup()
+      // fmt.Printf("test_classmethod_parse_hex:%s:%s\n", s.hex, s.ip.To_string())
 			assert_string(s.ip.To_string(),
 				From_str(s.hex, 16, 64).Unwrap().To_string())
 		})
