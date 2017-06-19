@@ -9,37 +9,35 @@ package ipaddress
 //   Is_valid_ipv6(addr *string) bool
 // }
 
-
 // package data
 
 import "math/big"
-import "../ip_bits"
-import "../prefix"
-
+import "./ip_bits"
+import "./prefix"
 
 type IPAddress struct {
-	Ip_bits                    *ip_bits.IpBits
-	Host_address               big.Int
-	Prefix                     prefix.Prefix
-	Mapped                     *IPAddress
-	Vt_is_private              func(*IPAddress) bool
-	Vt_is_loopback             func(*IPAddress) bool
-	Vt_to_ipv6                 func(*IPAddress) *IPAddress
+	Ip_bits        *ip_bits.IpBits
+	Host_address   big.Int
+	Prefix         prefix.Prefix
+	Mapped         *IPAddress
+	Vt_is_private  func(*IPAddress) bool
+	Vt_is_loopback func(*IPAddress) bool
+	Vt_to_ipv6     func(*IPAddress) *IPAddress
 	// Vt_parse_netmask           func(*string) (*uint8, *string)
 	// Vt_aggregate               func(*[]IPAddress) []IPAddress
-  // Vt_sum_first_found
+	// Vt_sum_first_found
 }
 
 type ResultIPAddress interface {
-  IsOk() bool
-  IsErr() bool
-  Unwrap() *IPAddress
-  UnwrapErr() *string
+	IsOk() bool
+	IsErr() bool
+	Unwrap() *IPAddress
+	UnwrapErr() *string
 }
 
 type ResultIPAddresses interface {
-  IsOk() bool
-  IsErr() bool
-  Unwrap() *[]*IPAddress
-  UnwrapErr() *string
+	IsOk() bool
+	IsErr() bool
+	Unwrap() *[]*IPAddress
+	UnwrapErr() *string
 }

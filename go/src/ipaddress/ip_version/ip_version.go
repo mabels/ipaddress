@@ -1,6 +1,5 @@
 package ip_version
 
-
 type Family int
 
 const (

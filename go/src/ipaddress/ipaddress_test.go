@@ -1,15 +1,7 @@
 package ipaddress
 
-import (
-	"fmt"
-	"testing"
-	// "reflect"
-)
-
-// mod tests {
-// use IPAddress;
-
-// use std.str.FromStr;
+import "fmt"
+import "testing"
 
 type IPAddressTest struct {
 	valid_ipv4     string
@@ -31,39 +23,40 @@ func setupIPAddressTest() IPAddressTest {
 	}
 }
 
-func TestIpAddress(t *testing.T) {
-	describe("", func() {
-		it("test_method_ipaddress", func() {
+func TestIpAddress(tx *testing.T) {
+  t := MyTesting{tx}
+	t.Run("IpAddress", func(t *MyTesting) {
+		t.Run("test_method_ipaddress", func(t *MyTesting) {
 			ipt := setupIPAddressTest()
-			assert(Parse(ipt.valid_ipv4).IsOk())
-			assert(Parse(ipt.valid_ipv6).IsOk())
-			assert(Parse(ipt.valid_mapped).IsOk())
+			t.assert(Parse(ipt.valid_ipv4).IsOk())
+			t.assert(Parse(ipt.valid_ipv6).IsOk())
+			t.assert(Parse(ipt.valid_mapped).IsOk())
 
-			assert(Parse(ipt.valid_ipv4).Unwrap().Is_ipv4())
-			assert(Parse(ipt.valid_ipv6).Unwrap().Is_ipv6())
-			assert(Parse(ipt.valid_mapped).Unwrap().Is_mapped())
+			t.assert(Parse(ipt.valid_ipv4).Unwrap().Is_ipv4())
+			t.assert(Parse(ipt.valid_ipv6).Unwrap().Is_ipv6())
+			t.assert(Parse(ipt.valid_mapped).Unwrap().Is_mapped())
 
-			assert(Parse(ipt.invalid_ipv4).IsErr())
-			assert(Parse(ipt.invalid_ipv6).IsErr())
-			assert(Parse(ipt.invalid_mapped).IsErr())
+			t.assert(Parse(ipt.invalid_ipv4).IsErr())
+			t.assert(Parse(ipt.invalid_ipv6).IsErr())
+			t.assert(Parse(ipt.invalid_mapped).IsErr())
 		})
-		it("test_module_method_valid", func() {
-			assert_bool(true, Is_valid("10.0.0.1"))
-			assert_bool(true, Is_valid("10.0.0.0"))
-			assert_bool(true, Is_valid("2002::1"))
-			assert_bool(true, Is_valid("dead:beef:cafe:babe::f0ad"))
-			assert_bool(false, Is_valid("10.0.0.256"))
-			assert_bool(false, Is_valid("10.0.0.0.0"))
-			assert_bool(true, Is_valid("10.0.0"))
-			assert_bool(true, Is_valid("10.0"))
-			assert_bool(false, Is_valid("2002:516:2:200"))
-			assert_bool(false, Is_valid("2002.:1"))
+		t.Run("test_module_method_valid", func(t *MyTesting) {
+			t.assert_bool(true, Is_valid("10.0.0.1"))
+			t.assert_bool(true, Is_valid("10.0.0.0"))
+			t.assert_bool(true, Is_valid("2002::1"))
+			t.assert_bool(true, Is_valid("dead:beef:cafe:babe::f0ad"))
+			t.assert_bool(false, Is_valid("10.0.0.256"))
+			t.assert_bool(false, Is_valid("10.0.0.0.0"))
+			t.assert_bool(true, Is_valid("10.0.0"))
+			t.assert_bool(true, Is_valid("10.0"))
+			t.assert_bool(false, Is_valid("2002:516:2:200"))
+			t.assert_bool(false, Is_valid("2002.:1"))
 		})
-		it("test_module_method_valid_ipv4_netmark", func() {
-			assert_bool(true, Is_valid_netmask("255.255.255.0"))
-			assert_bool(false, Is_valid_netmask("10.0.0.1"))
+		t.Run("test_module_method_valid_ipv4_netmark", func(t *MyTesting) {
+			t.assert_bool(true, Is_valid_netmask("255.255.255.0"))
+			t.assert_bool(false, Is_valid_netmask("10.0.0.1"))
 		})
-		it("test_summarize", func() {
+		t.Run("test_summarize", func(t *MyTesting) {
 			netstr := []string{}
 			nrs := [][]uint{{1, 10}, {11, 127}, {128, 169}, {170, 172}, {173, 192}, {193, 224}}
 			for _, ran := range nrs {
@@ -93,17 +86,17 @@ func TestIpAddress(t *testing.T) {
 			}
 
 			empty_vec := []string{}
-			assert_int(len(*Summarize_str(empty_vec).Unwrap()), 0)
-			assert_string_array(To_string_vec(Summarize_str([]string{"10.1.0.4/24"}).Unwrap()),
+			t.assert_int(len(*Summarize_str(empty_vec).Unwrap()), 0)
+			t.assert_string_array(To_string_vec(Summarize_str([]string{"10.1.0.4/24"}).Unwrap()),
 				[]string{"10.1.0.0/24"})
-			assert_string_array(To_string_vec(Summarize_str([]string{"2000:1::4711/32"}).Unwrap()),
+			t.assert_string_array(To_string_vec(Summarize_str([]string{"2000:1::4711/32"}).Unwrap()),
 				[]string{"2000:1::/32"})
 
-			assert_string_array(To_string_vec(Summarize_str([]string{"10.1.0.4/24",
+			t.assert_string_array(To_string_vec(Summarize_str([]string{"10.1.0.4/24",
 				"7.0.0.0/0",
 				"1.2.3.4/4"}).Unwrap()),
 				[]string{"0.0.0.0/0"})
-			assert_string_array(To_string_vec(Summarize_str([]string{"2000:1::/32",
+			t.assert_string_array(To_string_vec(Summarize_str([]string{"2000:1::/32",
 				"3000:1::/32",
 				"2000:2::/32",
 				"2000:3::/32",
@@ -114,7 +107,7 @@ func TestIpAddress(t *testing.T) {
 				"2000:8::/32"}).Unwrap()),
 				[]string{"2000:1::/32", "2000:2::/31", "2000:4::/30", "2000:8::/32", "3000:1::/32"})
 
-			assert_string_array(To_string_vec(Summarize_str([]string{"10.0.1.1/24",
+			t.assert_string_array(To_string_vec(Summarize_str([]string{"10.0.1.1/24",
 				"30.0.1.0/16",
 				"10.0.2.0/24",
 				"10.0.3.0/24",
@@ -125,21 +118,21 @@ func TestIpAddress(t *testing.T) {
 				"10.0.8.0/24"}).Unwrap()),
 				[]string{"10.0.1.0/24", "10.0.2.0/23", "10.0.4.0/22", "10.0.8.0/24", "30.0.0.0/16"})
 
-			assert_string_array(To_string_vec(Summarize_str([]string{"10.0.0.0/23",
+			t.assert_string_array(To_string_vec(Summarize_str([]string{"10.0.0.0/23",
 				"10.0.2.0/24"}).Unwrap()),
 				[]string{"10.0.0.0/23", "10.0.2.0/24"})
-			assert_string_array(To_string_vec(Summarize_str([]string{"10.0.0.0/24",
+			t.assert_string_array(To_string_vec(Summarize_str([]string{"10.0.0.0/24",
 				"10.0.1.0/24",
 				"10.0.2.0/23"}).Unwrap()),
 				[]string{"10.0.0.0/22"})
 
-			assert_string_array(To_string_vec(Summarize_str([]string{"10.0.0.0/16",
+			t.assert_string_array(To_string_vec(Summarize_str([]string{"10.0.0.0/16",
 				"10.0.2.0/24"}).Unwrap()),
 				[]string{"10.0.0.0/16"})
 			cnt := 10
 			for i := 0; i < cnt; i++ {
 				addrs := Summarize(&ip_addresses)
-				assert_string_array(To_string_vec(addrs),
+				t.assert_string_array(To_string_vec(addrs),
 					[]string{"1.0.0.0/8",
 						"2.0.0.0/7",
 						"4.0.0.0/6",
@@ -194,10 +187,9 @@ func TestIpAddress(t *testing.T) {
 			a1 := Parse("10.0.0.1/24").Unwrap()
 			a2 := Parse("10.0.1.1/24").Unwrap()
 			addrs := Summarize(&[]*IPAddress{a1.Clone(), a2.Clone()})
-			assert_string_array(To_string_vec(addrs),
-				[]string{"10.0.0.0/23"})
-			assert_string("10.0.0.1/24", a1.To_string())
-			assert_string("10.0.1.1/24", a2.To_string())
+			t.assert_string_array(To_string_vec(addrs), []string{"10.0.0.0/23"})
+			t.assert_string("10.0.0.1/24", a1.To_string())
+			t.assert_string("10.0.1.1/24", a2.To_string())
 		})
 	})
 }

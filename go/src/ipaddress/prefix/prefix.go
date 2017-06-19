@@ -13,8 +13,8 @@ type ResultPrefix interface {
 
 type Prefix struct {
 	Num      uint8
-	Ip_bits  *ip_bits.IpBits
-	Net_mask big.Int
+	IpBits  *ip_bits.IpBits
+	Netmask big.Int
 	Vt_from  func(prefix *Prefix, n uint8) ResultPrefix
 }
 
@@ -40,16 +40,17 @@ func (self *Ok) IsErr() bool        { return false }
 func (self *Ok) Unwrap() *Prefix    { return self.Prefix }
 func (self *Ok) UnwrapErr() *string { return nil }
 
-func (self *Prefix) Clone() Prefix {
-	return Prefix{
-		self.Num,
-		self.Ip_bits,
-		self.Net_mask,
-		self.Vt_from}
+func (self *Prefix) Clone() *Prefix {
+	ret := new(Prefix)
+	ret.Num =	self.Num
+	ret.IpBits =	self.IpBits
+	ret.Netmask =	self.Netmask
+	ret.Vt_from =	self.Vt_from
+	return ret
 }
 
 func (self *Prefix) Equal(other Prefix) bool {
-	return self.Ip_bits.Version == other.Ip_bits.Version &&
+	return self.IpBits.Version == other.IpBits.Version &&
 		self.Num == other.Num
 }
 
@@ -58,9 +59,9 @@ func (self *Prefix) String() string {
 }
 
 func (self *Prefix) Cmp(oth *Prefix) int {
-	if self.Ip_bits.Version < oth.Ip_bits.Version {
+	if self.IpBits.Version < oth.IpBits.Version {
 		return -1
-	} else if self.Ip_bits.Version > oth.Ip_bits.Version {
+	} else if self.IpBits.Version > oth.IpBits.Version {
 		return 1
 	} else {
 		if self.Num < oth.Num {
@@ -78,12 +79,12 @@ func (self *Prefix) From(num uint8) ResultPrefix {
 }
 
 func (self *Prefix) To_ip_str() string {
-	return (self.Ip_bits.Vt_as_compressed_string)(self.Ip_bits, self.Netmask())
+	return (self.IpBits.Vt_as_compressed_string)(self.IpBits, &self.Netmask)
 }
 
 func (self *Prefix) Size() *big.Int {
 	my := big.NewInt(1)
-	my.Lsh(my, uint(self.Ip_bits.Bits-self.Num))
+	my.Lsh(my, uint(self.IpBits.Bits-self.Num))
 	return my
 }
 
@@ -98,9 +99,9 @@ func New_netmask(prefix uint8, bits uint8) *big.Int {
 	return mask
 }
 
-func (self *Prefix) Netmask() *big.Int {
-	return &self.Net_mask
-}
+//func (self *Prefix) Netmask() *big.Int {
+//	return &self.Net_mask
+//}
 
 func (self *Prefix) Get_prefix() uint8 {
 	return self.Num
@@ -118,7 +119,7 @@ func (self *Prefix) Get_prefix() uint8 {
 func (self *Prefix) Host_mask() *big.Int {
 	ret := big.NewInt(0)
 	one := big.NewInt(1)
-	for i := uint8(0); i < (self.Ip_bits.Bits - self.Num); i++ {
+	for i := uint8(0); i < (self.IpBits.Bits - self.Num); i++ {
 		ret.Lsh(ret, 1)
 		ret.Add(ret, one)
 	}
@@ -135,7 +136,7 @@ func (self *Prefix) Host_mask() *big.Int {
 ///      ///  128
 ///
 func (self *Prefix) Host_prefix() uint8 {
-	return (self.Ip_bits.Bits) - self.Num
+	return (self.IpBits.Bits) - self.Num
 }
 
 ///
@@ -149,7 +150,7 @@ func (self *Prefix) Host_prefix() uint8 {
 ///          "0000000000000000000000000000000000000000000000000000000000000000"
 ///
 func (self *Prefix) Bits() string {
-	return self.Net_mask.Text(2)
+	return self.Netmask.Text(2)
 }
 func (self *Prefix) To_s() string {
 	return fmt.Sprintf("%d", self.Num)
@@ -164,7 +165,7 @@ func (self *Prefix) Add_prefix(other *Prefix) ResultPrefix {
 func (self *Prefix) Add(other uint8) ResultPrefix {
 	return self.From(self.Get_prefix() + other)
 }
-func (self *Prefix) Sub_prefix(other Prefix) ResultPrefix {
+func (self *Prefix) Sub_prefix(other *Prefix) ResultPrefix {
 	return self.Sub(other.Num)
 }
 func (self *Prefix) Sub(other uint8) ResultPrefix {

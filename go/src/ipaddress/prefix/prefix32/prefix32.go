@@ -5,8 +5,6 @@ import "../../ip_bits"
 import "../../prefix"
 import "fmt"
 
-
-
 func From(my *prefix.Prefix, num uint8) prefix.ResultPrefix {
     return New(num);
 }

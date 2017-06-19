@@ -20,21 +20,21 @@ func ipv6UnspecSetup() IPv6UnspecifiedTest {
 		num: *big.NewInt(0)}
 }
 
-func TestIpv6Unspec(t *testing.T) {
-
-	describe("", func() {
-		it("test_attributes", func() {
-      s := ipv6UnspecSetup()
-			assert_bigint(s.ip.Host_address, s.num)
-			assert_uint8(128, s.ip.Prefix.Get_prefix())
-			assert_bool(true, s.ip.Is_unspecified())
-			assert_string(s.to_s, s.ip.To_s())
-			assert_string(s.to_string, s.ip.To_string())
-			assert_string(s.to_string_uncompressed, s.ip.To_string_uncompressed())
+func TestIpv6Unspec(tx *testing.T) {
+  t := MyTesting{tx}
+	t.Run("", func(t *MyTesting) {
+		t.Run("test_attributes", func(t *MyTesting) {
+			s := ipv6UnspecSetup()
+			t.assert_bigint(s.ip.Host_address, s.num)
+			t.assert_uint8(128, s.ip.Prefix.Get_prefix())
+			t.assert_bool(true, s.ip.Is_unspecified())
+			t.assert_string(s.to_s, s.ip.To_s())
+			t.assert_string(s.to_string, s.ip.To_string())
+			t.assert_string(s.to_string_uncompressed, s.ip.To_string_uncompressed())
 		})
-		it("test_method_ipv6", func() {
-      s := ipv6UnspecSetup()
-			assert_bool(true, s.ip.Is_ipv6())
+		t.Run("test_method_ipv6", func(t *MyTesting) {
+			s := ipv6UnspecSetup()
+			t.assert_bool(true, s.ip.Is_ipv6())
 		})
 	})
 }

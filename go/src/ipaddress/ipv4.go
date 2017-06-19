@@ -1,22 +1,13 @@
 package ipaddress
 
-// import "../ipaddress"
-// import "./prefix"
 import "math/big"
 
-// import "../ipaddress"
-
-// import "../ipaddress/data"
-
-// import "../prefix"
-import "../prefix/prefix32"
-import "../prefix/prefix128"
-import "../ip_bits"
+import "./prefix/prefix32"
+import "./prefix/prefix128"
+import "./ip_bits"
 
 import "fmt"
 import "strconv"
-
-// import "math/big"
 
 // struct IPv4 {
 //     address: String,
@@ -166,7 +157,7 @@ func ipv4_to_ipv6(ia *IPAddress) *IPAddress {
 	ret.Host_address = ia.Host_address
 	ret.Prefix = *prefix128.New(ia.Prefix.Num).Unwrap()
 	ret.Mapped = nil
-	ret.Vt_is_private =	ipv6_is_private
+	ret.Vt_is_private = ipv6_is_private
 	ret.Vt_is_loopback = ipv6_is_loopback
 	ret.Vt_to_ipv6 = ipv6_to_ipv6
 	return ret

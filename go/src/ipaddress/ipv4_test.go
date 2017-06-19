@@ -3,7 +3,6 @@ package ipaddress
 import (
 	"fmt"
 	"math/big"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -35,7 +34,7 @@ type IPv4Test struct {
 	classful         map[string]uint8
 }
 
-func setup() IPv4Test {
+func ipv4Setup() IPv4Test {
 	ipv4t := IPv4Test{
 		valid_ipv4: map[string]IPv4Prefix{},
 		// , "10.0.0", "10.0"
@@ -115,264 +114,264 @@ func setup() IPv4Test {
 	return ipv4t
 }
 
-func TestIpv4(t *testing.T) {
-
-	describe("", func() {
-		it("test_initialize", func() {
-			setup := setup()
+func TestIpv4(tx *testing.T) {
+  t := MyTesting{tx}
+	t.Run("TestIpv4", func(t *MyTesting) {
+		t.Run("test_initialize", func(t *MyTesting) {
+			setup := ipv4Setup()
 			for i, _ := range setup.valid_ipv4 {
 				ip := *Parse(i).Unwrap()
-				assert(ip.Is_ipv4() && !ip.Is_ipv6())
+				t.assert(ip.Is_ipv4() && !ip.Is_ipv6())
 			}
-			assert_uint8(32, setup.ip.Prefix.Ip_bits.Bits)
-			assert(Parse("1.f.13.1/-3").IsErr())
-			assert(Parse("10.0.0.0/8").IsOk())
+			t.assert_uint8(32, setup.ip.Prefix.IpBits.Bits)
+			t.assert(Parse("1.f.13.1/-3").IsErr())
+			t.assert(Parse("10.0.0.0/8").IsOk())
 		})
-		it("test_initialize_format_error", func() {
-			for _, i := range setup().invalid_ipv4 {
-				assert(Parse(i).IsErr())
+		t.Run("test_initialize_format_error", func(t *MyTesting) {
+			for _, i := range ipv4Setup().invalid_ipv4 {
+				t.assert(Parse(i).IsErr())
 			}
-			assert(Parse("10.0.0.0/asd").IsErr())
+			t.assert(Parse("10.0.0.0/asd").IsErr())
 		})
-		it("test_initialize_without_prefix", func() {
-			assert(Parse("10.10.0.0").IsOk())
+		t.Run("test_initialize_without_prefix", func(t *MyTesting) {
+			t.assert(Parse("10.10.0.0").IsOk())
 			ip := Parse("10.10.0.0").Unwrap()
-			assert(!ip.Is_ipv6() && ip.Is_ipv4())
-			assert_uint8(32, ip.Prefix.Num)
+			t.assert(!ip.Is_ipv6() && ip.Is_ipv4())
+			t.assert_uint8(32, ip.Prefix.Num)
 		})
-		it("ipv4_test.test_attributes", func() {
-			for arg, attr := range setup().valid_ipv4 {
+		t.Run("ipv4_test.test_attributes", func(t *MyTesting) {
+			for arg, attr := range ipv4Setup().valid_ipv4 {
 				ip := Parse(arg).Unwrap()
 				// fmt.Printf("test_attributes:%s:%s\n", arg, attr.ip)
-				assert_string(attr.ip, ip.To_s())
-				assert_uint8(attr.prefix, ip.Prefix.Num)
+				t.assert_string(attr.ip, ip.To_s())
+				t.assert_uint8(attr.prefix, ip.Prefix.Num)
 			}
 		})
-		it("test_octets", func() {
+		t.Run("test_octets", func(t *MyTesting) {
 			ip := *Parse("10.1.2.3/8").Unwrap()
-			assert_uint16_array(ip.Parts(), []uint16{10, 1, 2, 3})
+			t.assert_uint16_array(ip.Parts(), []uint16{10, 1, 2, 3})
 		})
-		it("test_method_to_string", func() {
-			for arg, attr := range setup().valid_ipv4 {
+		t.Run("test_method_to_string", func(t *MyTesting) {
+			for arg, attr := range ipv4Setup().valid_ipv4 {
 				ip := *Parse(arg).Unwrap()
-				assert_string(fmt.Sprintf("%s/%d", attr.ip, attr.prefix), ip.To_string())
+				t.assert_string(fmt.Sprintf("%s/%d", attr.ip, attr.prefix), ip.To_string())
 			}
 		})
 
-		it("test_method_to_s", func() {
-			for arg, attr := range setup().valid_ipv4 {
+		t.Run("test_method_to_s", func(t *MyTesting) {
+			for arg, attr := range ipv4Setup().valid_ipv4 {
 				ip := *Parse(arg).Unwrap()
-				assert_string(attr.ip, ip.To_s())
+				t.assert_string(attr.ip, ip.To_s())
 				// ip_c = Parse(arg).Unwrap();
 				// assert_eq(attr.ip, ip.to_s());
 			}
 		})
 
-		it("test_netmask", func() {
-			for addr, mask := range setup().netmask_values {
+		t.Run("test_netmask", func(t *MyTesting) {
+			for addr, mask := range ipv4Setup().netmask_values {
 				netmask := Parse(addr).Unwrap().Netmask()
-				assert_string(netmask.To_s(), mask)
+				t.assert_string(netmask.To_s(), mask)
 			}
 		})
 
-		it("test_method_to_u32", func() {
-			for addr, val := range setup().decimal_values {
+		t.Run("test_method_to_u32", func(t *MyTesting) {
+			for addr, val := range ipv4Setup().decimal_values {
 				ip := *Parse(addr).Unwrap()
-				assert_uint64(ip.Host_address.Uint64(), uint64(val))
+				t.assert_uint64(ip.Host_address.Uint64(), uint64(val))
 			}
 		})
 
-		it("test_method_is_network", func() {
-			s := setup()
-			assert_bool(true, s.network.Is_network())
-			assert_bool(false, s.ip.Is_network())
+		t.Run("test_method_is_network", func(t *MyTesting) {
+			s := ipv4Setup()
+			t.assert_bool(true, s.network.Is_network())
+			t.assert_bool(false, s.ip.Is_network())
 		})
 
-		it("test_one_address_network", func() {
+		t.Run("test_one_address_network", func(t *MyTesting) {
 			network := *Parse("172.16.10.1/32").Unwrap()
-			assert_bool(false, network.Is_network())
+			t.assert_bool(false, network.Is_network())
 		})
 
-		it("test_method_broadcast", func() {
-			for addr, bcast := range setup().broadcast {
+		t.Run("test_method_broadcast", func(t *MyTesting) {
+			for addr, bcast := range ipv4Setup().broadcast {
 				bcastip := Parse(addr).Unwrap().Broadcast()
-				assert_string(bcast, bcastip.To_string())
+				t.assert_string(bcast, bcastip.To_string())
 			}
 		})
 
-		it("test_method_network", func() {
-			for addr, net := range setup().networks {
+		t.Run("test_method_network", func(t *MyTesting) {
+			for addr, net := range ipv4Setup().networks {
 				ip := Parse(addr).Unwrap().Network()
-				assert_string(net, ip.To_string())
+				t.assert_string(net, ip.To_string())
 			}
 		})
 
-		it("test_method_bits", func() {
+		t.Run("test_method_bits", func(t *MyTesting) {
 			ip := *Parse("127.0.0.1").Unwrap()
-			assert_string("01111111000000000000000000000001", ip.Bits())
+			t.assert_string("01111111000000000000000000000001", ip.Bits())
 		})
 
-		it("test_method_first", func() {
+		t.Run("test_method_first", func(t *MyTesting) {
 			ip := Parse("192.168.100.0/24").Unwrap().First()
-			assert_string("192.168.100.1", ip.To_s())
+			t.assert_string("192.168.100.1", ip.To_s())
 			ip = Parse("192.168.100.50/24").Unwrap().First()
-			assert_string("192.168.100.1", ip.To_s())
+			t.assert_string("192.168.100.1", ip.To_s())
 		})
 
-		it("test_method_last", func() {
+		t.Run("test_method_last", func(t *MyTesting) {
 			ip := Parse("192.168.100.0/24").Unwrap().Last()
-			assert_string("192.168.100.254", ip.To_s())
+			t.assert_string("192.168.100.254", ip.To_s())
 			ip = Parse("192.168.100.50/24").Unwrap().Last()
-			assert_string("192.168.100.254", ip.To_s())
+			t.assert_string("192.168.100.254", ip.To_s())
 		})
 
-		it("test_method_each_host", func() {
+		t.Run("test_method_each_host", func(t *MyTesting) {
 			ip := Parse("10.0.0.1/29").Unwrap()
 			arr := []string{}
 			ip.Each_host(func(i *IPAddress) { arr = append(arr, i.To_s()) })
-			assert_string_array(arr,
+			t.assert_string_array(arr,
 				[]string{"10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5", "10.0.0.6"})
 		})
 
-		it("test_method_each", func() {
+		t.Run("test_method_each", func(t *MyTesting) {
 			ip := Parse("10.0.0.1/29").Unwrap()
 			arr := []string{}
 			ip.Each(func(i *IPAddress) { arr = append(arr, i.To_s()) })
-			assert_string_array(arr,
+			t.assert_string_array(arr,
 				[]string{"10.0.0.0", "10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5",
 					"10.0.0.6", "10.0.0.7"})
 		})
 
-		it("test_method_size", func() {
+		t.Run("test_method_size", func(t *MyTesting) {
 			ip := *Parse("10.0.0.1/29").Unwrap()
 			eight := *big.NewInt(8)
-			assert_bigint(ip.Size(), eight)
+			t.assert_bigint(ip.Size(), eight)
 		})
 
-		it("test_method_network_u32", func() {
-			s := setup().ip
+		t.Run("test_method_network_u32", func(t *MyTesting) {
+			s := ipv4Setup().ip
 			network := s.Network()
-			assert_uint64(2886732288, network.Host_address.Uint64())
+			t.assert_uint64(2886732288, network.Host_address.Uint64())
 		})
 
-		it("test_method_broadcast_u32", func() {
-			s := setup().ip
+		t.Run("test_method_broadcast_u32", func(t *MyTesting) {
+			s := ipv4Setup().ip
 			broadcast := s.Broadcast()
-			assert_uint64(2886732543, broadcast.Host_address.Uint64())
+			t.assert_uint64(2886732543, broadcast.Host_address.Uint64())
 		})
 
-		it("test_method_include", func() {
+		t.Run("test_method_include", func(t *MyTesting) {
 			ip := *Parse("192.168.10.100/24").Unwrap()
 			addr := *Parse("192.168.10.102/24").Unwrap()
-			assert_bool(true, ip.Includes(&addr))
-			assert_bool(false,
+			t.assert_bool(true, ip.Includes(&addr))
+			t.assert_bool(false,
 				ip.Includes(Parse("172.16.0.48").Unwrap()))
 			ip = *Parse("10.0.0.0/8").Unwrap()
-			assert_bool(true, ip.Includes(Parse("10.0.0.0/9").Unwrap()))
-			assert_bool(true, ip.Includes(Parse("10.1.1.1/32").Unwrap()))
-			assert_bool(true, ip.Includes(Parse("10.1.1.1/9").Unwrap()))
-			assert_bool(false,
+			t.assert_bool(true, ip.Includes(Parse("10.0.0.0/9").Unwrap()))
+			t.assert_bool(true, ip.Includes(Parse("10.1.1.1/32").Unwrap()))
+			t.assert_bool(true, ip.Includes(Parse("10.1.1.1/9").Unwrap()))
+			t.assert_bool(false,
 				ip.Includes(Parse("172.16.0.0/16").Unwrap()))
-			assert_bool(false, ip.Includes(Parse("10.0.0.0/7").Unwrap()))
-			assert_bool(false, ip.Includes(Parse("5.5.5.5/32").Unwrap()))
-			assert_bool(false, ip.Includes(Parse("11.0.0.0/8").Unwrap()))
+			t.assert_bool(false, ip.Includes(Parse("10.0.0.0/7").Unwrap()))
+			t.assert_bool(false, ip.Includes(Parse("5.5.5.5/32").Unwrap()))
+			t.assert_bool(false, ip.Includes(Parse("11.0.0.0/8").Unwrap()))
 			ip = *Parse("13.13.0.0/13").Unwrap()
-			assert_bool(false, ip.Includes(Parse("13.16.0.0/32").Unwrap()))
+			t.assert_bool(false, ip.Includes(Parse("13.16.0.0/32").Unwrap()))
 		})
 
-		it("test_method_include_all", func() {
+		t.Run("test_method_include_all", func(t *MyTesting) {
 			ip := Parse("192.168.10.100/24").Unwrap()
 			addr1 := Parse("192.168.10.102/24").Unwrap()
 			addr2 := Parse("192.168.10.103/24").Unwrap()
-			assert_bool(true, ip.Includes_all(&[]*IPAddress{addr1.Clone(), addr2}))
-			assert_bool(false,
+			t.assert_bool(true, ip.Includes_all(&[]*IPAddress{addr1.Clone(), addr2}))
+			t.assert_bool(false,
 				ip.Includes_all(&[]*IPAddress{addr1, Parse("13.16.0.0/32").Unwrap()}))
 		})
 
-		it("test_method_ipv4", func() {
-			ip := setup().ip
-			assert_bool(true, ip.Is_ipv4())
+		t.Run("test_method_ipv4", func(t *MyTesting) {
+			ip := ipv4Setup().ip
+			t.assert_bool(true, ip.Is_ipv4())
 		})
 
-		it("test_method_ipv6", func() {
-			ip := setup().ip
-			assert_bool(false, ip.Is_ipv6())
+		t.Run("test_method_ipv6", func(t *MyTesting) {
+			ip := ipv4Setup().ip
+			t.assert_bool(false, ip.Is_ipv6())
 		})
 
-		it("test_method_private", func() {
-			assert_bool(true,
+		t.Run("test_method_private", func(t *MyTesting) {
+			t.assert_bool(true,
 				Parse("169.254.10.50/24").Unwrap().Is_private())
-			assert_bool(true,
+			t.assert_bool(true,
 				Parse("192.168.10.50/24").Unwrap().Is_private())
-			assert_bool(true,
+			t.assert_bool(true,
 				Parse("192.168.10.50/16").Unwrap().Is_private())
-			assert_bool(true,
+			t.assert_bool(true,
 				Parse("172.16.77.40/24").Unwrap().Is_private())
-			assert_bool(true,
+			t.assert_bool(true,
 				Parse("172.16.10.50/14").Unwrap().Is_private())
-			assert_bool(true,
+			t.assert_bool(true,
 				Parse("10.10.10.10/10").Unwrap().Is_private())
-			assert_bool(true, Parse("10.0.0.0/8").Unwrap().Is_private())
-			assert_bool(false,
+			t.assert_bool(true, Parse("10.0.0.0/8").Unwrap().Is_private())
+			t.assert_bool(false,
 				Parse("192.168.10.50/12").Unwrap().Is_private())
-			assert_bool(false, Parse("3.3.3.3").Unwrap().Is_private())
-			assert_bool(false, Parse("10.0.0.0/7").Unwrap().Is_private())
-			assert_bool(false,
+			t.assert_bool(false, Parse("3.3.3.3").Unwrap().Is_private())
+			t.assert_bool(false, Parse("10.0.0.0/7").Unwrap().Is_private())
+			t.assert_bool(false,
 				Parse("172.32.0.0/12").Unwrap().Is_private())
-			assert_bool(false,
+			t.assert_bool(false,
 				Parse("172.16.0.0/11").Unwrap().Is_private())
-			assert_bool(false,
+			t.assert_bool(false,
 				Parse("192.0.0.2/24").Unwrap().Is_private())
 		})
 
-		it("test_method_octet", func() {
-			ip := setup().ip
-			assert_uint16(ip.Parts()[0], 172)
-			assert_uint16(ip.Parts()[1], 16)
-			assert_uint16(ip.Parts()[2], 10)
-			assert_uint16(ip.Parts()[3], 1)
+		t.Run("test_method_octet", func(t *MyTesting) {
+			ip := ipv4Setup().ip
+			t.assert_uint16(ip.Parts()[0], 172)
+			t.assert_uint16(ip.Parts()[1], 16)
+			t.assert_uint16(ip.Parts()[2], 10)
+			t.assert_uint16(ip.Parts()[3], 1)
 		})
 
-		it("test_method_a", func() {
-			s := setup()
-			assert_bool(true, Is_class_a(&s.class_a))
-			assert_bool(false, Is_class_a(&s.class_b))
-			assert_bool(false, Is_class_a(&s.class_c))
+		t.Run("test_method_a", func(t *MyTesting) {
+			s := ipv4Setup()
+			t.assert_bool(true, Is_class_a(&s.class_a))
+			t.assert_bool(false, Is_class_a(&s.class_b))
+			t.assert_bool(false, Is_class_a(&s.class_c))
 		})
 
-		it("test_method_b", func() {
-			s := setup()
-			assert_bool(true, Is_class_b(&s.class_b))
-			assert_bool(false, Is_class_b(&s.class_a))
-			assert_bool(false, Is_class_b(&s.class_c))
+		t.Run("test_method_b", func(t *MyTesting) {
+			s := ipv4Setup()
+			t.assert_bool(true, Is_class_b(&s.class_b))
+			t.assert_bool(false, Is_class_b(&s.class_a))
+			t.assert_bool(false, Is_class_b(&s.class_c))
 		})
 
-		it("test_method_c", func() {
-			s := setup()
-			assert_bool(true, Is_class_c(&s.class_c))
-			assert_bool(false, Is_class_c(&s.class_a))
-			assert_bool(false, Is_class_c(&s.class_b))
+		t.Run("test_method_c", func(t *MyTesting) {
+			s := ipv4Setup()
+			t.assert_bool(true, Is_class_c(&s.class_c))
+			t.assert_bool(false, Is_class_c(&s.class_a))
+			t.assert_bool(false, Is_class_c(&s.class_b))
 		})
 
-		it("test_method_to_ipv6", func() {
-			s := setup()
+		t.Run("test_method_to_ipv6", func(t *MyTesting) {
+			s := ipv4Setup()
 			ipv6 := s.ip.To_ipv6()
-			assert_string("::ac10:a01", ipv6.To_s())
+			t.assert_string("::ac10:a01", ipv6.To_s())
 		})
 
-		it("test_method_reverse", func() {
-			s := setup()
-			assert_string(s.ip.Dns_reverse(), "10.16.172.in-addr.arpa")
+		t.Run("test_method_reverse", func(t *MyTesting) {
+			s := ipv4Setup()
+			t.assert_string(s.ip.Dns_reverse(), "10.16.172.in-addr.arpa")
 		})
 
-		it("ipv4.test_method_dns_rev_domains", func() {
-			assert_string_array(Parse("173.17.5.1/23").Unwrap().Dns_rev_domains(),
+		t.Run("ipv4.test_method_dns_rev_domains", func(t *MyTesting) {
+			t.assert_string_array(Parse("173.17.5.1/23").Unwrap().Dns_rev_domains(),
 				[]string{"4.17.173.in-addr.arpa", "5.17.173.in-addr.arpa"})
-			assert_string_array(Parse("173.17.1.1/15").Unwrap().Dns_rev_domains(),
+			t.assert_string_array(Parse("173.17.1.1/15").Unwrap().Dns_rev_domains(),
 				[]string{"16.173.in-addr.arpa", "17.173.in-addr.arpa"})
-			assert_string_array(Parse("173.17.1.1/7").Unwrap().Dns_rev_domains(),
+			t.assert_string_array(Parse("173.17.1.1/7").Unwrap().Dns_rev_domains(),
 				[]string{"172.in-addr.arpa", "173.in-addr.arpa"})
-			assert_string_array(Parse("173.17.1.1/29").Unwrap().Dns_rev_domains(),
+			t.assert_string_array(Parse("173.17.1.1/29").Unwrap().Dns_rev_domains(),
 				[]string{
 					"0.1.17.173.in-addr.arpa",
 					"1.1.17.173.in-addr.arpa",
@@ -382,43 +381,43 @@ func TestIpv4(t *testing.T) {
 					"5.1.17.173.in-addr.arpa",
 					"6.1.17.173.in-addr.arpa",
 					"7.1.17.173.in-addr.arpa"})
-			assert_string_array(Parse("174.17.1.1/24").Unwrap().Dns_rev_domains(),
+			t.assert_string_array(Parse("174.17.1.1/24").Unwrap().Dns_rev_domains(),
 				[]string{"1.17.174.in-addr.arpa"})
-			assert_string_array(Parse("175.17.1.1/16").Unwrap().Dns_rev_domains(),
+			t.assert_string_array(Parse("175.17.1.1/16").Unwrap().Dns_rev_domains(),
 				[]string{"17.175.in-addr.arpa"})
-			assert_string_array(Parse("176.17.1.1/8").Unwrap().Dns_rev_domains(),
+			t.assert_string_array(Parse("176.17.1.1/8").Unwrap().Dns_rev_domains(),
 				[]string{"176.in-addr.arpa"})
-			assert_string_array(Parse("177.17.1.1/0").Unwrap().Dns_rev_domains(),
+			t.assert_string_array(Parse("177.17.1.1/0").Unwrap().Dns_rev_domains(),
 				[]string{"in-addr.arpa"})
-			assert_string_array(Parse("178.17.1.1/32").Unwrap().Dns_rev_domains(),
+			t.assert_string_array(Parse("178.17.1.1/32").Unwrap().Dns_rev_domains(),
 				[]string{"1.1.17.178.in-addr.arpa"})
 		})
 
-		it("test_method_compare", func() {
+		t.Run("test_method_compare", func(t *MyTesting) {
 			ip1 := Parse("10.1.1.1/8").Unwrap()
 			ip2 := Parse("10.1.1.1/16").Unwrap()
 			ip3 := Parse("172.16.1.1/14").Unwrap()
 			ip4 := Parse("10.1.1.1/8").Unwrap()
 
 			// ip2 should be greater than ip1
-			assert_bool(true, ip1.Lt(ip2))
-			assert_bool(false, ip1.Gt(ip2))
-			assert_bool(false, ip2.Lt(ip1))
+			t.assert_bool(true, ip1.Lt(ip2))
+			t.assert_bool(false, ip1.Gt(ip2))
+			t.assert_bool(false, ip2.Lt(ip1))
 			// ip2 should be less than ip3
-			assert_bool(true, ip2.Lt(ip3))
-			assert_bool(false, ip2.Gt(ip3))
+			t.assert_bool(true, ip2.Lt(ip3))
+			t.assert_bool(false, ip2.Gt(ip3))
 			// ip1 should be less than ip3
-			assert_bool(true, ip1.Lt(ip3))
-			assert_bool(false, ip1.Gt(ip3))
-			assert_bool(false, ip3.Lt(ip1))
+			t.assert_bool(true, ip1.Lt(ip3))
+			t.assert_bool(false, ip1.Gt(ip3))
+			t.assert_bool(false, ip3.Lt(ip1))
 			// ip1 should be equal to itself
-			assert_bool(true, ip1.Eq(ip1))
+			t.assert_bool(true, ip1.Eq(ip1))
 			// ip1 should be equal to ip4
-			assert_bool(true, ip1.Eq(ip4))
+			t.assert_bool(true, ip1.Eq(ip4))
 			// test sorting
 			res := []*IPAddress{ip1, ip2, ip3}
 			Sorting(res)
-			assert_string_array(To_string_vec(&res),
+			t.assert_string_array(To_string_vec(&res),
 				[]string{"10.1.1.1/8", "10.1.1.1/16", "172.16.1.1/14"})
 			// test same prefix
 			ip1 = Parse("10.0.0.0/24").Unwrap()
@@ -426,76 +425,76 @@ func TestIpv4(t *testing.T) {
 			ip3 = Parse("10.0.0.0/8").Unwrap()
 			{
 				res = []*IPAddress{ip1, ip2, ip3}
-				sort.Sort(ByAddress{res})
-				assert_string_array(To_string_vec(&res),
+				Sorting(res)
+				t.assert_string_array(To_string_vec(&res),
 					[]string{"10.0.0.0/8", "10.0.0.0/16", "10.0.0.0/24"})
 			}
 		})
 
-		it("test_method_minus", func() {
+		t.Run("test_method_minus", func(t *MyTesting) {
 			ip1 := Parse("10.1.1.1/8").Unwrap()
 			ip2 := Parse("10.1.1.10/8").Unwrap()
 			bi := ip2.Sub(ip1)
-			assert_uint64(9, bi.Uint64())
+			t.assert_uint64(9, bi.Uint64())
 			bi = ip1.Sub(ip2)
-			assert_uint64(9, bi.Uint64())
+			t.assert_uint64(9, bi.Uint64())
 		})
 
-		it("test_method_plus", func() {
+		t.Run("test_method_plus", func(t *MyTesting) {
 			ip1 := Parse("172.16.10.1/24").Unwrap()
 			ip2 := Parse("172.16.11.2/24").Unwrap()
 			add := ip1.Add(ip2)
-			assert_string_array(To_string_vec(add),
+			t.assert_string_array(To_string_vec(add),
 				[]string{"172.16.10.0/23"})
 
 			ip2 = Parse("172.16.12.2/24").Unwrap()
 			add = ip1.Add(ip2)
 			net1 := ip1.Network()
 			net2 := ip2.Network()
-			assert_string_array(To_string_vec(add),
+			t.assert_string_array(To_string_vec(add),
 				[]string{net1.To_string(),
 					net2.To_string()})
 
 			ip1 = Parse("10.0.0.0/23").Unwrap()
 			ip2 = Parse("10.0.2.0/24").Unwrap()
 			add = ip1.Add(ip2)
-			assert_string_array(To_string_vec(add),
+			t.assert_string_array(To_string_vec(add),
 				[]string{"10.0.0.0/23", "10.0.2.0/24"})
 
 			ip1 = Parse("10.0.0.0/23").Unwrap()
 			ip2 = Parse("10.0.2.0/24").Unwrap()
 			add = ip1.Add(ip2)
-			assert_string_array(To_string_vec(add),
+			t.assert_string_array(To_string_vec(add),
 				[]string{"10.0.0.0/23", "10.0.2.0/24"})
 
 			ip1 = Parse("10.0.0.0/16").Unwrap()
 			ip2 = Parse("10.0.2.0/24").Unwrap()
 			add = ip1.Add(ip2)
-			assert_string_array(To_string_vec(add),
+			t.assert_string_array(To_string_vec(add),
 				[]string{"10.0.0.0/16"})
 
 			ip1 = Parse("10.0.0.0/23").Unwrap()
 			ip2 = Parse("10.1.0.0/24").Unwrap()
 			add = ip1.Add(ip2)
-			assert_string_array(To_string_vec(add),
+			t.assert_string_array(To_string_vec(add),
 				[]string{"10.0.0.0/23", "10.1.0.0/24"})
 		})
 
-		it("test_method_netmask_equal", func() {
+		t.Run("test_method_netmask_equal", func(t *MyTesting) {
 			ip := Parse("10.1.1.1/16").Unwrap()
-			assert_uint8(16, ip.Prefix.Num)
+			t.assert_uint8(16, ip.Prefix.Num)
 			ip2 := ip.Change_netmask("255.255.255.0").Unwrap()
-			assert_uint8(24, ip2.Prefix.Num)
+			t.assert_uint8(24, ip2.Prefix.Num)
 		})
 
-		it("test_method_split", func() {
-			s := setup()
-			assert(s.ip.Split(0).IsErr())
-			assert(s.ip.Split(257).IsErr())
+		t.Run("test_method_split", func(t *MyTesting) {
+			s := ipv4Setup()
+			t.assert(s.ip.Split(0).IsErr())
+			t.assert(s.ip.Split(257).IsErr())
 			net := s.ip.Network()
-			assert_string_array(To_string_vec(s.ip.Split(1).Unwrap()), []string{net.To_string()})
+			t.assert_string_array(To_string_vec(s.ip.Split(1).Unwrap()), []string{net.To_string()})
 
-			assert_string_array(To_string_vec(s.network.Split(8).Unwrap()),
+			t.assert_string_array(To_string_vec(s.network.Split(8).Unwrap()),
 				[]string{"172.16.10.0/27",
 					"172.16.10.32/27",
 					"172.16.10.64/27",
@@ -505,7 +504,7 @@ func TestIpv4(t *testing.T) {
 					"172.16.10.192/27",
 					"172.16.10.224/27"})
 
-			assert_string_array(To_string_vec(s.network.Split(7).Unwrap()),
+			t.assert_string_array(To_string_vec(s.network.Split(7).Unwrap()),
 				[]string{"172.16.10.0/27",
 					"172.16.10.32/27",
 					"172.16.10.64/27",
@@ -514,62 +513,62 @@ func TestIpv4(t *testing.T) {
 					"172.16.10.160/27",
 					"172.16.10.192/26"})
 
-			assert_string_array(To_string_vec(s.network.Split(6).Unwrap()),
+			t.assert_string_array(To_string_vec(s.network.Split(6).Unwrap()),
 				[]string{"172.16.10.0/27",
 					"172.16.10.32/27",
 					"172.16.10.64/27",
 					"172.16.10.96/27",
 					"172.16.10.128/26",
 					"172.16.10.192/26"})
-			assert_string_array(To_string_vec(s.network.Split(5).Unwrap()),
+			t.assert_string_array(To_string_vec(s.network.Split(5).Unwrap()),
 				[]string{"172.16.10.0/27",
 					"172.16.10.32/27",
 					"172.16.10.64/27",
 					"172.16.10.96/27",
 					"172.16.10.128/25"})
-			assert_string_array(To_string_vec(s.network.Split(4).Unwrap()),
+			t.assert_string_array(To_string_vec(s.network.Split(4).Unwrap()),
 				[]string{"172.16.10.0/26", "172.16.10.64/26", "172.16.10.128/26", "172.16.10.192/26"})
-			assert_string_array(To_string_vec(s.network.Split(3).Unwrap()),
+			t.assert_string_array(To_string_vec(s.network.Split(3).Unwrap()),
 				[]string{"172.16.10.0/26", "172.16.10.64/26", "172.16.10.128/25"})
-			assert_string_array(To_string_vec(s.network.Split(2).Unwrap()),
+			t.assert_string_array(To_string_vec(s.network.Split(2).Unwrap()),
 				[]string{"172.16.10.0/25", "172.16.10.128/25"})
-			assert_string_array(To_string_vec(s.network.Split(1).Unwrap()),
+			t.assert_string_array(To_string_vec(s.network.Split(1).Unwrap()),
 				[]string{"172.16.10.0/24"})
 		})
 
-		it("test_method_subnet", func() {
-			s := setup()
-			assert(s.network.Subnet(23).IsErr())
-			assert(s.network.Subnet(33).IsErr())
-			assert(s.ip.Subnet(30).IsOk())
-			assert_string_array(To_string_vec(s.network.Subnet(26).Unwrap()),
+		t.Run("test_method_subnet", func(t *MyTesting) {
+			s := ipv4Setup()
+			t.assert(s.network.Subnet(23).IsErr())
+			t.assert(s.network.Subnet(33).IsErr())
+			t.assert(s.ip.Subnet(30).IsOk())
+			t.assert_string_array(To_string_vec(s.network.Subnet(26).Unwrap()),
 				[]string{"172.16.10.0/26",
 					"172.16.10.64/26",
 					"172.16.10.128/26",
 					"172.16.10.192/26"})
-			assert_string_array(To_string_vec(s.network.Subnet(25).Unwrap()),
+			t.assert_string_array(To_string_vec(s.network.Subnet(25).Unwrap()),
 				[]string{"172.16.10.0/25", "172.16.10.128/25"})
-			assert_string_array(To_string_vec(s.network.Subnet(24).Unwrap()),
+			t.assert_string_array(To_string_vec(s.network.Subnet(24).Unwrap()),
 				[]string{"172.16.10.0/24"})
 		})
 
-		it("test_method_supernet", func() {
-			s := setup()
-			assert(s.ip.Supernet(24).IsErr())
-			assert_string("0.0.0.0/0", s.ip.Supernet(0).Unwrap().To_string())
-			// assert_eq("0.0.0.0/0", setup().ip.supernet(-2).Unwrap().to_string());
-			assert_string("172.16.10.0/23",
+		t.Run("test_method_supernet", func(t *MyTesting) {
+			s := ipv4Setup()
+			t.assert(s.ip.Supernet(24).IsErr())
+			t.assert_string("0.0.0.0/0", s.ip.Supernet(0).Unwrap().To_string())
+			// assert_eq("0.0.0.0/0", ipv4Setup().ip.supernet(-2).Unwrap().to_string());
+			t.assert_string("172.16.10.0/23",
 				s.ip.Supernet(23).Unwrap().To_string())
-			assert_string("172.16.8.0/22",
+			t.assert_string("172.16.8.0/22",
 				s.ip.Supernet(22).Unwrap().To_string())
 		})
 
-		it("test_classmethod_parse_u32", func() {
-			for addr, val := range setup().decimal_values {
+		t.Run("test_classmethod_parse_u32", func(t *MyTesting) {
+			for addr, val := range ipv4Setup().decimal_values {
 				ip := From_u32(val, 32).Unwrap()
 				splitted, _ := strconv.Atoi(strings.Split(addr, "/")[1])
 				ip2 := ip.Change_prefix(uint8(splitted)).Unwrap()
-				assert_string(ip2.To_string(), addr)
+				t.assert_string(ip2.To_string(), addr)
 			}
 		})
 
@@ -578,19 +577,19 @@ func TestIpv4(t *testing.T) {
 		//   assert_eq("172.16.10.1", extract(str).to_s
 		// }
 
-		it("test_classmethod_Summarize", func() {
+		t.Run("test_classmethod_Summarize", func(t *MyTesting) {
 
-			s := setup()
+			s := ipv4Setup()
 			// Should return self if only one network given
 			net := s.ip.Network()
 			addrs := []*IPAddress{net}
-			assert_string_array(To_string_vec(Summarize(&addrs)), []string{net.To_string()})
+			t.assert_string_array(To_string_vec(Summarize(&addrs)), []string{net.To_string()})
 
 			// Summarize homogeneous networks
 			ip1 := Parse("172.16.10.1/24").Unwrap()
 			ip2 := Parse("172.16.11.2/24").Unwrap()
 			addrs = []*IPAddress{ip1, ip2}
-			assert_string_array(To_string_vec(Summarize(&addrs)),
+			t.assert_string_array(To_string_vec(Summarize(&addrs)),
 				[]string{"172.16.10.0/23"})
 
 			{
@@ -598,7 +597,7 @@ func TestIpv4(t *testing.T) {
 				ip2 := Parse("10.0.1.1/24").Unwrap()
 				ip3 := Parse("10.0.2.1/24").Unwrap()
 				ip4 := Parse("10.0.3.1/24").Unwrap()
-				assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2, ip3, ip4})),
+				t.assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2, ip3, ip4})),
 					[]string{"10.0.0.0/22"})
 			}
 			{
@@ -606,38 +605,38 @@ func TestIpv4(t *testing.T) {
 				ip2 := Parse("10.0.1.1/24").Unwrap()
 				ip3 := Parse("10.0.2.1/24").Unwrap()
 				ip4 := Parse("10.0.3.1/24").Unwrap()
-				assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip4, ip3, ip2, ip1})),
+				t.assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip4, ip3, ip2, ip1})),
 					[]string{"10.0.0.0/22"})
 			}
 
 			// Summarize non homogeneous networks
 			ip1 = Parse("10.0.0.0/23").Unwrap()
 			ip2 = Parse("10.0.2.0/24").Unwrap()
-			assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2})),
+			t.assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2})),
 				[]string{"10.0.0.0/23", "10.0.2.0/24"})
 
 			ip1 = Parse("10.0.0.0/16").Unwrap()
 			ip2 = Parse("10.0.2.0/24").Unwrap()
-			assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2})),
+			t.assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2})),
 				[]string{"10.0.0.0/16"})
 
 			ip1 = Parse("10.0.0.0/23").Unwrap()
 			ip2 = Parse("10.1.0.0/24").Unwrap()
-			assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2})),
+			t.assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2})),
 				[]string{"10.0.0.0/23", "10.1.0.0/24"})
 
 			ip1 = Parse("10.0.0.0/23").Unwrap()
 			ip2 = Parse("10.0.2.0/23").Unwrap()
 			ip3 := Parse("10.0.4.0/24").Unwrap()
 			ip4 := Parse("10.0.6.0/24").Unwrap()
-			assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2, ip3, ip4})),
+			t.assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2, ip3, ip4})),
 				[]string{"10.0.0.0/22", "10.0.4.0/24", "10.0.6.0/24"})
 			{
 				ip1 = Parse("10.0.1.1/24").Unwrap()
 				ip2 = Parse("10.0.2.1/24").Unwrap()
 				ip3 = Parse("10.0.3.1/24").Unwrap()
 				ip4 = Parse("10.0.4.1/24").Unwrap()
-				assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2, ip3, ip4})),
+				t.assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip1, ip2, ip3, ip4})),
 					[]string{"10.0.1.0/24", "10.0.2.0/23", "10.0.4.0/24"})
 			}
 			{
@@ -645,7 +644,7 @@ func TestIpv4(t *testing.T) {
 				ip2 = Parse("10.0.2.1/24").Unwrap()
 				ip3 = Parse("10.0.3.1/24").Unwrap()
 				ip4 = Parse("10.0.4.1/24").Unwrap()
-				assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip4, ip3, ip2, ip1})),
+				t.assert_string_array(To_string_vec(Summarize(&[]*IPAddress{ip4, ip3, ip2, ip1})),
 					[]string{"10.0.1.0/24", "10.0.2.0/23", "10.0.4.0/24"})
 			}
 
@@ -653,33 +652,33 @@ func TestIpv4(t *testing.T) {
 			ip2 = Parse("10.10.2.1/24").Unwrap()
 			ip3 = Parse("172.16.0.1/24").Unwrap()
 			ip4 = Parse("172.16.1.1/24").Unwrap()
-			assert_string_array(To_string_vec(Summarize(
+			t.assert_string_array(To_string_vec(Summarize(
 				&[]*IPAddress{ip1, ip2, ip3, ip4})),
 				[]string{"10.0.1.0/24", "10.10.2.0/24", "172.16.0.0/23"})
 
 			ips := []*IPAddress{Parse("10.0.0.12/30").Unwrap(),
 				Parse("10.0.100.0/24").Unwrap()}
-			assert_string_array(To_string_vec(Summarize(&ips)),
+			t.assert_string_array(To_string_vec(Summarize(&ips)),
 				[]string{"10.0.0.12/30", "10.0.100.0/24"})
 
 			ips = []*IPAddress{Parse("172.16.0.0/31").Unwrap(),
 				Parse("10.10.2.1/32").Unwrap()}
-			assert_string_array(To_string_vec(Summarize(&ips)),
+			t.assert_string_array(To_string_vec(Summarize(&ips)),
 				[]string{"10.10.2.1/32", "172.16.0.0/31"})
 
 			ips = []*IPAddress{Parse("172.16.0.0/32").Unwrap(),
 				Parse("10.10.2.1/32").Unwrap()}
-			assert_string_array(To_string_vec(Summarize(&ips)),
+			t.assert_string_array(To_string_vec(Summarize(&ips)),
 				[]string{"10.10.2.1/32", "172.16.0.0/32"})
 		})
 
-		it("test_classmethod_parse_classful", func() {
-			for ip, prefix := range setup().classful {
+		t.Run("test_classmethod_parse_classful", func(t *MyTesting) {
+			for ip, prefix := range ipv4Setup().classful {
 				res := Parse_classful(ip).Unwrap()
-				assert_uint8(prefix, res.Prefix.Num)
-				assert_string(fmt.Sprintf("%s/%d", ip, prefix), res.To_string())
+				t.assert_uint8(prefix, res.Prefix.Num)
+				t.assert_string(fmt.Sprintf("%s/%d", ip, prefix), res.To_string())
 			}
-			assert(Parse_classful("192.168.256.257").IsErr())
+			t.assert(Parse_classful("192.168.256.257").IsErr())
 		})
 	})
 }

@@ -11,8 +11,8 @@ import "sort"
 import "fmt"
 
 // import "../ip_bits"
-import "../ip_version"
-import "../prefix"
+import "./ip_version"
+import "./prefix"
 
 // import "./data"
 import "bytes"
@@ -48,10 +48,10 @@ type Errors struct {
 	err *string
 }
 
-func (self *Errors) IsOk() bool           { return false }
-func (self *Errors) IsErr() bool          { return true }
+func (self *Errors) IsOk() bool            { return false }
+func (self *Errors) IsErr() bool           { return true }
 func (self *Errors) Unwrap() *[]*IPAddress { return nil }
-func (self *Errors) UnwrapErr() *string   { return self.err }
+func (self *Errors) UnwrapErr() *string    { return self.err }
 
 // func Error(err *string) *ErrorIsh {
 //     return &ErrorIsh{err}
@@ -61,10 +61,10 @@ type Oks struct {
 	ipaddresses *[]*IPAddress
 }
 
-func (self *Oks) IsOk() bool           { return true }
-func (self *Oks) IsErr() bool          { return false }
+func (self *Oks) IsOk() bool            { return true }
+func (self *Oks) IsErr() bool           { return false }
 func (self *Oks) Unwrap() *[]*IPAddress { return self.ipaddresses }
-func (self *Oks) UnwrapErr() *string   { return nil }
+func (self *Oks) UnwrapErr() *string    { return nil }
 
 func (self *IPAddress) Clone() *IPAddress {
 	mapped := self.Mapped
@@ -74,14 +74,14 @@ func (self *IPAddress) Clone() *IPAddress {
 		mapped = tmp2
 	}
 	ret := new(IPAddress)
-	ret.Ip_bits =	self.Ip_bits
+	ret.Ip_bits = self.Ip_bits
 	ret.Host_address = self.Host_address
-	ret.Prefix = self.Prefix.Clone()
+	ret.Prefix = *self.Prefix.Clone()
 	ret.Mapped = mapped
-	ret.Vt_is_private =	self.Vt_is_private
+	ret.Vt_is_private = self.Vt_is_private
 	ret.Vt_is_loopback = self.Vt_is_loopback
 	ret.Vt_to_ipv6 = self.Vt_to_ipv6
-	return ret;
+	return ret
 }
 
 func (self *IPAddress) String() string {
@@ -160,11 +160,11 @@ func (self *IPAddress) From(addr *big.Int, prefix *prefix.Prefix) *IPAddress {
 	padr := new(IPAddress)
 	padr.Ip_bits = self.Ip_bits
 	padr.Host_address = *big.NewInt(0).Set(addr)
-	padr.Prefix =	prefix.Clone()
-	padr.Mapped =	self.Mapped
+	padr.Prefix = *prefix.Clone()
+	padr.Mapped = self.Mapped
 	padr.Vt_is_private = self.Vt_is_private
-	padr.Vt_is_loopback =	self.Vt_is_loopback
-	padr.Vt_to_ipv6 =	self.Vt_to_ipv6
+	padr.Vt_is_loopback = self.Vt_is_loopback
+	padr.Vt_to_ipv6 = self.Vt_to_ipv6
 	return padr
 }
 
@@ -227,7 +227,7 @@ func (self *IPAddress) Dns_reverse() string {
 	dot := ""
 	dns_parts := self.dns_parts()
 	for i := ((self.Prefix.Host_prefix() + (self.Ip_bits.Dns_bits - 1)) / self.Ip_bits.Dns_bits); i < uint8(len(dns_parts)); i++ {
-	// for _, part := range dns_parts {
+		// for _, part := range dns_parts {
 		ret.WriteString(dot)
 		ret.WriteString(self.Ip_bits.Dns_part_format(dns_parts[i]))
 		dot = "."
@@ -240,7 +240,7 @@ func (self *IPAddress) Dns_reverse() string {
 func (self *IPAddress) dns_parts() []uint8 {
 	num := big.NewInt(0).Set(&self.Host_address)
 	mask := big.NewInt(0).Lsh(big.NewInt(1), uint(self.Ip_bits.Dns_bits))
-	cnt := int(self.Ip_bits.Bits/self.Ip_bits.Dns_bits)
+	cnt := int(self.Ip_bits.Bits / self.Ip_bits.Dns_bits)
 	ret := make([]uint8, cnt)
 	for i := 0; i < cnt; i++ {
 		rem := big.NewInt(0).Set(num)
@@ -443,8 +443,7 @@ func (self *IPAddress) To_hex() string {
 }
 
 func (self *IPAddress) Netmask() *IPAddress {
-	nm := self.Prefix.Netmask()
-	return self.From(nm, &self.Prefix)
+	return self.From(&self.Prefix.Netmask, &self.Prefix)
 }
 
 ///  Returns the broadcast address for the given IP.
@@ -919,13 +918,14 @@ func (s *ipaddressSorter) Less(i, j int) bool {
 	return s.ipaddress[i].Cmp(s.ipaddress[j]) < 0
 }
 
-func Sorting(ips []*IPAddress) {
+func Sorting(ips []*IPAddress) []*IPAddress {
 	s := &ipaddressSorter{
 		ipaddress: ips,
 		by: func(ip1, ip2 *IPAddress) bool {
 			return ip1.Cmp(ip2) < 0
 		}}
 	sort.Sort(s)
+	return ips
 }
 
 func remove_ipaddress(stack []*IPAddress, idx int) []*IPAddress {

@@ -37,7 +37,7 @@ func Parse(str string) ResultIPAddress {
 		}
 	}
 	// fmt.Printf("p-8\n");
-  tmp := fmt.Sprintf("Unknown IP Address %s", str)
+	tmp := fmt.Sprintf("Unknown IP Address %s", str)
 	return &Error{&tmp}
 }
 
@@ -58,9 +58,8 @@ func Is_valid(addr string) bool {
 
 func Is_valid_netmask(addr string) bool {
 	ret, _ := Parse_netmask_to_prefix(addr)
-  return ret != nil
+	return ret != nil
 }
-
 
 /// Checks if the given string is a valid IPv4 address
 ///
@@ -75,13 +74,13 @@ func Is_valid_netmask(addr string) bool {
 func parse_ipv4_part(i string, addr string) (*uint32, *string) {
 	part, err := strconv.ParseUint(i, 10, 32)
 	if err != nil {
-    tmp := fmt.Sprintf("IP must contain numbers %s", addr)
+		tmp := fmt.Sprintf("IP must contain numbers %s", addr)
 		// fmt.Printf("parse_ipv4_part-1 %s:%s:%s:%s\n", i, part, err, addr, tmp)
 		return nil, &tmp
 	}
 	part_num := uint32(part)
 	if part_num >= 256 {
-    tmp := fmt.Sprintf("IP items has to lower than 256. %s", addr)
+		tmp := fmt.Sprintf("IP items has to lower than 256. %s", addr)
 		// fmt.Printf("parse_ipv4_part-2\n")
 		return nil, &tmp
 	}
@@ -91,10 +90,10 @@ func parse_ipv4_part(i string, addr string) (*uint32, *string) {
 
 func remove_string(stack []string, idx int) []string {
 	var p []string = nil
-	if (idx < len(stack)) {
-		p = make([]string, len(stack)-1);
+	if idx < len(stack) {
+		p = make([]string, len(stack)-1)
 	} else {
-		p = make([]string, len(stack));
+		p = make([]string, len(stack))
 	}
 	pidx := 0
 	for i, v := range stack {
@@ -113,7 +112,7 @@ func split_to_u32(addr string) (*uint32, *string) {
 	split_addr_len := len(split_addr)
 	// fmt.Printf("u32-1\n")
 	if split_addr_len > 4 {
-    tmp := fmt.Sprintf("IP has not the right format:%s", addr)
+		tmp := fmt.Sprintf("IP has not the right format:%s", addr)
 		// fmt.Printf("u32-1\n")
 		return nil, &tmp
 	}
@@ -168,12 +167,12 @@ func split_on_colon(addr string) (*big.Int, *string, uint) {
 	for _, i := range parts {
 		part, err := strconv.ParseUint(i, 16, 32)
 		if err != nil {
-      tmp := fmt.Sprintf("IP must contain hex numbers %s->%s", addr, i)
+			tmp := fmt.Sprintf("IP must contain hex numbers %s->%s", addr, i)
 			return nil, &tmp, 0
 		}
 		part_num := int64(part)
 		if part_num >= 65536 {
-      tmp := fmt.Sprintf("IP items has to lower than 65536. %s", addr)
+			tmp := fmt.Sprintf("IP items has to lower than 65536. %s", addr)
 			return nil, &tmp, 0
 		}
 		bi_part_num := big.NewInt(part_num)
@@ -188,7 +187,7 @@ func split_to_num(addr string) (*big.Int, *string) {
 	//let mut ip = 0;
 	pre_post := strings.Split(strings.TrimSpace(addr), "::")
 	if len(pre_post) > 2 {
-    tmp := fmt.Sprintf("IPv6 only allow one :: %s", addr)
+		tmp := fmt.Sprintf("IPv6 only allow one :: %s", addr)
 		// fmt.Printf("stn-1:%s:%s\n", addr, tmp)
 		return nil, &tmp
 	}
@@ -210,11 +209,11 @@ func split_to_num(addr string) (*big.Int, *string) {
 	}
 	//fmt.Printf("split_to_num:no double:{}", addr);
 	ret, err, parts := split_on_colon(addr)
-  if err != nil {
+	if err != nil {
 		return nil, err
-  }
+	}
 	if parts != 128/16 {
-    tmp := fmt.Sprintf("incomplete IPv6")
+		tmp := fmt.Sprintf("incomplete IPv6")
 		return nil, &tmp
 	}
 	return ret, nil

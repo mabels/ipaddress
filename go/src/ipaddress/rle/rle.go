@@ -1,8 +1,6 @@
 package rle
 
-import (
-	"fmt"
-)
+import "fmt"
 
 type Rle struct {
 	Part uint16
@@ -11,7 +9,7 @@ type Rle struct {
 	Max  bool
 }
 
-func (r Rle) String() string {
+func (r *Rle) String() string {
 	return fmt.Sprintf("Rle:Part:{%d},Pos:{%d},Cnt:{%d},Max:{%d}",
 		r.Part, r.Pos, r.Cnt, r.Max)
 }
@@ -23,7 +21,7 @@ func (r Rle) String() string {
 //     }
 // }
 
-func (self Rle) Equal(other Rle) bool {
+func (self *Rle) Equal(other Rle) bool {
   return self.Part == other.Part && self.Pos == other.Pos &&
           self.Cnt == other.Cnt && self.Max == other.Max;
 }
