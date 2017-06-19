@@ -1,13 +1,11 @@
-package ip_bits
+package ipaddress
 
 import "math/big"
 import "bytes"
 import "fmt"
-import "../rle"
-import "../ip_version"
 
 type IpBits struct {
-	Version                   ip_version.Family
+	Version                   Family
 	Vt_as_compressed_string   func(ipb *IpBits, d *big.Int) string
 	Vt_as_uncompressed_string func(ipb *IpBits, d *big.Int) string
 	Bits                      uint8
@@ -37,7 +35,7 @@ func ipv6_as_compressed(ip_bits *IpBits, host_address *big.Int) string {
 	the_empty := ""
 	colon := &the_empty
 	done := false
-	for _, rle := range rle.Code(ip_bits.Parts(host_address)) {
+	for _, rle := range Code(ip_bits.Parts(host_address)) {
 		// println!(">>{:?}", rle);
 		for i := 0; i < rle.Cnt; i++ {
 			if done || !(rle.Part == 0 && rle.Max) {
@@ -68,7 +66,7 @@ func ipv6_as_uncompressed(ip_bits *IpBits, host_address *big.Int) string {
 
 func v4const() *IpBits {
 	ret := new(IpBits)
-	ret.Version = ip_version.V4
+	ret.Version = FamilyV4
 	ret.Vt_as_compressed_string = ipv4_as_compressed
 	ret.Vt_as_uncompressed_string = ipv4_as_compressed
 	ret.Bits = 32
@@ -82,7 +80,7 @@ func v4const() *IpBits {
 
 func v6const() *IpBits {
 	ret := new(IpBits)
-	ret.Version = ip_version.V6
+	ret.Version = FamilyV6
 	ret.Vt_as_compressed_string = ipv6_as_compressed
 	ret.Vt_as_uncompressed_string = ipv6_as_uncompressed
 	ret.Bits = 128
@@ -133,9 +131,9 @@ func (self *IpBits) As_uncompressed_string(bu *big.Int) string {
 
 func (self *IpBits) Dns_part_format(i uint8) string {
 	switch self.Version {
-	case ip_version.V4:
+	case FamilyV4:
 		return fmt.Sprintf("%d", i)
-	case ip_version.V6:
+	case FamilyV6:
 		return fmt.Sprintf("%x", i)
 	default:
 		return ""
@@ -144,12 +142,12 @@ func (self *IpBits) Dns_part_format(i uint8) string {
 
 var v4ref *IpBits = v4const()
 
-func V4() *IpBits {
+func IpBitsV4() *IpBits {
 	return v4ref
 }
 
 var v6ref *IpBits = v6const()
 
-func V6() *IpBits {
+func IpBitsV6() *IpBits {
 	return v6ref
 }

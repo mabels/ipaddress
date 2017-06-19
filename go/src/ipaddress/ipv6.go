@@ -5,9 +5,6 @@ import "math/big"
 import "fmt"
 import "strconv"
 
-import "./prefix/prefix128"
-import "./ip_bits"
-
 ///  =Name
 ///
 ///  IPAddress::IPv6 - IP version 6 address manipulation library
@@ -96,7 +93,7 @@ func enhance_if_mapped(ip *IPAddress) ResultIPAddress {
 			return &Ok{ip}
 		}
 		//fmt.Printf("ip:{},{:x}", ip.to_string(), num);
-		ipv4_bits := ip_bits.V4()
+		ipv4_bits := IpBitsV4()
 		if ipv4_bits.Bits < ip.Prefix.Host_prefix() {
 			// fmt.Printf("enhance_if_mapped-2:{}:{}", ip.to_string(), ip.prefix.host_prefix());
 			tmp := fmt.Sprintf("enhance_if_mapped prefix not ipv4 compatible %d", ip.Prefix.Host_prefix())
@@ -118,12 +115,12 @@ func enhance_if_mapped(ip *IPAddress) ResultIPAddress {
 }
 
 func Ipv6FromInt(adr *big.Int, _prefix uint8) ResultIPAddress {
-	prefix := prefix128.New(_prefix)
+	prefix := Prefix128New(_prefix)
 	if prefix.IsErr() {
 		return &Error{prefix.UnwrapErr()}
 	}
 	return enhance_if_mapped(&IPAddress{
-		ip_bits.V6(),
+		IpBitsV6(),
 		*adr,
 		*prefix.Unwrap(),
 		nil,
@@ -170,14 +167,14 @@ func Ipv6New(str string) ResultIPAddress {
 			}
 			netmask = uint8(num_mask)
 		}
-		prefix := prefix128.New(netmask)
+		prefix := Prefix128New(netmask)
 		if prefix.IsErr() {
 			// fmt.Printf("i6-6 %s\n", prefix.UnwrapErr())
 			return &Error{prefix.UnwrapErr()}
 		}
 		// fmt.Printf("i6-7\n")
 		return enhance_if_mapped(&IPAddress{
-			ip_bits.V6(),
+			IpBitsV6(),
 			*o_num,
 			*prefix.Unwrap(),
 			nil,

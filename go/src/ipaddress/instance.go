@@ -2,25 +2,11 @@ package ipaddress
 
 import "strings"
 
-// import "strconv"
 import "math/big"
 import "math"
 import "sort"
-
-// import "regexp"
 import "fmt"
-
-// import "../ip_bits"
-import "./ip_version"
-import "./prefix"
-
-// import "./data"
 import "bytes"
-
-// import "../ip_version"
-// import "../ipaddress"
-// import "../ipv4"
-// import "../ipv6"
 
 type Error struct {
 	err *string
@@ -102,7 +88,7 @@ func (self *IPAddress) Gt(oth *IPAddress) bool {
 
 func (self *IPAddress) Cmp(oth *IPAddress) int {
 	if self.Ip_bits.Version != oth.Ip_bits.Version {
-		if self.Ip_bits.Version == ip_version.V6 {
+		if self.Ip_bits.Version == FamilyV6 {
 			return 1
 		}
 		return -1
@@ -156,7 +142,7 @@ func Split_at_slash(str string) (string, *string) {
 	return addr, nil
 }
 
-func (self *IPAddress) From(addr *big.Int, prefix *prefix.Prefix) *IPAddress {
+func (self *IPAddress) From(addr *big.Int, prefix *Prefix) *IPAddress {
 	padr := new(IPAddress)
 	padr.Ip_bits = self.Ip_bits
 	padr.Host_address = *big.NewInt(0).Set(addr)
@@ -176,7 +162,7 @@ func (self *IPAddress) From(addr *big.Int, prefix *prefix.Prefix) *IPAddress {
 ///     //-> true
 ///
 func (self *IPAddress) Is_ipv4() bool {
-	return self.Ip_bits.Version == ip_version.V4
+	return self.Ip_bits.Version == FamilyV4
 }
 
 /// True if the object is an IPv6 address
@@ -187,7 +173,7 @@ func (self *IPAddress) Is_ipv4() bool {
 ///     //-> false
 ///
 func (self *IPAddress) Is_ipv6() bool {
-	return self.Ip_bits.Version == ip_version.V6
+	return self.Ip_bits.Version == FamilyV6
 }
 
 func (self *IPAddress) Parts() []uint16 {
@@ -888,7 +874,7 @@ func (self *IPAddress) To_ipv6() *IPAddress {
 //  private methods
 //
 
-func (self *IPAddress) Newprefix(num uint) (*prefix.Prefix, *string) {
+func (self *IPAddress) Newprefix(num uint) (*Prefix, *string) {
 	for i := uint8(num); i < self.Ip_bits.Bits; i++ {
 		a := float64(uint(math.Log2(float64(i))))
 		if a == math.Log2(float64(i)) {

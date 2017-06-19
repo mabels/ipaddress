@@ -1,6 +1,5 @@
-package prefix
+package ipaddress
 
-import "../ip_bits"
 import "math/big"
 import "fmt"
 
@@ -12,40 +11,40 @@ type ResultPrefix interface {
 }
 
 type Prefix struct {
-	Num      uint8
-	IpBits  *ip_bits.IpBits
+	Num     uint8
+	IpBits  *IpBits
 	Netmask big.Int
-	Vt_from  func(prefix *Prefix, n uint8) ResultPrefix
+	Vt_from func(prefix *Prefix, n uint8) ResultPrefix
 }
 
-type Error struct {
+type PrefixError struct {
 	Err *string
 }
 
-func (self *Error) IsOk() bool         { return false }
-func (self *Error) IsErr() bool        { return true }
-func (self *Error) Unwrap() *Prefix    { return nil }
-func (self *Error) UnwrapErr() *string { return self.Err }
+func (self *PrefixError) IsOk() bool         { return false }
+func (self *PrefixError) IsErr() bool        { return true }
+func (self *PrefixError) Unwrap() *Prefix    { return nil }
+func (self *PrefixError) UnwrapErr() *string { return self.Err }
 
 // func Error(err *string) *ErrorIsh {
 //     return &ErrorIsh{err}
 // }
 
-type Ok struct {
+type PrefixOk struct {
 	Prefix *Prefix
 }
 
-func (self *Ok) IsOk() bool         { return true }
-func (self *Ok) IsErr() bool        { return false }
-func (self *Ok) Unwrap() *Prefix    { return self.Prefix }
-func (self *Ok) UnwrapErr() *string { return nil }
+func (self *PrefixOk) IsOk() bool         { return true }
+func (self *PrefixOk) IsErr() bool        { return false }
+func (self *PrefixOk) Unwrap() *Prefix    { return self.Prefix }
+func (self *PrefixOk) UnwrapErr() *string { return nil }
 
 func (self *Prefix) Clone() *Prefix {
 	ret := new(Prefix)
-	ret.Num =	self.Num
-	ret.IpBits =	self.IpBits
-	ret.Netmask =	self.Netmask
-	ret.Vt_from =	self.Vt_from
+	ret.Num = self.Num
+	ret.IpBits = self.IpBits
+	ret.Netmask = self.Netmask
+	ret.Vt_from = self.Vt_from
 	return ret
 }
 

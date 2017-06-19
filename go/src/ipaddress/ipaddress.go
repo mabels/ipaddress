@@ -12,13 +12,11 @@ package ipaddress
 // package data
 
 import "math/big"
-import "./ip_bits"
-import "./prefix"
 
 type IPAddress struct {
-	Ip_bits        *ip_bits.IpBits
+	Ip_bits        *IpBits
 	Host_address   big.Int
-	Prefix         prefix.Prefix
+	Prefix         Prefix
 	Mapped         *IPAddress
 	Vt_is_private  func(*IPAddress) bool
 	Vt_is_loopback func(*IPAddress) bool

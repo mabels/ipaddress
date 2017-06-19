@@ -5,8 +5,6 @@ import "strings"
 import "bytes"
 import "math/big"
 
-import "./ip_bits"
-
 // import "ipaddress"
 
 //  Ac
@@ -113,7 +111,7 @@ func Ipv6MappedNew(str string) ResultIPAddress {
 		}
 		//mapped = Some(ipv4.Unwrap());
 		addr := ipv4.Unwrap()
-		ipv6_bits := ip_bits.V6()
+		ipv6_bits := IpBitsV6()
 		part_mod := ipv6_bits.Part_mod
 		up_addr := *big.NewInt(0).Set(&addr.Host_address)
 		down_addr := *big.NewInt(0).Set(&addr.Host_address)
@@ -127,7 +125,7 @@ func Ipv6MappedNew(str string) ResultIPAddress {
 		}
 		rebuild_ipv6.WriteString(colon)
 		// fmt.Printf("1-UP:%s\n", up_addr.String())
-		shr := up_addr.Rsh(&up_addr, uint(ip_bits.V6().Part_bits))
+		shr := up_addr.Rsh(&up_addr, uint(IpBitsV6().Part_bits))
 		// fmt.Printf("UP:%s:SHR:%s\n", up_addr.String(), shr.String())
 		// fmt.Printf("DOWN:%s\n", down_addr.String())
 		rebuild_ipv4 := fmt.Sprintf("%x:%x/%d",

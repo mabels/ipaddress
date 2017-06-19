@@ -1,4 +1,4 @@
-package rle
+package ipaddress
 
 import "fmt"
 
@@ -22,8 +22,8 @@ func (r *Rle) String() string {
 // }
 
 func (self *Rle) Equal(other Rle) bool {
-  return self.Part == other.Part && self.Pos == other.Pos &&
-          self.Cnt == other.Cnt && self.Max == other.Max;
+	return self.Part == other.Part && self.Pos == other.Pos &&
+		self.Cnt == other.Cnt && self.Max == other.Max
 }
 
 //impl<T: PartialEq> Eq for Rle<T> {}
@@ -35,7 +35,7 @@ type Last struct {
 
 func (self *Last) handle_last() {
 	if self.val == nil {
-    // fmt.Printf("--1\n")
+		// fmt.Printf("--1\n")
 		return
 	}
 	_last := self.val
@@ -43,21 +43,21 @@ func (self *Last) handle_last() {
 	if !ok {
 		Max_rles = make([]int, 0)
 		self.Max_Poses[_last.Part] = Max_rles
-    // fmt.Printf("--2 %d\n", _last.Part)
+		// fmt.Printf("--2 %d\n", _last.Part)
 	}
-  // fmt.Printf("--A %d\n", len(Max_rles))
+	// fmt.Printf("--A %d\n", len(Max_rles))
 	for _, idx := range Max_rles {
 		prev := &self.ret[idx]
 		if prev.Cnt > _last.Cnt {
-      // fmt.Printf("--3 %d %d\n", prev.Part, _last.Part)
+			// fmt.Printf("--3 %d %d\n", prev.Part, _last.Part)
 			_last.Max = false
 		}
 		if prev.Cnt == _last.Cnt {
-      // fmt.Printf("--4\n")
+			// fmt.Printf("--4\n")
 			// nothing
 		}
 		if prev.Cnt < _last.Cnt {
-      // fmt.Printf("--5 %d %d\n", prev.Part, _last.Part)
+			// fmt.Printf("--5 %d %d\n", prev.Part, _last.Part)
 			// println!("<<<<< last={:?}->{}->prev={:?}", _last, idx, prev);
 			//self.ret[idx].Max = false;
 			prev.Max = false
@@ -67,16 +67,16 @@ func (self *Last) handle_last() {
 	self.Max_Poses[_last.Part] = append(Max_rles, len(self.ret))
 	_last.Pos = len(self.ret)
 	self.ret = append(self.ret, *_last)
-  // fmt.Printf("--6 -- %s -- %s -- %s --\n", _last, self.ret, self.val)
+	// fmt.Printf("--6 -- %s -- %s -- %s --\n", _last, self.ret, self.val)
 }
 
 func Code(Parts []uint16) []Rle {
 	last := Last{nil, make(map[uint16][]int), make([]Rle, 0)}
-  // fmt.Println("code");
+	// fmt.Println("code");
 	// println!("code");
 	for i := 0; i < len(Parts); i++ {
 		Part := Parts[i]
-    // fmt.Printf("code-1 %d %d\n", Part, last.val);
+		// fmt.Printf("code-1 %d %d\n", Part, last.val);
 		// println!("Part:{}", Part);
 		if last.val != nil && last.val.Part == Part {
 			last.val.Cnt += 1
@@ -86,10 +86,10 @@ func Code(Parts []uint16) []Rle {
 		}
 	}
 	last.handle_last()
-  return last.ret
-  // vsm := make([]Rle, len(last.ret))
-  // for i, v := range last.ret {
-  //   vsm[i] = *v
-  // }
+	return last.ret
+	// vsm := make([]Rle, len(last.ret))
+	// for i, v := range last.ret {
+	//   vsm[i] = *v
+	// }
 	// return vsm
 }

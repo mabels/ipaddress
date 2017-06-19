@@ -2,10 +2,6 @@ package ipaddress
 
 import "math/big"
 
-import "./prefix/prefix32"
-import "./prefix/prefix128"
-import "./ip_bits"
-
 import "fmt"
 import "strconv"
 
@@ -60,13 +56,13 @@ import "strconv"
 // mod IPv4 {
 
 func From_u32(addr uint32, _prefix uint8) ResultIPAddress {
-	prefix := prefix32.New(_prefix)
+	prefix := Prefix32New(_prefix)
 	if prefix.IsErr() {
 		return &Error{prefix.UnwrapErr()}
 	}
 	big_addr := big.NewInt(int64(addr))
 	return &Ok{&IPAddress{
-		ip_bits.V4(),
+		IpBitsV4(),
 		*big_addr,
 		*prefix.Unwrap(),
 		nil,
@@ -94,7 +90,7 @@ func Ipv4New(str string) ResultIPAddress {
 		ip_prefix_num = *ipn
 		//if ip_prefix.ip_bits.version
 	}
-	ip_prefix := prefix32.New(ip_prefix_num)
+	ip_prefix := Prefix32New(ip_prefix_num)
 	if ip_prefix == nil {
 		// fmt.Printf("---4\n")
 		return &Error{ip_prefix.UnwrapErr()}
@@ -106,7 +102,7 @@ func Ipv4New(str string) ResultIPAddress {
 	}
 	// fmt.Printf("Ipv4New:%x:%s\n", int64(*split_u32), str)
 	return &Ok{&IPAddress{
-		ip_bits.V4(),
+		IpBitsV4(),
 		*big.NewInt(int64(*split_u32)),
 		*ip_prefix.Unwrap(),
 		nil,
@@ -153,9 +149,9 @@ func ipv4_is_loopback(my *IPAddress) bool {
 
 func ipv4_to_ipv6(ia *IPAddress) *IPAddress {
 	ret := new(IPAddress)
-	ret.Ip_bits = ip_bits.V6()
+	ret.Ip_bits = IpBitsV6()
 	ret.Host_address = ia.Host_address
-	ret.Prefix = *prefix128.New(ia.Prefix.Num).Unwrap()
+	ret.Prefix = *Prefix128New(ia.Prefix.Num).Unwrap()
 	ret.Mapped = nil
 	ret.Vt_is_private = ipv6_is_private
 	ret.Vt_is_loopback = ipv6_is_loopback
@@ -1018,11 +1014,11 @@ func Parse_classful(ip_si string) ResultIPAddress {
 	}
 	ip := o_ip.Unwrap()
 	if Is_class_a(ip) {
-		ip.Prefix = *prefix32.New(8).Unwrap()
+		ip.Prefix = *Prefix32New(8).Unwrap()
 	} else if Is_class_b(ip) {
-		ip.Prefix = *prefix32.New(16).Unwrap()
+		ip.Prefix = *Prefix32New(16).Unwrap()
 	} else if Is_class_c(ip) {
-		ip.Prefix = *prefix32.New(24).Unwrap()
+		ip.Prefix = *Prefix32New(24).Unwrap()
 	}
 	return &Ok{ip}
 }

@@ -1,9 +1,6 @@
 package ipaddress
 
 import "testing"
-import "./prefix/prefix32"
-
-// import "../../../gocha"
 
 type Prefix32ArrayTuple struct {
 	arr []uint16
@@ -65,7 +62,7 @@ func TestPrefix32(tx *testing.T) {
 	t.Run("TestPrefix32", func(t *MyTesting) {
 		t.Run("test_attributes", func(t *MyTesting) {
 			for _, num := range prefix32Setup().prefix_hash {
-				prefix := prefix32.New(num).Unwrap()
+				prefix := Prefix32New(num).Unwrap()
 				t.assert_uint8(num, prefix.Num)
 			}
 		})
@@ -78,51 +75,51 @@ func TestPrefix32(tx *testing.T) {
 		})
 		t.Run("test_method_to_ip", func(t *MyTesting) {
 			for netmask, num := range prefix32Setup().prefix_hash {
-				prefix := prefix32.New(num).Unwrap()
+				prefix := Prefix32New(num).Unwrap()
 				t.assert_string(netmask, prefix.To_ip_str())
 			}
 		})
 
 		t.Run("test_method_to_s", func(t *MyTesting) {
-			prefix := prefix32.New(8).Unwrap()
+			prefix := Prefix32New(8).Unwrap()
 			t.assert_string("8", prefix.To_s())
 		})
 
 		t.Run("test_method_bits", func(t *MyTesting) {
-			prefix := prefix32.New(16).Unwrap()
+			prefix := Prefix32New(16).Unwrap()
 			t.assert_string("11111111111111110000000000000000", prefix.Bits())
 		})
 
 		t.Run("test_method_to_u32", func(t *MyTesting) {
 			for num, ip32 := range prefix32Setup().u32_hash {
-				t.assert_uint64(ip32, prefix32.New(num).Unwrap().Netmask.Uint64())
+				t.assert_uint64(ip32, Prefix32New(num).Unwrap().Netmask.Uint64())
 			}
 		})
 
 		t.Run("test_method_plus", func(t *MyTesting) {
-			p1 := prefix32.New(8).Unwrap()
-			p2 := prefix32.New(10).Unwrap()
+			p1 := Prefix32New(8).Unwrap()
+			p2 := Prefix32New(10).Unwrap()
 			t.assert_uint8(18, p1.Add_prefix(p2).Unwrap().Num)
 			t.assert_uint8(12, p1.Add(4).Unwrap().Num)
 		})
 
 		t.Run("test_method_minus", func(t *MyTesting) {
-			p1 := prefix32.New(8).Unwrap()
-			p2 := prefix32.New(24).Unwrap()
+			p1 := Prefix32New(8).Unwrap()
+			p2 := Prefix32New(24).Unwrap()
 			t.assert_uint8(16, p1.Sub_prefix(p2).Unwrap().Num)
 			t.assert_uint8(16, p2.Sub_prefix(p1).Unwrap().Num)
 			t.assert_uint8(20, p2.Sub(4).Unwrap().Num)
 		})
 
 		t.Run("test_initialize", func(t *MyTesting) {
-			t.assert(prefix32.New(33).IsErr())
-			t.assert(prefix32.New(8).IsOk())
+			t.assert(Prefix32New(33).IsErr())
+			t.assert(Prefix32New(8).IsOk())
 		})
 
 		t.Run("test_method_octets", func(t *MyTesting) {
 			for _, e := range prefix32Setup().octets_hash {
 				pref := e.num
-				prefix := prefix32.New(pref).Unwrap()
+				prefix := Prefix32New(pref).Unwrap()
 				t.assert_uint16_array(prefix.IpBits.Parts(&prefix.Netmask), e.arr)
 			}
 		})
@@ -131,7 +128,7 @@ func TestPrefix32(tx *testing.T) {
 			for _, e := range prefix32Setup().octets_hash {
 				arr := e.arr
 				pref := e.num
-				prefix := prefix32.New(pref).Unwrap()
+				prefix := Prefix32New(pref).Unwrap()
 				for index := 0; index < len(arr); index++ {
 					oct := arr[index]
 					t.assert_uint16(prefix.IpBits.Parts(&prefix.Netmask)[index], oct)
@@ -140,7 +137,7 @@ func TestPrefix32(tx *testing.T) {
 		})
 
 		t.Run("test_method_hostmask", func(t *MyTesting) {
-			prefix := prefix32.New(8).Unwrap()
+			prefix := Prefix32New(8).Unwrap()
 			t.assert_string("0.255.255.255",
 				From_u32(uint32(prefix.Host_mask().Uint64()), 0).Unwrap().To_s())
 		})
