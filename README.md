@@ -12,6 +12,7 @@ full network design.
 IPAddress should have the same api for:
 - ruby (the root implementation, it's not updated after the port to rust)
 - rust
+- go / golang
 - javascript/typescript
 - cpp
 The documentation is in ruby and hopefully in rust. There should
@@ -46,6 +47,10 @@ Install the library with rust
 
 or add to your Cargo.toml
   ipaddress = "0.1.1"
+
+For go:
+
+  $ go get github.com/mabels/ipaddress/go/ipaddress
 
 For javascript:
   
