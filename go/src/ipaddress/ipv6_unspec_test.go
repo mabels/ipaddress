@@ -21,7 +21,7 @@ func ipv6UnspecSetup() IPv6UnspecifiedTest {
 }
 
 func TestIpv6Unspec(tx *testing.T) {
-  t := MyTesting{tx}
+	t := MyTesting{tx}
 	t.Run("", func(t *MyTesting) {
 		t.Run("test_attributes", func(t *MyTesting) {
 			s := ipv6UnspecSetup()

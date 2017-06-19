@@ -1,4 +1,3 @@
-
 package ipaddress
 
 // import "ipaddress"
@@ -52,5 +51,5 @@ package ipaddress
 ///       ///  => "::/128"
 ///
 func Ipv6UnspecNew() *IPAddress {
-    return Parse("::").Unwrap();
+	return Parse("::").Unwrap()
 }

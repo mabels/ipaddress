@@ -24,7 +24,7 @@ func setupIPAddressTest() IPAddressTest {
 }
 
 func TestIpAddress(tx *testing.T) {
-  t := MyTesting{tx}
+	t := MyTesting{tx}
 	t.Run("IpAddress", func(t *MyTesting) {
 		t.Run("test_method_ipaddress", func(t *MyTesting) {
 			ipt := setupIPAddressTest()

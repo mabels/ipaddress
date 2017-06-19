@@ -43,7 +43,7 @@ func ipv6MappedSetup() IPv6MappedTest {
 }
 
 func TestIpv6Mapped(tx *testing.T) {
-  t := MyTesting{tx}
+	t := MyTesting{tx}
 	t.Run("TestIpv6Mapped", func(t *MyTesting) {
 		t.Run("test_initialize", func(t *MyTesting) {
 			s := ipv6MappedSetup()

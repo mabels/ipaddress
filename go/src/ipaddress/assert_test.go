@@ -5,7 +5,6 @@ package ipaddress
 import "math/big"
 import "testing"
 
-
 // type gochaFunc func() string
 
 //func Describe(t *MyTesting, desc string, fn func()) {

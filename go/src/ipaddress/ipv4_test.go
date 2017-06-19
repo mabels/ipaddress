@@ -115,7 +115,7 @@ func ipv4Setup() IPv4Test {
 }
 
 func TestIpv4(tx *testing.T) {
-  t := MyTesting{tx}
+	t := MyTesting{tx}
 	t.Run("TestIpv4", func(t *MyTesting) {
 		t.Run("test_initialize", func(t *MyTesting) {
 			setup := ipv4Setup()

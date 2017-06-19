@@ -61,7 +61,7 @@ func prefix32Setup() Prefix32Test {
 }
 
 func TestPrefix32(tx *testing.T) {
-  t := MyTesting{tx}
+	t := MyTesting{tx}
 	t.Run("TestPrefix32", func(t *MyTesting) {
 		t.Run("test_attributes", func(t *MyTesting) {
 			for _, num := range prefix32Setup().prefix_hash {
