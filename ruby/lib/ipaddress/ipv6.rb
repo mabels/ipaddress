@@ -1,8 +1,8 @@
 
 require_relative 'prefix'
 require_relative 'ip_bits'
-require_relative '../ipaddress'
-require_relative 'ipv4'
+#require_relative '../ipaddress'
+#require_relative 'ipv4'
 require_relative 'prefix128'
 require_relative 'crunchy'
 

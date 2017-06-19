@@ -1,5 +1,5 @@
 
-require_relative '../ipaddress'
+#require_relative '../ipaddress'
 
 class IPAddress
   class Ipv6Unspec

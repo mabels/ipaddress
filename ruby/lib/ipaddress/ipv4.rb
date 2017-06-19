@@ -1,7 +1,7 @@
 
 require_relative 'crunchy'
 require_relative 'prefix32'
-require_relative '../ipaddress'
+#require_relative '../ipaddress'
 require_relative 'ip_bits'
 require_relative 'prefix128'
 require_relative 'ipv6'

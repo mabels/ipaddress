@@ -1,7 +1,7 @@
 
 require_relative 'crunchy'
 require_relative 'ip_bits'
-require_relative '../ipaddress'
+#require_relative '../ipaddress'
 
 class IPAddress
 

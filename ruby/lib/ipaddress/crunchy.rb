@@ -105,7 +105,7 @@ class IPAddress
     end
 
     def mds(y)
-      ret = Crunchy.new
+      #ret = Crunchy.new
       self.num % y
     end
 

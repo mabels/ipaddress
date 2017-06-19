@@ -1,5 +1,5 @@
 
-require_relative '../ipaddress'
+#require_relative '../ipaddress'
 require_relative 'ipv6'
 
 require_relative 'crunchy'

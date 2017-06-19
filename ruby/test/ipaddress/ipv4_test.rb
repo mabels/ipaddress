@@ -61,10 +61,10 @@ class IPv4Test < Test::Unit::TestCase
   end
 
   def test_initialize
-    @valid_ipv4.keys.each do |i|
-      ip = IPAddress.parse(i)
-      # assert_instance_of @klass, ip
-    end
+    #@valid_ipv4.keys.each do |i|
+    #  ip = IPAddress.parse(i)
+    #  # assert_instance_of @klass, ip
+    #end
     # assert_instance_of IPAddress::Prefix32, @ip.prefix
     assert_equal nil, IPAddress.parse("")
     assert_not_equal nil, IPAddress.parse("10.0.0.0/8")
