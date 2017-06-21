@@ -1,8 +1,6 @@
 package com.adviser.ipaddress
 
 import java.math.BigInteger
-import java.util.Collections
-import java.util.Arrays
 
 // #[derive(Debug, Clone)]
 class IpBits {
@@ -35,7 +33,7 @@ class IpBits {
 
     public static def IpBits v4() {
         val ipv4_as_compressed = [IpBits ip_bits, BigInteger host_address |
-            var StringBuffer ret
+            val ret = new StringBuffer()
             var sep = "";
             for(part : ip_bits.parts(host_address)) {
                 ret.append(sep);
@@ -66,14 +64,16 @@ class IpBits {
             var colon = the_empty;
             var done = false;
             for(rle : Rle.code(ip_bits.parts(host_address))) {
-                for(var _ = 0; !done && _ < rle.cnt; _++) {
+                var break = false
+                for(var _ = 0; !break && _ < rle.cnt; _++) {
                     if(done || !(rle.part == 0 && rle.max)) {
                         ret.append(String.format("%s%x", colon, rle.part));
                         colon = the_colon;
                     } else if(rle.part == 0 && rle.max) {
                         ret.append("::");
                         colon = the_empty;
-                        done = true;
+                        done = true
+                        break = true
                     }
                 }
             }
@@ -122,7 +122,7 @@ class IpBits {
         var my = BigInteger.ZERO.add(bu);
         val part_mod = BigInteger.ONE.shiftLeft(this.part_bits);// - BigUint::one();
         for(var i = 0; i < len ; i++) {
-            val v = bu.mod(part_mod).intValue();
+            val v = my.mod(part_mod).intValue();
             vec.set(i, v);
             my = my.shiftRight(this.part_bits);
         }

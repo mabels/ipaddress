@@ -45,7 +45,7 @@ import java.math.BigInteger
 ///    ip.to_string
 ///      ///  "::1/128"
 ///
-class Ipv6LoopBack {
+class Ipv6Loopback {
     public static def IPAddress create() {
         return IpV6.from_int(BigInteger.ONE , 128).unwrap();
     }

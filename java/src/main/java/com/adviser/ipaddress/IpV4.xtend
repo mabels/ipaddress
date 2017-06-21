@@ -7,7 +7,7 @@ class IpV4 {
         return #[IPAddress.parse("10.0.0.0/8").unwrap(),
             IPAddress.parse("169.254.0.0/16").unwrap(),
             IPAddress.parse("172.16.0.0/12").unwrap(),
-            IPAddress.parse("192.168.0.0/16").unwrap()].find[IPAddress i| i.includes(my)]
+            IPAddress.parse("192.168.0.0/16").unwrap()].findFirst[i| i.includes(my)] !== null
     ]
 
     public static final IPAddress.VtBool ipv4_is_loopback = [ IPAddress my |
@@ -23,7 +23,7 @@ class IpV4 {
                 IpV6.ipv6_is_private, IpV6.ipv6_is_loopback, IpV6.ipv6_to_ipv6)
     ]
 
-    public def Result<IPAddress> from_u32(int addr, int _prefix) {
+    public static def Result<IPAddress> from_u32(long addr, int _prefix) {
         val prefix = Prefix32.create(_prefix);
         if(prefix.isErr()) {
             return Result.Err(prefix.unwrapErr());
@@ -42,27 +42,27 @@ class IpV4 {
     public static def Result<IPAddress> create(String str)  {
         val splitted = IPAddress.split_at_slash(str);
         if(!IPAddress.is_valid_ipv4(splitted.addr)) {
-            return Err('''Invalid IP <<str>>''');
+            return Result.Err('''Invalid IP <<str>>''');
         }
-        var ip_prefix_num = Ok(32);
-        if(splitted.netmask != null) {
+        var ip_prefix_num = Result.Ok(32);
+        if(splitted.netmask !== null) {
             //  netmask is defined
-            ip_prefix_num = IPAddress.parse_netmask_to_prefix(netmask.unwrap());
-            if(ip_prefix_num.is_err()) {
-                return Err(ip_prefix_num.unwrap_err());
+            ip_prefix_num = IPAddress.parse_netmask_to_prefix(splitted.netmask);
+            if(ip_prefix_num.isErr()) {
+                return Result.Err(ip_prefix_num.unwrapErr());
             }
             //if ip_prefix.ip_bits.version
         }
-        val ip_prefix = prefix32.create(ip_prefix_num.unwrap());
-        if(ip_prefix.is_err()) {
-            return Err(ip_prefix.unwrap_err());
+        val ip_prefix = Prefix32.create(ip_prefix_num.unwrap());
+        if(ip_prefix.isErr()) {
+            return Result.Err(ip_prefix.unwrapErr());
         }
-        val split_u32 = IPAddress.split_to_u32(ip);
-        if(split_u32.is_err()) {
-            return Err(split_u32.unwrap_err());
+        val split_u32 = IPAddress.split_to_u32(splitted.addr);
+        if(split_u32.isErr()) {
+            return Result.Err(split_u32.unwrapErr());
         }
-        return Result.Ok(new IPAddress(ip_bits.V4,
-        BigInteger.from_u32(split_u32.unwrap()).unwrap(),
+        return Result.Ok(new IPAddress(IpBits.V4,
+        BigInteger.valueOf(split_u32.unwrap()),
         ip_prefix.unwrap(),
         null,
         ipv4_is_private, ipv4_is_loopback, to_ipv6));
@@ -1066,8 +1066,13 @@ class IpV4 {
     //    ip.a?
     //      // => true
     //
+    public final static BigInteger x80000000 = BigInteger.valueOf(2147483648L)
+    public final static BigInteger xc0000000 = BigInteger.valueOf(3221225472L)
+    public final static BigInteger xe0000000 = BigInteger.valueOf(3758096384L)
+
     public static def boolean is_class_a(IPAddress my) {
-        return my.is_ipv4() && my.host_address < BigUint::from_u32(0x80000000).unwrap();
+//      val ret = my.host_address.compareTo(x80000000)
+      return my.is_ipv4() && my.host_address.compareTo(x80000000) < 0;
     }
 
     //  Checks whether the ip address belongs to a
@@ -1085,8 +1090,8 @@ class IpV4 {
     //      // => true
     //
     public static def boolean is_class_b(IPAddress my) {
-        return my.is_ipv4() && BigUint::from_u32(0x80000000).unwrap() <= my.host_address
-                && my.host_address < BigUint::from_u32( 0xc0000000).unwrap();
+        return my.is_ipv4() && x80000000.compareTo(my.host_address) <= 0
+                && my.host_address.compareTo(xc0000000) < 0;
     }
     //  Checks whether the ip address belongs to a
 
@@ -1104,10 +1109,8 @@ class IpV4 {
     //
 
     public static def boolean is_class_c(IPAddress my) {
-        return my.is_ipv4() && BigUint::from_u32(
-                0xc0000000).unwrap() <= my. host_address && my.
-        host_address < BigUint:: from_u32(0xe0000000).
-        unwrap();
+        return my.is_ipv4() && xc0000000.compareTo(my. host_address) <= 0 
+          && my.host_address.compareTo(xe0000000) < 0
     }
     //  Return the ip address in a format compatible
 
@@ -1344,7 +1347,7 @@ class IpV4 {
     //  prefix of /24 or 255.255.255.0
 
     //
-    public def Result<IPAddress> parse_classful(String ip_s) {
+    public static def Result<IPAddress> parse_classful(String ip_s) {
         if(!IPAddress.is_valid_ipv4(ip_s)) {
             return Result.Err('''Invalid IP <<ip_si>>''');
         }
@@ -1354,11 +1357,11 @@ class IpV4 {
         }
         val ip = o_ip.unwrap();
         if(IpV4.is_class_a(ip)) {
-            ip.prefix = Prefix32.create(8).unwrap();
+            return IPAddress.parse(String.format("%s/8", ip.to_s()));
         } else if(IpV4.is_class_b(ip)) {
-            ip.prefix = Prefix32.create(16).unwrap();
+            return IPAddress.parse(String.format("%s/16", ip.to_s()));
         } else if(IpV4.is_class_c(ip)) {
-            ip.prefix = Prefix32.create(24).unwrap();
+            return IPAddress.parse(String.format("%s/24", ip.to_s()));
         }
         return Result.Ok(ip);
     }

@@ -105,60 +105,60 @@ class IpV6 {
 
     ///
 
-    public final static IPAddress.VtIPAddress ipv6_to_ipv6 = [ IPAddress my | return ia.clone() ];
-    public final static IPAddress.VtBool ipv6_is_loopback = [ IPAddress my | return my.host_address.eq(BigInteger.ONE) ];
+    public final static IPAddress.VtIPAddress ipv6_to_ipv6 = [ IPAddress my | return my.clone() ];
+    public final static IPAddress.VtBool ipv6_is_loopback = [ IPAddress my | return my.host_address.equals(BigInteger.ONE) ];
     public final static IPAddress.VtBool ipv6_is_private = [ IPAddress my | return IPAddress.parse("fd00::/8").unwrap().includes(my) ];
 
-    public def Result<IPAddress> from_str(String str, int radix, int prefix) {
+    public static def Result<IPAddress> from_str(String str, int radix, int prefix) {
         try {
-            val num = BigInteger(str, radix)
-            return from_int(num.unwrap(), prefix);
+            val num = new BigInteger(str, radix)
+            return from_int(num, prefix);
         } catch(Throwable e) {
             return Result.Err("unparsable <<str>>")
         }
     }
 
-    public static def Result<IPAddress>  enhance_if_mapped(IPAddress ip) {
+    public static def Result<IPAddress> enhance_if_mapped(IPAddress ip) {
         // println!("real mapped {:x} {:x}", &ip.host_address, ip.host_address.clone().shr(32));
         if(ip.is_mapped()) {
             return Result.Ok(ip);
         }
-        val ipv6_top_96bit = ip.host_address.clone().shr(32);
-        if(ipv6_top_96bit.Equal(BigInteger.from_u32(0xffff))) {
+        val ipv6_top_96bit = ip.host_address.shiftRight(32);
+        if(ipv6_top_96bit.equals(BigInteger.valueOf(0xffff))) {
             // println!("enhance_if_mapped-1:{}", );
-            val num = ip.host_address.clone().rem(BigUint::one().shl(32));
-            if(num.Equal(BigUint::zero())) {
-                return Ok(ip);
+            val num = ip.host_address.mod(BigInteger.ONE.shiftLeft(32));
+            if(num.equals(BigInteger.ZERO)) {
+                return Result.Ok(ip);
             }
             //println!("ip:{},{:x}", ip.to_string(), num);
-            val ipv4_bits = Ip_bits.V4;
+            val ipv4_bits = IpBits.V4;
             if(ipv4_bits.bits < ip.prefix.host_prefix()) {
                 //println!("enhance_if_mapped-2:{}:{}", ip.to_string(), ip.prefix.host_prefix());
-                return Err('''enhance_if_mapped prefix not ipv4 compatible <<ip.prefix.host_prefix()>>''');
+                return Result.Err('''enhance_if_mapped prefix not ipv4 compatible <<ip.prefix.host_prefix()>>''');
             }
-            val mapped = IpV4.from_u32(num.to_u32().unwrap(), ipv4_bits.bits-ip.prefix.host_prefix());
-            if(mapped.is_err()) {
+            val mapped = IpV4.from_u32(num.intValue(), ipv4_bits.bits-ip.prefix.host_prefix());
+            if(mapped.isErr()) {
                 //println!("enhance_if_mapped-3");
                 return mapped;
             }
             // println!("real mapped!!!!!={}", mapped.clone().unwrap().to_string());
-            ip.mapped = mapped.unwrap();
+            return Result.Ok(ip.setMapped(mapped.unwrap()))
         }
-        return Ok(ip);
+        return Result.Ok(ip);
     }
 
 
-    public static def Result<IPAddress> from_int(BigInteger bi, int prefix) {
-        val prefix = prefix128.create(prefix);
-        if(prefix.is_err()) {
-            return Err(prefix.unwrap_err());
+    public static def Result<IPAddress> from_int(BigInteger bi, int prefixNum) {
+        val prefix = Prefix128.create(prefixNum);
+        if(prefix.isErr()) {
+            return Result.Err(prefix.unwrapErr());
         }
         return enhance_if_mapped(new IPAddress(
-                Ip_bits.V6,
+                IpBits.V6,
                 BigInteger.ZERO.add(bi),
                 prefix.unwrap(),
                 null,
-                ipv6_is_private, ipv6_is_loopback, to_ipv6));
+                ipv6_is_private, ipv6_is_loopback, ipv6_to_ipv6));
     }
     ///  Creates a new IPv6 address object.
     ///
@@ -187,30 +187,30 @@ class IpV6 {
     ///
     public static def Result<IPAddress> create(String str)  {
         val splitted = IPAddress.split_at_slash(str);
-        if (IPAddress.is_valid_ipv6(ip)) {
-            val o_num = IPAddress.split_to_num(ip);
-            if (o_num.is_err()) {
-                return Err(o_num.unwrap_err());
+        if (IPAddress.is_valid_ipv6(splitted.addr)) {
+            val o_num = IPAddress.split_to_num(splitted.addr);
+            if (o_num.isErr()) {
+                return Result.Err(o_num.unwrapErr());
             }
             var netmask = 128;
-            if (o_netmask.is_some()) {
-                val network = o_netmask.unwrap();
-                val num_mask = parse(network);
-                if(num_mask.is_err()) {
+            if (splitted.netmask !== null) {
+                val network = splitted.netmask
+                val num_mask = IPAddress.parseInt(network, 10);
+                if(num_mask === null) {
                     return Result.Err('''Invalid Netmask <<str>>''');
                 }
-                netmask = network.parse::<usize>().unwrap();
+                netmask = num_mask.intValue()
             }
             val prefix = Prefix128.create(netmask);
-            if (prefix.is_err()) {
-                return Result.Err(prefix.unwrap_err());
+            if (prefix.isErr()) {
+                return Result.Err(prefix.unwrapErr());
             }
             return enhance_if_mapped(new IPAddress(
-                    ip_bits.V6,
+                    IpBits.V6,
                     o_num.unwrap(),
                     prefix.unwrap(),
                     null,
-                    ipv6_is_private, ipv6_is_loopback, to_ipv6));
+                    ipv6_is_private, ipv6_is_loopback, ipv6_to_ipv6));
         } else {
             return Result.Err('''Invalid IP <<str>>''');
         }

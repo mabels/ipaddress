@@ -81,16 +81,16 @@ import java.math.BigInteger
 class Ipv6Mapped {
     public static def Result<IPAddress> create(String str) {
         val ret = IPAddress.split_at_slash(str);
-        val split_colon = ret.ip.split(":");
-        if(split_colon.len() <= 1) {
+        val split_colon = ret.addr.split(":");
+        if(split_colon.length <= 1) {
             // println!("---1");
             return Result.Err('''not mapped format-1: <<str>>''');
         }
-        val netmask = "";
-        if(o_netmask.is_some()) {
-            netmask = String.format("/%d", o_netmask.unwrap());
+        var netmask = "";
+        if(ret.netmask !== null) {
+            netmask = String.format("/%d", ret.netmask);
         }
-        val ipv4_str = split_colon.last()
+        val ipv4_str = split_colon.get(split_colon.length-1)
         if(IPAddress.is_valid_ipv4(ipv4_str)) {
             val ipv4 = IPAddress.parse(String.format("%s%s", ipv4_str, netmask));
             if(ipv4.isErr()) {

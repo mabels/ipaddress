@@ -12,11 +12,11 @@ class Result<T> {
         this.msg = msg
     }
     def boolean isOk() {
-        return msg == 0;
+        return msg === null;
     }
     
     def boolean isErr() {
-        return msg != 0;
+        return msg !== null;
     }
 
     def String text() {
