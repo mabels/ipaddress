@@ -17,10 +17,12 @@ install:
 script:
     - rvm use 2.2
     - (cd ruby && rake test)
-    - (cd rust && cargo build --release --verbose)
-    - (cd rust && cargo test --release --verbose)
     - (cd go/ipaddress && go test -v)
     - (cd js && npm install && npm test)
+    - jdk_switcher use oraclejdk8
+    - (cd java && mvn test -B -Dmaven.javadoc.skip=true)
+    - (cd rust && cargo build --release --verbose)
+    - (cd rust && cargo test --release --verbose)
     - (cd cpp && cmake -DCMAKE_BUILD_TYPE=Release . && make)
     - ./cpp/test/Release/*/test_crunchy
     - ./cpp/test/Release/*/test_ipaddress
