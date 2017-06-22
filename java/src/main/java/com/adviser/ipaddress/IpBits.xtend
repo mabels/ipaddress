@@ -33,7 +33,7 @@ class IpBits {
 
     public static def IpBits v4() {
         val ipv4_as_compressed = [IpBits ip_bits, BigInteger host_address |
-            val ret = new StringBuffer()
+            val ret = new StringBuilder()
             var sep = "";
             for(part : ip_bits.parts(host_address)) {
                 ret.append(sep);
@@ -58,14 +58,14 @@ class IpBits {
     public static def IpBits v6() {
         val ipv6_as_compressed = [IpBits ip_bits, BigInteger host_address |
             //println!("ipv6_as_compressed:{}", host_address);
-            val ret = new StringBuffer();
+            val ret = new StringBuilder();
             var the_colon = ":";
             val the_empty = "";
             var colon = the_empty;
             var done = false;
             for(rle : Rle.code(ip_bits.parts(host_address))) {
                 var break = false
-                for(var _ = 0; !break && _ < rle.cnt; _++) {
+                for(var i = 0; !break && i < rle.cnt; i++) {
                     if(done || !(rle.part == 0 && rle.max)) {
                         ret.append(String.format("%s%x", colon, rle.part));
                         colon = the_colon;
@@ -80,7 +80,7 @@ class IpBits {
             return ret.toString();
         ];
         val ipv6_as_uncompressed = [IpBits ip_bits, BigInteger host_address |
-            val ret = new StringBuffer()
+            val ret = new StringBuilder()
             var sep = "";
             for(part : ip_bits.parts(host_address)) {
                 ret.append(sep);

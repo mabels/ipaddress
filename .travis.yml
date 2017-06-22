@@ -20,6 +20,7 @@ script:
     - (cd go/ipaddress && go test -v)
     - (cd js && npm install && npm test)
     - jdk_switcher use oraclejdk8
+    - env
     - (cd java && mvn test -B -Dmaven.javadoc.skip=true)
     - (cd rust && cargo build --release --verbose)
     - (cd rust && cargo test --release --verbose)

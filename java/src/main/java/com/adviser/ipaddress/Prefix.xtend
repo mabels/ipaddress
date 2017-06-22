@@ -89,7 +89,7 @@ class Prefix {
     ///
     public def BigInteger host_mask() {
         var ret = BigInteger.ZERO;
-        for (var _ = 0; _  < this.ip_bits.bits-this.num; _++) {
+        for (var i = 0; i  < this.ip_bits.bits-this.num; i++) {
             ret = ret.shiftLeft(1).add(BigInteger.ONE);
         }
         return ret;

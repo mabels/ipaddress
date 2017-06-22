@@ -458,7 +458,7 @@ class IPAddress {
 
 
     public def String dns_reverse() {
-        val ret = new StringBuffer()
+        val ret = new StringBuilder()
         var dot = "";
         val dns_parts = this.dns_parts();
         for (var i  = ((this.prefix.host_prefix()+(this.ip_bits.dns_bits-1))/this.ip_bits.dns_bits); i < dns_parts.length(); i++) {
@@ -477,10 +477,10 @@ class IPAddress {
         var ret = newIntArrayOfSize(len)
         var num = BigInteger.ZERO.add(this.host_address);
         val mask = BigInteger.ONE.shiftLeft(this.ip_bits.dns_bits);
-        for (var _ = 0; _ < len; _++) {
+        for (var i = 0; i < len; i++) {
             var part = num.mod(mask)
             num = num.shiftRight(this.ip_bits.dns_bits);
-            ret.set(_, part.intValue());
+            ret.set(i, part.intValue());
         }
         return ret;
     }
@@ -714,7 +714,7 @@ class IPAddress {
         var addr = BigInteger.ZERO.add(nm);
         var in_host_part = true;
         val two = BigInteger.valueOf(2)
-        for (var _ = 0; _ < bits; _++) {
+        for (var i = 0; i < bits; i++) {
             val bit = addr.mod(two).intValue()
             if (in_host_part && bit == 0) {
                 prefix = prefix + 1;
@@ -791,7 +791,7 @@ class IPAddress {
     ///      ///  "172.16.100.4/22"
     ///
     public def String to_string() {
-        var ret = new StringBuffer()
+        var ret = new StringBuilder()
         ret.append(this.to_s());
         ret.append("/");
         ret.append(this.prefix.to_s());
@@ -803,7 +803,7 @@ class IPAddress {
     }
 
     public def String to_string_uncompressed() {
-        var ret = new StringBuffer()
+        var ret = new StringBuilder()
         ret.append(this.to_s_uncompressed());
         ret.append("/");
         ret.append(this.prefix.to_s());
@@ -843,8 +843,8 @@ class IPAddress {
     
     public def String bits() {
         val num = this.host_address.toString(2);
-        var ret = new StringBuffer()
-        for (var _ = num.length(); _ < this.ip_bits.bits; _++) {
+        var ret = new StringBuilder()
+        for (var i = num.length(); i < this.ip_bits.bits; i++) {
             ret.append("0");
         }
         ret.append(num);
@@ -1277,7 +1277,7 @@ class IPAddress {
         var net = this.network();
         var prefix = net.prefix.from(subprefix).unwrap();
         var host_address = net.host_address
-        for (var _ = 0; _ < (1 << (subprefix - this.prefix.num)); _++) {
+        for (var i = 0; i < (1 << (subprefix - this.prefix.num)); i++) {
             net = net.from(host_address, prefix);
             ret.add(net);
             val size = net.size();

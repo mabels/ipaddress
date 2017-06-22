@@ -169,7 +169,7 @@ class TestIpAddress {
                    #["10.0.0.0/16"]);
 
         val cnt = 10;
-        for (var _ = 0; _ < cnt; _++) {
+        for (var i = 0; i < cnt; i++) {
             assertArrayEquals(IPAddress.to_string_vec(IPAddress.summarize(ip_addresses)),
                        #["1.0.0.0/8",
                         "2.0.0.0/7",

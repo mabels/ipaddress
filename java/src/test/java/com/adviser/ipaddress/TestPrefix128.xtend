@@ -30,7 +30,7 @@ class TestPrefix128 {
     @Test
     public def test_method_bits() {
         val prefix = Prefix128.create(64).unwrap();
-        var str = new StringBuffer();
+        var str = new StringBuilder();
         for (var i = 0; i < 64; i++) {
             str.append("1");
         }

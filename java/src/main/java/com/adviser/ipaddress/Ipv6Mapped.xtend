@@ -104,7 +104,7 @@ class Ipv6Mapped {
             val up_addr = addr.host_address;
             val down_addr = addr.host_address;
 
-            var rebuild_ipv6 = new StringBuffer()
+            var rebuild_ipv6 = new StringBuilder()
             var colon = "";
             for(var i = 0; i < split_colon.length()-1; i++) {
                 rebuild_ipv6.append(colon);
