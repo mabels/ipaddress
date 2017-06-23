@@ -7,16 +7,13 @@
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "build": "webpack",
-    "build:watch": "webpack --watch --debug --output-pathinfo --progress",
+    "build:watch": "webpack --watch --output-pathinfo --progress",
     "start": "nodemon ./dist/ipaddress.js",
     "pretest": "npm run build",
     "test": "mocha dist/test",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -w",
-    "preversion": "npm test",
-    "version": "npm run build && conventional-changelog -p angular -v -r 0 > CHANGELOG.md && git add -A .",
-    "postversion": "git push && git push --tags",
     "prepublish": "not-in-install && npm run build || echo 'In install cycle, skipping prepublish'"
   },
+  "keywords": ["ip", "ipv4", "ipv6"],
   "repository": {
     "type": "git",
     "url": "mabels/ipaddress"

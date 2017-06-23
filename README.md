@@ -9,14 +9,15 @@ addresses simple, powerful and enjoyable. It provides a complete set of
 methods to handle IP addresses for any need, from simple scripting to
 full network design.
 
-IPAddress should have the same api for:
-- ruby (the root implementation, it's not updated after the port to rust)
+IPAddress should have the same(some odd looking) api for:
+- ruby 
 - rust
 - go / golang
 - javascript/typescript
+- java / xtend
 - cpp
-The documentation is in ruby and hopefully in rust. There should
-be examples writen in ruby in. 
+
+The documentation is in ruby and hopefully in rust. 
 
 The Function naming could be odd non CamelCase in the javascript out
 of the fact that it is grown from ruby/rust which both does not like
@@ -63,6 +64,13 @@ typescipt sources.
 For c++ you need boost 1.54> and cmake and g++
   
   $ cmake . && make
+
+For java
+
+  $ mvn package
+
+currently i could not send my artefacts to maven-central
+out of a gpg problem with signing and subkeys
 
 == Documentation
 
@@ -958,7 +966,7 @@ needs in network programming.
 == Copyright
 
 Copyright (c) 2009-2011 Marco Ceresa. See LICENSE for details.
-Copyright (c) 2015-2016 Meno Abels. See LICENSE for details.
+Copyright (c) 2015-2017 Meno Abels. See LICENSE for details.
 
 
  
