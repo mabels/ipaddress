@@ -148,6 +148,7 @@
     </plugins>
   </build>
 
+  <!--
   <distributionManagement>
     <snapshotRepository>
       <id>ossrh</id>
@@ -156,6 +157,15 @@
     <repository>
       <id>ossrh</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+  -->
+
+  <distributionManagement>
+    <repository>
+      <id>bintray-mabels-com.adviser</id>
+      <name>mabels-com.adviser</name>
+      <url>https://api.bintray.com/maven/mabels/com.adviser/ipaddress/;publish=1</url>
     </repository>
   </distributionManagement>
 

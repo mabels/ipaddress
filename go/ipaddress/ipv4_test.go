@@ -1,17 +1,10 @@
 package ipaddress
 
-import (
-	"fmt"
-	"math/big"
-	"strconv"
-	"strings"
-	"testing"
-	// "reflect"
-)
-
-// import "math/big"
-
-// import "./ipaddress"
+import "fmt"
+import "math/big"
+import "strconv"
+import "strings"
+import "testing"
 
 type IPv4Prefix struct {
 	ip     string
@@ -36,8 +29,7 @@ type IPv4Test struct {
 
 func ipv4Setup() IPv4Test {
 	ipv4t := IPv4Test{
-		valid_ipv4: map[string]IPv4Prefix{},
-		// , "10.0.0", "10.0"
+		valid_ipv4:       map[string]IPv4Prefix{},
 		invalid_ipv4:     []string{"10.0.0.256", "10.0.0.0.0"},
 		valid_ipv4_range: []string{"10.0.0.1-254", "10.0.1-254.0", "10.1-254.0.0"},
 		netmask_values:   map[string]string{},
@@ -571,11 +563,6 @@ func TestIpv4(tx *testing.T) {
 				t.assert_string(ip2.To_string(), addr)
 			}
 		})
-
-		// func test_classhmethod_extract() {
-		//   str = "foobar172.16.10.1barbaz";
-		//   assert_eq("172.16.10.1", extract(str).to_s
-		// }
 
 		t.Run("test_classmethod_Summarize", func(t *MyTesting) {
 

@@ -111,6 +111,4 @@ func TestRleCode(tx *testing.T) {
 			Rle{0, 2, 1, false},
 			Rle{0x6630, 3, 1, true},
 			Rle{0, 4, 4, true}})
-	//
-	//
 }

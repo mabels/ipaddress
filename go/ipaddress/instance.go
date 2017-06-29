@@ -1,7 +1,6 @@
 package ipaddress
 
 import "strings"
-
 import "math/big"
 import "math"
 import "sort"
@@ -38,10 +37,6 @@ func (self *Errors) IsOk() bool            { return false }
 func (self *Errors) IsErr() bool           { return true }
 func (self *Errors) Unwrap() *[]*IPAddress { return nil }
 func (self *Errors) UnwrapErr() *string    { return self.err }
-
-// func Error(err *string) *ErrorIsh {
-//     return &ErrorIsh{err}
-// }
 
 type Oks struct {
 	ipaddresses *[]*IPAddress

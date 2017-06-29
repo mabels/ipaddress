@@ -1,42 +1,25 @@
 package ipaddress
 
-// import "../ip_bits"
 import "math/big"
-
-// import "../prefix"
-
 import "regexp"
 import "fmt"
 import "strconv"
 import "strings"
-
-// import "./data"
-
-// import "../ipv4"
-// import "../ipv6"
 
 var re_MAPPED = regexp.MustCompile(":.+\\.")
 var re_IPV4 = regexp.MustCompile("\\.")
 var re_IPV6 = regexp.MustCompile(":")
 
 func Parse(str string) ResultIPAddress {
-	// fmt.Printf("p-1: %s\n", str);
 	if re_MAPPED.MatchString(str) {
-		// fmt.Printf("p-2 %s\n", str);
-		// fmt.Printf("mapped:{}", string);
 		return Ipv6MappedNew(str)
 	} else {
 		if re_IPV4.MatchString(str) {
-			// fmt.Printf("p-3 %s\n", str);
-			// fmt.Printf("ipv4:{}", string);
 			return Ipv4New(str)
 		} else if re_IPV6.MatchString(str) {
-			// fmt.Printf("p-7 %s\n", str);
-			// fmt.Printf("ipv6:{}", string);
 			return Ipv6New(str)
 		}
 	}
-	// fmt.Printf("p-8\n");
 	tmp := fmt.Sprintf("Unknown IP Address %s", str)
 	return &Error{&tmp}
 }

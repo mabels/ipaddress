@@ -1,7 +1,5 @@
 package ipaddress
 
-// import "fmt"
-// import "log"
 import "math/big"
 import "testing"
 
