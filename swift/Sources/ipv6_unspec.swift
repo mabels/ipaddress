@@ -52,7 +52,7 @@ class Ipv6Unspec {
     //       // => => "::/128"
     //
     class func create() -> IPAddress {
-        return IPAddress.parse("::");
+        return IPAddress.parse("::")!;
     }
     //  class IPv6::Unspecified
 }

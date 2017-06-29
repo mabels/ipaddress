@@ -64,12 +64,12 @@ class Ipv6 {
     //
     //
 
-    class func from_str(_ str: String, _ radix: Int, _ prefix: Int) -> IPAddress? {
+    class func from_str(_ str: String, _ radix: Int, _ prefix: UInt8) -> IPAddress? {
         let num = BigUInt(str, radix: radix);
         if (num == nil) {
             return nil;
         }
-        return Ipv6.from_int(num, prefix);
+        return Ipv6.from_int(num!, prefix);
     }
 
     class func enhance_if_mapped(_ ip: IPAddress) -> IPAddress? {
@@ -80,11 +80,11 @@ class Ipv6 {
             return ip;
         }
         // console.log("------C", ip);
-        let ipv6_top_96bit = ip.host_address.shr(32);
+        let ipv6_top_96bit = ip.host_address >> 32
         // console.log("------D", ip);
         if (ipv6_top_96bit == BigUInt(0xffff)) {
             // console.log("------E");
-            let num = ip.host_address.mod(BigUInt(1) << BigUInt(32));
+            let num = ip.host_address % (BigUInt(1) << 32);
             // console.log("------F");
             if (num == BigUInt(0)) {
                 return ip;
@@ -96,9 +96,9 @@ class Ipv6 {
                 return nil;
             }
             // console.log("------G");
-            let mapped = Ipv4.from_Int(num, ipv4_bits.bits - ip.prefix.host_prefix());
+            let mapped = Ipv4.from_int(num, ipv4_bits.bits - ip.prefix.host_prefix());
             // console.log("------H");
-            if (!mapped) {
+            if (mapped != nil) {
                 // println!("enhance_if_mapped-3");
                 return mapped;
             }
@@ -108,15 +108,15 @@ class Ipv6 {
         return ip;
     }
 
-    class func from_int(_ adr: BigUInt, _ prefix_num: Int) -> IPAddress? {
+    class func from_int(_ adr: BigUInt, _ prefix_num: UInt8) -> IPAddress? {
         let prefix = Prefix128.create(prefix_num);
-        if (prefix === nil) {
+        if (prefix == nil) {
             return nil;
         }
         let ret = Ipv6.enhance_if_mapped(IPAddress(
             ip_bits: IpBits.v6(),
-            host_address: adr.clone(),
-            prefix: prefix,
+            host_address: adr,
+            prefix: prefix!,
             mapped: nil,
             vt_is_private: Ipv6.ipv6_is_private,
             vt_is_loopback: Ipv6.ipv6_is_loopback,
@@ -144,35 +144,36 @@ class Ipv6 {
     //
     class func create(_ str: String) -> IPAddress? {
         // console.log("1>>>>>>>>>", str);
-        let ip, o_netmask = IPAddress.split_at_slash(str);
+        let (ip, o_netmask) = IPAddress.split_at_slash(str);
         // console.log("2>>>>>>>>>", str);
         if (IPAddress.is_valid_ipv6(ip)) {
             // console.log("3>>>>>>>>>", str);
             let o_num = IPAddress.split_to_num(ip);
-            if (o_num === nil) {
+            if (o_num == nil) {
                 // console.log("ipv6_create-1", str);
                 return nil;
             }
             // console.log("4>>>>>>>>>", str);
-            let netmask = 128;
-            if (o_netmask !== nil) {
-                netmask = IPAddress.parse_dec_str(o_netmask);
-                if (netmask === nil) {
+            var netmask : UInt8 = 128;
+            if (o_netmask != nil) {
+                let tmp = IPAddress.parse_dec_str(o_netmask!);
+                if (tmp == nil) {
                     // console.log("ipv6_create-2", str);
                     return nil;
                 }
+                netmask = UInt8(tmp!)
             }
             // console.log("5>>>>>>>>>", str);
             let prefix = Prefix128.create(netmask);
-            if (prefix === nil) {
+            if (prefix == nil) {
                 // console.log("ipv6_create-3", str);
                 return nil;
             }
             //console.log("6>>>>>>>>>", str, prefix.num, o_netmask, netmask);
             return Ipv6.enhance_if_mapped(IPAddress(
                 ip_bits: IpBits.v6(),
-                host_address: o_num.crunchy,
-                prefix: prefix,
+                host_address: o_num!.crunchy,
+                prefix: prefix!,
                 mapped: nil,
                 vt_is_private: Ipv6.ipv6_is_private,
                 vt_is_loopback: Ipv6.ipv6_is_loopback,
@@ -195,7 +196,7 @@ class Ipv6 {
 
 
     class func ipv6_is_private(_ my: IPAddress) -> Bool {
-        return IPAddress.parse("fd00::/8").includes(my);
+        return IPAddress.parse("fd00::/8")!.includes(my);
     }
 
 }

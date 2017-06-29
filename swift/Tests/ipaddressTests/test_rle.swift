@@ -1,3 +1,6 @@
+import XCTest
+@testable import swift
+
 
 //import rle 
 
@@ -11,18 +14,8 @@ func assert_rle(left: [RleInt], right: [RleInt]) {
     }
 }
 
-func describe(_ t: String, _ cl: ()) {
-  print("%s:", t);
-  cl();
-}
-
-func it(_ t: String, _ cl: ()) {
-  print("%s:", t);
-  cl();
-}
-
-describe("rle", () {
-    it("test_rle",  {
+class rleTests: XCTestCase {
+  func testRle() {
         let empty = [Int];
         assert_rle(RleInt.code(empty), []);
         assert_rle(RleInt.code([4711]), [
@@ -151,5 +144,5 @@ describe("rle", () {
                        max: true
                    )
        ]);
-    });
-});
+    }
+}

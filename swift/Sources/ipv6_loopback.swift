@@ -49,6 +49,6 @@ class Ipv6Loopback {
     //      // => "::1/128"
     //
     class func create() -> IPAddress {
-        return Ipv6.from_int(BigUInt.one(), 128);
+        return Ipv6.from_int(BigUInt(1), 128)!;
     }
 }

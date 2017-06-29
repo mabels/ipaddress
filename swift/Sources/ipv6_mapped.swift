@@ -80,13 +80,11 @@ class Ipv6Mapped {
     //    ip6.to_string
     //      // => "::ffff:13.1.68.3"
     //
-    class func create(str: String) -> IPAddress? {
+    class func create(_ str: String) -> IPAddress? {
         // console.log("mapped-1");
-        let i = IPAddress.split_at_slash(str);
-        let ip = i[0];
-        let o_netmask = i[1];
-        let split_colon = ip.split(":");
-        if (split_colon.length <= 1) {
+        let (ip, o_netmask) = IPAddress.split_at_slash(str);
+        let split_colon = ip.components(separatedBy: ":");
+        if (split_colon.count <= 1) {
             // console.log("mapped-2");
             return nil;
         }
@@ -95,11 +93,11 @@ class Ipv6Mapped {
         //     return Err(format!("not mapped format-2: {}", &str));
         // }
         // let mapped: Option<IPAddress> = None;
-        let netmask = "";
+        var netmask = "";
         if (o_netmask != nil) {
             netmask = "/\(o_netmask)";
         }
-        let ipv4_str = split_colon[split_colon.length - 1];
+        let ipv4_str = split_colon[split_colon.count - 1];
         if (IPAddress.is_valid_ipv4(ipv4_str)) {
             let ipv4 = IPAddress.parse("\(ipv4_str)\(netmask)");
             if (ipv4 == nil) {
@@ -107,22 +105,22 @@ class Ipv6Mapped {
                 return ipv4;
             }
             //mapped = Some(ipv4.unwrap());
-            let addr = ipv4;
+            let addr = ipv4!;
             let ipv6_bits = IpBits.v6();
-            let part_mod = BigUInt.from_number(ipv6_bits.part_mod);
-            let up_addr = addr.host_address.clone();
-            let down_addr = addr.host_address.clone();
+            let part_mod = BigUInt(ipv6_bits.part_mod);
+            let up_addr = addr.host_address;
+            let down_addr = addr.host_address;
 
             var rebuild_ipv6 = "";
             var colon = "";
-            for i in 0...(split_colon.length - 1) {
+            for i in 0...(split_colon.count - 1) {
                 rebuild_ipv6 += colon;
                 rebuild_ipv6 += split_colon[i];
                 colon = ":";
             }
             rebuild_ipv6 += colon;
-            let high_part = up_addr.shr(IpBits.v6().part_bits).mod(part_mod).toString(16);
-            let low_part = down_addr.mod(part_mod).toString(16);
+            let high_part = String((up_addr >> Int(IpBits.v6().part_bits)) % part_mod, radix: 16);
+            let low_part = String(down_addr % part_mod, radix: 16);
             let bits = ipv6_bits.bits - addr.prefix.host_prefix();
             let rebuild_ipv4 = "\(high_part):\(low_part)/\(bits)";
             rebuild_ipv6 += rebuild_ipv4;
@@ -134,13 +132,13 @@ class Ipv6Mapped {
                 // console.log("mapped-4");
                 return r_ipv6;
             }
-            if (r_ipv6.is_mapped()) {
+            if (r_ipv6!.is_mapped()) {
                 // console.log("mapped-5");
                 return r_ipv6;
             }
-            let ipv6 = r_ipv6;
-            let p96bit = ipv6.host_address.shr(32);
-            if (!p96bit == BigUInt(0)) {
+            let ipv6 = r_ipv6!;
+            let p96bit = ipv6.host_address >> 32;
+            if (p96bit != BigUInt(0)) {
                 // println!("---4|{}", &rebuild_ipv6);
                 //console.log("mapped-6",ipv6.host_address, p96bit, BigUInt(0));
                 return nil;

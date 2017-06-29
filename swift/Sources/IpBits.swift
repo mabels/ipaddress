@@ -54,28 +54,28 @@ class IpBits {
     }
 
     func parts(_ bu: BigUInt)-> [UInt] {
-        var vec = [Int]();
-        var my = bu.clone();
+        var vec = [UInt]();
+        var my = bu;
         let part_mod = BigUInt(1) << Int(self.part_bits);// - BigUInt::one();
         for _ in 0...(self.bits / self.part_bits) {
             // console.log("parts-1:", my, part_mod, my.mod(part_mod), my.mod(part_mod).toString());
-            let tmp = String(my.mod(part_mod).toString(10))
-            let itmp = Int(tmp!)
+            let tmp = String(my % part_mod)
+            let itmp = UInt(tmp)
             vec.append(itmp!)
-            my = my.shr(self.part_bits);
+            my = my >> Int(self.part_bits);
         }
         // console.log("parts:", vec);
-        return vec.reversed();
+        return Array(vec.reversed());
     }
 
-    func as_compressed_String(bu: BigUInt) -> String {
+    func as_compressed_string(_ bu: BigUInt) -> String {
         return (self.vt_as_compressed_string)(self, bu);
     }
-    func as_uncompressed_String(bu: BigUInt) -> String {
+    func as_uncompressed_string(_ bu: BigUInt) -> String {
         return (self.vt_as_uncompressed_string)(self, bu);
     }
 
-    func dns_part_format(i: Int) -> String {
+    func dns_part_format(_ i: UInt) -> String {
         switch (self.version) {
             case IpVersion.V4: return "\(i)";
             case IpVersion.V6: return "\(String(i, radix: 16))";
@@ -120,7 +120,7 @@ class IpBits {
       return IpBits._v6!;
     }
 
-    class func ipv4_as_compressed(ip_bits: IpBits, host_address: BigUInt) -> String {
+    class func ipv4_as_compressed(_ ip_bits: IpBits, _ host_address: BigUInt) -> String {
         var ret = "";
         var sep = "";
         for part in ip_bits.parts(host_address) {
@@ -131,7 +131,7 @@ class IpBits {
         return ret;
     }
 
-    class func ipv6_as_compressed(ip_bits: IpBits, host_address: BigUInt) -> String {
+    class func ipv6_as_compressed(_ ip_bits: IpBits, _ host_address: BigUInt) -> String {
         //println!("ipv6_as_compressed:{}", host_address);
         var ret = "";
         var colon = "";
@@ -151,7 +151,7 @@ class IpBits {
         }
         return ret;
     }
-    class func ipv6_as_uncompressed(ip_bits: IpBits, host_address: BigUInt) -> String {
+    class func ipv6_as_uncompressed(_ ip_bits: IpBits, _ host_address: BigUInt) -> String {
         var ret = "";
         var sep = "";
         for part in ip_bits.parts(host_address) {

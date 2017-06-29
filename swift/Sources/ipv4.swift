@@ -7,15 +7,15 @@ import BigInt
 //import Ipv6 from './ipv6';
 
 class Ipv4 {
-    class func from_number(_ addr: BigUInt, _ prefix_num: UInt8)-> IPAddress? {
+    class func from_int(_ addr: BigUInt, _ prefix_num: UInt8)-> IPAddress? {
         let prefix = Prefix32.create(prefix_num);
-        if (!prefix) {
+        if (prefix == nil) {
             return nil;
         }
         return IPAddress(
             ip_bits: IpBits.v4(),
-            host_address: addr.clone(),
-            prefix: prefix,
+            host_address: addr,
+            prefix: prefix!,
             mapped: nil,
             vt_is_private: Ipv4.ipv4_is_private,
             vt_is_loopback: Ipv4.ipv4_is_loopback,
@@ -26,21 +26,20 @@ class Ipv4 {
     class func create(_ str: String)-> IPAddress? {
         // console.log("create:v4:", str);
         // let enable = str == "0.0.0.0/0";
-        let tmp = IPAddress.split_at_slash(str);
-        let ip = tmp[0];
-        let netmask = tmp[1];
+        let (ip, netmask) = IPAddress.split_at_slash(str);
         if (!IPAddress.is_valid_ipv4(ip)) {
             // enable && console.log("xx1");
             return nil;
         }
-        let ip_prefix_num = 32;
-        if (netmask) {
+        var ip_prefix_num = UInt8(32);
+        if (netmask != nil) {
             //  netmask is defined
-            ip_prefix_num = IPAddress.parse_netmask_to_prefix(netmask);
-            if (ip_prefix_num == nil) {
+            let tmp = IPAddress.parse_netmask_to_prefix(netmask!);
+            if (tmp == nil) {
                 // enable && console.log("xx2");
                 return nil;
             }
+            ip_prefix_num = tmp!
             //if ip_prefix.ip_bits.version
         }
         let ip_prefix = Prefix32.create(ip_prefix_num);
@@ -56,8 +55,8 @@ class Ipv4 {
         // console.log(">>>>>>>", ip, ip_prefix);
         return IPAddress(
             ip_bits: IpBits.v4(),
-            host_address: split_number,
-            prefix: ip_prefix,
+            host_address: split_number!,
+            prefix: ip_prefix!,
             mapped: nil,
             vt_is_private: Ipv4.ipv4_is_private,
             vt_is_loopback: Ipv4.ipv4_is_loopback,
@@ -66,22 +65,22 @@ class Ipv4 {
     }
 
     class func ipv4_is_private(_ my: IPAddress) -> Bool {
-        return [IPAddress.parse("10.0.0.0/8"),
-            IPAddress.parse("169.254.0.0/16"),
-            IPAddress.parse("172.16.0.0/12"),
-            IPAddress.parse("192.168.0.0/16")]
-            .find(i => i.includes(my)) != nil;
+        return [IPAddress.parse("10.0.0.0/8")!,
+            IPAddress.parse("169.254.0.0/16")!,
+            IPAddress.parse("172.16.0.0/12")!,
+            IPAddress.parse("192.168.0.0/16")!]
+            .index(where: { $0.includes(my) }) != nil
     }
 
     class func ipv4_is_loopback(_ my: IPAddress) -> Bool {
-        return IPAddress.parse("127.0.0.0/8").includes(my);
+        return IPAddress.parse("127.0.0.0/8")!.includes(my);
     }
 
     class func to_ipv6(_ ia: IPAddress) -> IPAddress {
         return IPAddress(
             ip_bits: IpBits.v6(),
-            host_address: ia.host_address.clone(),
-            prefix: Prefix128.create(ia.prefix.num),
+            host_address: ia.host_address,
+            prefix: Prefix128.create(ia.prefix.num)!,
             mapped: nil,
             vt_is_private: Ipv6.ipv6_is_private,
             vt_is_loopback: Ipv6.ipv6_is_loopback,

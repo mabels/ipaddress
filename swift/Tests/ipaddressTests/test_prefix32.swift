@@ -1,23 +1,21 @@
 
-import { assert } from 'chai';
-import * as Mocha from 'mocha';
+import XCTest
+@testable import swift
 
-import Prefix32 from '../src/prefix32';
-import IPAddress from '../src/ipaddress';
-import Ipv4 from '../src/ipv4';
-import Crunchy from '../src/crunchy';
+import BigInt
 
 class Prefix32Test {
-    netmask0: string = "0.0.0.0";
-    netmask8: string = "255.0.0.0";
-    netmask16: string = "255.255.0.0";
-    netmask24: string = "255.255.255.0";
-    netmask30: string = "255.255.255.252";
-    netmasks: string[] = [];
-    prefix_hash: [string, number][] = [];
-    octets_hash: [number[], number][] = [];
-    u32_hash: [number, Crunchy][] = [];
+    val netmask0: String = "0.0.0.0";
+    val netmask8: String = "255.0.0.0";
+    val netmask16: String = "255.255.0.0";
+    val netmask24: String = "255.255.255.0";
+    val netmask30: String = "255.255.255.252";
+    val netmasks: [String] = [String];
+    val prefix_hash: [String, Int][] = [];
+    val octets_hash: [number[], Int][] = [];
+    val u32_hash: [UInt32, BigInt][] = [];
 }
+
 
 describe("prefix32", () => {
     function assertArrayEqual(a: any[], b: any[]) : void {
