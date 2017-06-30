@@ -95,7 +95,7 @@ public class Ipv6Mapped {
         // let mapped: Option<IPAddress> = None;
         var netmask = "";
         if (o_netmask != nil) {
-            netmask = "/\(o_netmask)";
+            netmask = "/\(o_netmask!)";
         }
         let ipv4_str = split_colon[split_colon.count - 1];
         if (IPAddress.is_valid_ipv4(ipv4_str)) {

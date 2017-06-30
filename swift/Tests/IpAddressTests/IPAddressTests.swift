@@ -203,4 +203,14 @@ class IPAddressTests: XCTestCase {
         XCTAssertEqual("10.0.0.1/24", a1.to_string());
         XCTAssertEqual("10.0.1.1/24", a2.to_string());
     }
+
+    static var allTests : [(String, (IPAddressTests) -> () throws -> Void)] {
+        return [
+		("test_method_ipaddress", test_method_ipaddress),
+		("test_module_method_valid", test_module_method_valid),
+		("test_module_method_valid_ipv4_netmark", test_module_method_valid_ipv4_netmark),
+		("test_summarize", test_summarize)
+        ]
+    }
+
 }

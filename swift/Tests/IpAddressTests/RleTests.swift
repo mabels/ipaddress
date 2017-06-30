@@ -137,4 +137,9 @@ class RleTests: XCTestCase {
                    )
        ]);
     }
+    static var allTests : [(String, (RleTests) -> () throws -> Void)] {
+        return [
+("testRle", testRle),
+        ]
+    }
 }

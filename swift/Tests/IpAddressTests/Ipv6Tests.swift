@@ -328,4 +328,39 @@ class Ipv6Tests : XCTestCase {
         XCTAssertEqual(setup().ip.to_string(),
             Ipv6.from_str(setup().hex, 16, 64)!.to_string());
     }
+    static var allTests : [(String, (Ipv6Tests) -> () throws -> Void)] {
+        return [
+("test_attribute_address", test_attribute_address),
+("test_initialize", test_initialize),
+("test_attribute_groups", test_attribute_groups),
+("test_method_hexs", test_method_hexs),
+("test_method_to_i", test_method_to_i),
+("test_method_set_prefix", test_method_set_prefix),
+("test_method_mapped", test_method_mapped),
+("test_method_group", test_method_group),
+("test_method_ipv4", test_method_ipv4),
+("test_method_ipv6", test_method_ipv6),
+("test_method_network_known", test_method_network_known),
+("test_method_network_u128", test_method_network_u128),
+("test_method_broadcast_u128", test_method_broadcast_u128),
+("test_method_size", test_method_size),
+("test_method_includes", test_method_includes),
+("test_method_to_hex", test_method_to_hex),
+("test_method_to_s", test_method_to_s),
+("test_method_to_string", test_method_to_string),
+("test_method_to_string_uncompressed", test_method_to_string_uncompressed),
+("test_method_reverse", test_method_reverse),
+("test_method_dns_rev_domains", test_method_dns_rev_domains),
+("test_method_compressed", test_method_compressed),
+("test_method_unspecified", test_method_unspecified),
+("test_method_loopback", test_method_loopback),
+("test_method_network", test_method_network),
+("test_method_each", test_method_each),
+("test_method_each_net", test_method_each_net),
+("test_method_compare", test_method_compare),
+("test_classmethod_compress", test_classmethod_compress),
+("test_classhmethod_parse_u128", test_classhmethod_parse_u128),
+("test_classmethod_parse_hex", test_classmethod_parse_hex),
+        ]
+    }
 }

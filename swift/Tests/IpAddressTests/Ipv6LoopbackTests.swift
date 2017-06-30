@@ -41,4 +41,10 @@ class Ipv6LoopbackTests : XCTestCase {
     func test_method_ipv6() {
         XCTAssertEqual(true, setup().ip.is_ipv6());
     }
+    static var allTests : [(String, (Ipv6LoopbackTests) -> () throws -> Void)] {
+        return [
+		("test_attributes", test_attributes),
+		("test_method_ipv6", test_method_ipv6),
+        ]
+    }
 }

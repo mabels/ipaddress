@@ -81,4 +81,13 @@ class Ipv6MappedTests: XCTestCase {
   func test_mapped() {
     XCTAssertTrue(setup().ip.is_mapped());
   }
+    static var allTests : [(String, (Ipv6MappedTests) -> () throws -> Void)] {
+        return [
+("test_initialize", test_initialize),
+("test_mapped_from_ipv6_conversion", test_mapped_from_ipv6_conversion),
+("test_attributes", test_attributes),
+("test_method_ipv6", test_method_ipv6),
+("test_mapped", test_mapped),
+        ]
+    }
 }

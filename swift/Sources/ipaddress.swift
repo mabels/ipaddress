@@ -6,7 +6,7 @@ typealias Is = (_ source: IPAddress) -> Bool;
 
 typealias ToIpv4 = (_ source: IPAddress) -> IPAddress;
 
-typealias EachFn = (_ source: IPAddress) -> Void;
+public typealias EachFn = (_ source: IPAddress) -> Void;
 
 extension String {
   public func index(of char: Character) -> Int? {

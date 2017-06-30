@@ -590,4 +590,52 @@ class Ipv4Tests : XCTestCase {
     }
     XCTAssertNil(Ipv4.parse_classful("192.168.256.257"));
   }
+
+    static var allTests : [(String, (Ipv4Tests) -> () throws -> Void)] {
+        return [
+("test_initialize", test_initialize),
+("test_initialize_format_error", test_initialize_format_error),
+("test_initialize_without_prefix", test_initialize_without_prefix),
+("test_attributes", test_attributes),
+("test_octets", test_octets),
+("test_method_to_string", test_method_to_string),
+("test_method_to_s", test_method_to_s),
+("test_netmask", test_netmask),
+("test_method_to_u32", test_method_to_u32),
+("test_method_is_network", test_method_is_network),
+("test_one_address_network", test_one_address_network),
+("test_method_broadcast", test_method_broadcast),
+("test_method_network", test_method_network),
+("test_method_bits", test_method_bits),
+("test_method_first", test_method_first),
+("test_method_last", test_method_last),
+("test_method_each_host", test_method_each_host),
+("test_method_each", test_method_each),
+("test_method_size", test_method_size),
+("test_method_network_u32", test_method_network_u32),
+("test_method_broadcast_u32", test_method_broadcast_u32),
+("test_method_include", test_method_include),
+("test_method_include_all", test_method_include_all),
+("test_method_ipv4", test_method_ipv4),
+("test_method_ipv6", test_method_ipv6),
+("test_method_private", test_method_private),
+("test_method_octet", test_method_octet),
+("test_method_a", test_method_a),
+("test_method_b", test_method_b),
+("test_method_c", test_method_c),
+("test_method_to_ipv6", test_method_to_ipv6),
+("test_method_reverse", test_method_reverse),
+("test_method_dns_rev_domains", test_method_dns_rev_domains),
+("test_method_compare", test_method_compare),
+("test_method_minus", test_method_minus),
+("test_method_plus", test_method_plus),
+("test_method_netmask_equal", test_method_netmask_equal),
+("test_method_split", test_method_split),
+("test_method_subnet", test_method_subnet),
+("test_method_supernet", test_method_supernet),
+("test_classmethod_parse_u32", test_classmethod_parse_u32),
+("test_classmethod_summarize", test_classmethod_summarize),
+("test_classmethod_parse_classful", test_classmethod_parse_classful),
+        ]
+    }
 }
