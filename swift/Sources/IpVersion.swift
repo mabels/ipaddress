@@ -2,7 +2,7 @@
 
 
 enum IpVersion {
-    case V4
-    case V6
+  case V4
+  case V6
 }
 

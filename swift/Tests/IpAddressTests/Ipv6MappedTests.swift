@@ -25,16 +25,16 @@ class IPv6MappedTest {
 
 
 class Ipv6MappedTests: XCTestCase {
-
+  
   func setup()-> IPv6MappedTest {
     let ipv6 = IPv6MappedTest(
-        ip: Ipv6Mapped.create("::172.16.10.1")!,
-        s: "::ffff:172.16.10.1",
-        sstr: "::ffff:172.16.10.1/32",
-        string: "0000:0000:0000:0000:0000:ffff:ac10:0a01/128",
-        u128: BigUInt("281473568475649")!,
-        address: "::ffff:ac10:a01/128"
-        );
+      ip: Ipv6Mapped.create("::172.16.10.1")!,
+      s: "::ffff:172.16.10.1",
+      sstr: "::ffff:172.16.10.1/32",
+      string: "0000:0000:0000:0000:0000:ffff:ac10:0a01/128",
+      u128: BigUInt("281473568475649")!,
+      address: "::ffff:ac10:a01/128"
+    );
     ipv6.valid_mapped["::13.1.68.3"] = BigUInt("281470899930115")!;
     ipv6.valid_mapped["0:0:0:0:0:ffff:129.144.52.38"] = BigUInt("281472855454758")!;
     ipv6.valid_mapped["::ffff:129.144.52.38"] = BigUInt("281472855454758")!;
@@ -46,7 +46,7 @@ class Ipv6MappedTests: XCTestCase {
     ipv6.valid_mapped_ipv6_conversion["::ffff:8190:3426"] = "129.144.52.38";
     return ipv6;
   }
-
+  
   func test_initialize() {
     let s = setup();
     XCTAssertNotNil(IPAddress.parse("::172.16.10.1")!);
@@ -81,13 +81,13 @@ class Ipv6MappedTests: XCTestCase {
   func test_mapped() {
     XCTAssertTrue(setup().ip.is_mapped());
   }
-    static var allTests : [(String, (Ipv6MappedTests) -> () throws -> Void)] {
-        return [
-("test_initialize", test_initialize),
-("test_mapped_from_ipv6_conversion", test_mapped_from_ipv6_conversion),
-("test_attributes", test_attributes),
-("test_method_ipv6", test_method_ipv6),
-("test_mapped", test_mapped),
-        ]
-    }
+  static var allTests : [(String, (Ipv6MappedTests) -> () throws -> Void)] {
+    return [
+      ("test_initialize", test_initialize),
+      ("test_mapped_from_ipv6_conversion", test_mapped_from_ipv6_conversion),
+      ("test_attributes", test_attributes),
+      ("test_method_ipv6", test_method_ipv6),
+      ("test_mapped", test_mapped),
+    ]
+  }
 }

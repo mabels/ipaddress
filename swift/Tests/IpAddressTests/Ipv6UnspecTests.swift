@@ -18,17 +18,17 @@ class IPv6UnspecifiedTest {
 }
 
 class Ipv6UnspecTests: XCTestCase {
-
+  
   func setup() -> IPv6UnspecifiedTest {
     return IPv6UnspecifiedTest(
-        ip: Ipv6Unspec.create(),
-        to_s: "::",
-        to_string: "::/128",
-        to_string_uncompressed: "0000:0000:0000:0000:0000:0000:0000:0000/128",
-        num: BigUInt(0)
-        );
+      ip: Ipv6Unspec.create(),
+      to_s: "::",
+      to_string: "::/128",
+      to_string_uncompressed: "0000:0000:0000:0000:0000:0000:0000:0000/128",
+      num: BigUInt(0)
+    );
   }
-
+  
   func test_attributes() {
     XCTAssertEqual(setup().ip.host_address, setup().num);
     XCTAssertEqual(128, setup().ip.prefix.num);
@@ -40,10 +40,10 @@ class Ipv6UnspecTests: XCTestCase {
   func test_method_ipv6() {
     XCTAssertEqual(true, setup().ip.is_ipv6());
   }
-    static var allTests : [(String, (Ipv6UnspecTests) -> () throws -> Void)] {
-        return [
-("test_attributes", test_attributes),
-("test_method_ipv6", test_method_ipv6),
-        ]
-    }
+  static var allTests : [(String, (Ipv6UnspecTests) -> () throws -> Void)] {
+    return [
+      ("test_attributes", test_attributes),
+      ("test_method_ipv6", test_method_ipv6),
+    ]
+  }
 }

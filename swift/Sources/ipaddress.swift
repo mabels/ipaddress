@@ -20,9 +20,9 @@ extension String {
 extension Array {
   func clone() -> Array {
     var copiedArray = Array<Element>()
-      for element in self {
-        copiedArray.append(element)
-      }
+    for element in self {
+      copiedArray.append(element)
+    }
     return copiedArray
   }
 }
@@ -31,7 +31,7 @@ extension Array {
 public class ResultBigUIntParts {
   var crunchy: BigUInt;
   var parts: Int;
-
+  
   init(_ crunchy: BigUInt, _ parts: Int) {
     self.crunchy = crunchy;
     self.parts = parts;
@@ -47,12 +47,12 @@ public class IPAddress : Equatable, CustomStringConvertible {
   let vt_is_private: Is;
   let vt_is_loopback: Is;
   let vt_to_ipv6: ToIpv4;
-
+  
   init(ip_bits: IpBits, host_address: BigUInt, prefix: Prefix,
-      mapped: IPAddress?,
-      vt_is_private: @escaping Is,
-      vt_is_loopback: @escaping Is,
-      vt_to_ipv6: @escaping ToIpv4) {
+       mapped: IPAddress?,
+       vt_is_private: @escaping Is,
+       vt_is_loopback: @escaping Is,
+       vt_to_ipv6: @escaping ToIpv4) {
     self.ip_bits = ip_bits;
     self.host_address = host_address;
     self.prefix = prefix;
@@ -64,39 +64,39 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public var description: String {
     return "<IPAddress:\(self.to_string())>";
   }
-
+  
   public func clone()-> IPAddress {
     var mapped: IPAddress? = nil;
     if (self.mapped != nil) {
       mapped = self.mapped!.clone();
     }
     return IPAddress(
-        ip_bits: self.ip_bits.clone(),
-        host_address: self.host_address,
-        prefix: self.prefix.clone(),
-        mapped: mapped,
-        vt_is_private: self.vt_is_private,
-        vt_is_loopback: self.vt_is_loopback,
-        vt_to_ipv6: self.vt_to_ipv6
-        );
+      ip_bits: self.ip_bits.clone(),
+      host_address: self.host_address,
+      prefix: self.prefix.clone(),
+      mapped: mapped,
+      vt_is_private: self.vt_is_private,
+      vt_is_loopback: self.vt_is_loopback,
+      vt_to_ipv6: self.vt_to_ipv6
+    );
   }
-
+  
   public func lt(_ oth: IPAddress)-> Bool {
     return self.cmp(oth) < 0;
   }
-
+  
   public func lte(_ oth: IPAddress)-> Bool {
     return self.cmp(oth) <= 0;
   }
-
+  
   public func gt(_ oth: IPAddress)-> Bool {
     return self.cmp(oth) > 0;
   }
-
+  
   public func gte(_ oth: IPAddress)-> Bool {
     return self.cmp(oth) >= 0;
   }
-
+  
   public func cmp(_ oth: IPAddress) -> Int {
     if (self.ip_bits.version != oth.ip_bits.version) {
       if (self.ip_bits.version == IpVersion.V6) {
@@ -112,11 +112,11 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return self.prefix.cmp(oth.prefix);
   }
-
+  
   public final class func ==(lhs: IPAddress, rhs: IPAddress) -> Bool {
     return lhs.eq(rhs)
   }
-
+  
   public func eq(_ other: IPAddress)-> Bool {
     // if (!!self.mapped != !!self.mapped) {
     //     return false;
@@ -153,24 +153,24 @@ public class IPAddress : Equatable, CustomStringConvertible {
   //
   public class func parse(_ str: String) -> IPAddress? {
     let colon = str.index(of: ":")
-      let dot = str.index(of: ".")
-      if (colon != nil && dot != nil && colon! < dot!) {
-        return Ipv6Mapped.create(str);
-      } else {
-        if (dot != nil && colon == nil) {
-          // console.log("ipv4:", str);
-          return Ipv4.create(str);
-        } else if (dot == nil && colon != nil) {
-          // console.log("ipv6:", str);
-          return Ipv6.create(str);
-        }
+    let dot = str.index(of: ".")
+    if (colon != nil && dot != nil && colon! < dot!) {
+      return Ipv6Mapped.create(str);
+    } else {
+      if (dot != nil && colon == nil) {
+        // console.log("ipv4:", str);
+        return Ipv4.create(str);
+      } else if (dot == nil && colon != nil) {
+        // console.log("ipv6:", str);
+        return Ipv6.create(str);
       }
+    }
     return nil;
   }
-
+  
   public class func split_at_slash(_ str: String)-> (String, String?) {
     let slash: [String] = str.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: "/")
-      var addr = "";
+    var addr = "";
     if (slash.count >= 1) {
       addr += slash[0].trimmingCharacters(in: .whitespacesAndNewlines)
     }
@@ -186,16 +186,16 @@ public class IPAddress : Equatable, CustomStringConvertible {
       mapped = self.mapped!.clone();
     }
     return IPAddress(
-        ip_bits: self.ip_bits,
-        host_address: addr,
-        prefix: prefix.clone(),
-        mapped: mapped,
-        vt_is_private: self.vt_is_private,
-        vt_is_loopback: self.vt_is_loopback,
-        vt_to_ipv6: self.vt_to_ipv6
-        );
+      ip_bits: self.ip_bits,
+      host_address: addr,
+      prefix: prefix.clone(),
+      mapped: mapped,
+      vt_is_private: self.vt_is_private,
+      vt_is_loopback: self.vt_is_loopback,
+      vt_to_ipv6: self.vt_to_ipv6
+    );
   }
-
+  
   // True if the object is an IPv4 address
   //
   //   ip = IPAddress("192.168.10.100/24")
@@ -206,7 +206,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public func is_ipv4() -> Bool {
     return self.ip_bits.version == IpVersion.V4;
   }
-
+  
   // True if the object is an IPv6 address
   //
   //   ip = IPAddress("192.168.10.100/24")
@@ -217,7 +217,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public func is_ipv6() -> Bool {
     return self.ip_bits.version == IpVersion.V6
   }
-
+  
   // Checks if the given string is a valid IP address,
   // either IPv4 or IPv6
   //
@@ -232,7 +232,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public class func is_valid(_ addr: String) -> Bool {
     return IPAddress.is_valid_ipv4(addr) || IPAddress.is_valid_ipv6(addr);
   }
-
+  
   class func parse_dec_str(_ str: String) -> UInt? {
     let part = UInt(str);
     if (part == nil) {
@@ -242,12 +242,12 @@ public class IPAddress : Equatable, CustomStringConvertible {
     // console.log("parse_dec_str:-3:", str, part);
     return part;
   }
-
+  
   class func parse_hex_str(_ str: String)-> Int? {
     return Int(str, radix: 16);
   }
-
-
+  
+  
   // Checks if the given string is a valid IPv4 address
   //
   // Example:
@@ -266,7 +266,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return UInt8(part!);
   }
-
+  
   class func split_to_u32(_ addr: String) -> BigUInt? {
     var ip = BigUInt(0);
     var shift = 24;
@@ -295,12 +295,12 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return ip;
   }
-
+  
   public class func is_valid_ipv4(_ addr: String) -> Bool {
     return IPAddress.split_to_u32(addr) != nil
   }
-
-
+  
+  
   // Checks if the given string is a valid IPv6 address
   //
   // Example:
@@ -330,7 +330,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return ResultBigUIntParts(ip, parts_len);
   }
-
+  
   class func split_to_num(_ addr: String) -> ResultBigUIntParts? {
     //let ip = 0;
     let pre_post = addr.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: "::");
@@ -349,7 +349,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
       }
       // println!("pre:{} post:{}", pre_parts, post_parts);
       return ResultBigUIntParts(
-          (pre!.crunchy << (128 - (pre!.parts * 16))) + post!.crunchy, 128 / 16);
+        (pre!.crunchy << (128 - (pre!.parts * 16))) + post!.crunchy, 128 / 16);
     }
     //println!("split_to_num:no double:{}", addr);
     let ret = IPAddress.split_on_colon(addr);
@@ -358,17 +358,17 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return ret;
   }
-
+  
   public class func is_valid_ipv6(_ addr: String) -> Bool {
     return IPAddress.split_to_num(addr) != nil;
   }
-
-
+  
+  
   // private helper for summarize
   // assumes that networks is output from reduce_networks
   // means it should be sorted lowers first and uniq
   //
-
+  
   class func pos_to_idx(_ pos: Int, _ len: Int) -> Int {
     let ilen = len;
     // let ret = pos % ilen;
@@ -376,7 +376,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     // println!("pos_to_idx:{}:{}=>{}:{}", pos, len, ret, rem);
     return rem;
   }
-
+  
   public class func aggregate(_ networks: [IPAddress]) -> [IPAddress] {
     if (networks.count == 0) {
       return [];
@@ -387,67 +387,67 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     var stack = networks.map({ $0.network() }).sorted(by: { $0.lt($1) });
     // console.log(IPAddress.to_string_vec(stack));
-//     for i in stack {
-//         print("\(i)");
-//     }
+    //     for i in stack {
+    //         print("\(i)");
+    //     }
     var pos = 0
-      while (true) {
-        if (pos < 0) {
-          pos = 0
-        }
-        let stack_len = stack.count; // borrow checker
-        // println!("loop:{}:{}", pos, stack_len);
-        // if stack_len == 1 {
-        //     println!("exit 1");
-        //     break;
-        // }
-        if (pos >= stack_len) {
-          // println!("exit first:{}:{}", stack_len, pos);
-          break;
-        }
-        let first = IPAddress.pos_to_idx(pos, stack_len);
-        pos = pos + 1;
-        if (pos >= stack_len) {
-          // println!("exit second:{}:{}", stack_len, pos);
-          break;
-        }
-        let second = IPAddress.pos_to_idx(pos, stack_len);
-        pos = pos + 1;
-        //let firstUnwrap = first;
-        if (stack[first].includes(stack[second])) {
+    while (true) {
+      if (pos < 0) {
+        pos = 0
+      }
+      let stack_len = stack.count; // borrow checker
+      // println!("loop:{}:{}", pos, stack_len);
+      // if stack_len == 1 {
+      //     println!("exit 1");
+      //     break;
+      // }
+      if (pos >= stack_len) {
+        // println!("exit first:{}:{}", stack_len, pos);
+        break;
+      }
+      let first = IPAddress.pos_to_idx(pos, stack_len);
+      pos = pos + 1;
+      if (pos >= stack_len) {
+        // println!("exit second:{}:{}", stack_len, pos);
+        break;
+      }
+      let second = IPAddress.pos_to_idx(pos, stack_len);
+      pos = pos + 1;
+      //let firstUnwrap = first;
+      if (stack[first].includes(stack[second])) {
+        pos = pos - 2;
+        // println!("remove:1:{}:{}:{}=>{}", first, second, stack_len, pos + 1);
+        let pidx = IPAddress.pos_to_idx(pos + 1, stack_len);
+        stack = Array(stack[0...pidx-1] + stack.dropFirst(pidx + 1));
+      } else {
+        stack[first].prefix = stack[first].prefix.sub(1)!;
+        // println!("complex:{}:{}:{}:{}:P1:{}:P2:{}", pos, stack_len,
+        // first, second,
+        // stack[first].to_string(), stack[second].to_string());
+        if ((stack[first].prefix.num + 1) == stack[second].prefix.num &&
+          stack[first].includes(stack[second])) {
           pos = pos - 2;
-          // println!("remove:1:{}:{}:{}=>{}", first, second, stack_len, pos + 1);
+          let idx = IPAddress.pos_to_idx(pos, stack_len);
+          stack[idx] = stack[first].clone(); // kaputt
           let pidx = IPAddress.pos_to_idx(pos + 1, stack_len);
           stack = Array(stack[0...pidx-1] + stack.dropFirst(pidx + 1));
+          // println!("remove-2:{}:{}", pos + 1, stack_len);
+          pos = pos - 1; // backtrack
         } else {
-          stack[first].prefix = stack[first].prefix.sub(1)!;
-          // println!("complex:{}:{}:{}:{}:P1:{}:P2:{}", pos, stack_len,
-          // first, second,
-          // stack[first].to_string(), stack[second].to_string());
-          if ((stack[first].prefix.num + 1) == stack[second].prefix.num &&
-              stack[first].includes(stack[second])) {
-            pos = pos - 2;
-            let idx = IPAddress.pos_to_idx(pos, stack_len);
-            stack[idx] = stack[first].clone(); // kaputt
-            let pidx = IPAddress.pos_to_idx(pos + 1, stack_len);
-            stack = Array(stack[0...pidx-1] + stack.dropFirst(pidx + 1));
-            // println!("remove-2:{}:{}", pos + 1, stack_len);
-            pos = pos - 1; // backtrack
-          } else {
-            stack[first].prefix = stack[first].prefix.add(1)!; //reset prefix
-            // println!("easy:{}:{}=>{}", pos, stack_len, stack[first].to_string());
-            pos = pos - 1; // do it with second as first
-          }
+          stack[first].prefix = stack[first].prefix.add(1)!; //reset prefix
+          // println!("easy:{}:{}=>{}", pos, stack_len, stack[first].to_string());
+          pos = pos - 1; // do it with second as first
         }
       }
+    }
     // println!("agg={}:{}", pos, stack.count);
     return stack//[0...stack.count];
   }
-
+  
   public func parts() -> [UInt] {
     return self.ip_bits.parts(self.host_address);
   }
-
+  
   public func parts_hex_str() -> [String] {
     var ret = [String]();
     let leading = 1 << UInt(self.ip_bits.part_bits);
@@ -456,7 +456,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return ret;
   }
-
+  
   //  Returns the IP address in in-addr.arpa format
   //  for DNS Domain definition entries like SOA Records
   //
@@ -473,37 +473,37 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return ret;
   }
-
-
+  
+  
   public func dns_reverse() -> String {
     var ret = "";
     var dot = "";
     let dns_parts = self.dns_parts();
     for i in stride(from: Int((self.prefix.host_prefix() + (self.ip_bits.dns_bits - 1)) / self.ip_bits.dns_bits),
                     to: self.dns_parts().count, by:1) {
-      // console.log("dns_r", i);
-      ret += dot;
-      ret += self.ip_bits.dns_part_format(dns_parts[i]);
-      dot = ".";
+                      // console.log("dns_r", i);
+                      ret += dot;
+                      ret += self.ip_bits.dns_part_format(dns_parts[i]);
+                      dot = ".";
     }
     ret += dot;
     ret += self.ip_bits.rev_domain;
     return ret;
   }
-
-
+  
+  
   public func dns_parts() -> [UInt] {
     var ret: [UInt] = [UInt]();
     var num = self.host_address;
     let mask = BigUInt(1) << Int(self.ip_bits.dns_bits);
     for _ in 1...(self.ip_bits.bits / self.ip_bits.dns_bits) {
       let part = UInt(String(num % mask))!
-        num = num >> Int(self.ip_bits.dns_bits);
+      num = num >> Int(self.ip_bits.dns_bits);
       ret.append(part);
     }
     return ret;
   }
-
+  
   public func dns_networks() -> [IPAddress] {
     // +self.ip_bits.dns_bits-1
     let next_bit_mask = self.ip_bits.bits -
@@ -530,8 +530,8 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return ret;
   }
-
-
+  
+  
   // Summarization (or aggregation) is the process when two or more
   // networks are taken together to check if a supernet, including all
   // and only these networks, exists. If it exists then this supernet
@@ -658,7 +658,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public class func summarize(_ networks: [IPAddress]) -> [IPAddress]? {
     return IPAddress.aggregate(networks);
   }
-
+  
   public class func summarize_str(_ netstr: [String]) -> [IPAddress]? {
     let vec = IPAddress.to_ipaddress_vec(netstr);
     // console.log(netstr, vec);
@@ -667,11 +667,11 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return IPAddress.aggregate(vec!);
   }
-
+  
   public func ip_same_kind(_ oth: IPAddress) -> Bool {
     return self.ip_bits.version == oth.ip_bits.version
   }
-
+  
   //  Returns true if the address is an unspecified address
   //
   //  See IPAddress.IPv6.Unspecified for more information
@@ -679,7 +679,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public func is_unspecified() -> Bool {
     return self.host_address == BigUInt(0);
   }
-
+  
   //  Returns true if the address is a loopback address
   //
   //  See IPAddress.IPv6.Loopback for more information
@@ -687,8 +687,8 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public func is_loopback() -> Bool {
     return (self.vt_is_loopback)(self);
   }
-
-
+  
+  
   //  Returns true if the address is a mapped address
   //
   //  See IPAddress.IPv6.Mapped for more information
@@ -699,8 +699,8 @@ public class IPAddress : Equatable, CustomStringConvertible {
     // console.log("+++++++++++", self.mapped, ret);
     return ret;
   }
-
-
+  
+  
   //  Returns the prefix portion of the IPv4 object
   //  as a IPAddress.Prefix32 object
   //
@@ -715,8 +715,8 @@ public class IPAddress : Equatable, CustomStringConvertible {
   // func prefix() -> Prefix {
   //     return self.prefix;
   // }
-
-
+  
+  
   // Checks if the argument is a valid IPv4 netmask
   // expressed in dotted decimal format.
   //
@@ -726,7 +726,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public class func is_valid_netmask(_ addr: String) -> Bool {
     return IPAddress.parse_netmask_to_prefix(addr) != nil;
   }
-
+  
   class func netmask_to_prefix(_ nm: BigUInt, _ bits: UInt8) -> UInt8? {
     var prefix : UInt8 = 0;
     var addr = nm;
@@ -746,8 +746,8 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return bits - prefix;
   }
-
-
+  
+  
   public class func parse_netmask_to_prefix(_ netmask: String) -> UInt8? {
     // console.log("--1", netmask);
     let is_number = IPAddress.parse_dec_str(netmask);
@@ -764,8 +764,8 @@ public class IPAddress : Equatable, CustomStringConvertible {
     // console.log("--5", netmask, my);
     return IPAddress.netmask_to_prefix(my!.host_address, my!.ip_bits.bits);
   }
-
-
+  
+  
   //  Set a new prefix Int for the object
   //
   //  This is useful if you want to change the prefix
@@ -790,7 +790,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return self.from(self.host_address, prefix!);
   }
-
+  
   public func change_netmask(_ str: String) -> IPAddress? {
     let nm = IPAddress.parse_netmask_to_prefix(str);
     if (nm == nil) {
@@ -798,7 +798,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return self.change_prefix(nm!);
   }
-
+  
   //  Returns a string with the IP address in canonical
   //  form.
   //
@@ -814,11 +814,11 @@ public class IPAddress : Equatable, CustomStringConvertible {
     ret += self.prefix.to_s();
     return ret;
   }
-
+  
   public func to_s() -> String {
     return self.ip_bits.as_compressed_string(self.host_address);
   }
-
+  
   public func to_string_uncompressed() -> String {
     var ret = "";
     ret += self.to_s_uncompressed();
@@ -829,14 +829,14 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public func to_s_uncompressed() -> String {
     return self.ip_bits.as_uncompressed_string(self.host_address);
   }
-
+  
   public func to_s_mapped() -> String {
     if (self.is_mapped()) {
       return "::ffff:\(self.mapped!.to_s())";
     }
     return self.to_s();
   }
-
+  
   public func to_string_mapped() -> String {
     if (self.is_mapped()) {
       let mapped = self.mapped!.clone();
@@ -844,7 +844,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return self.to_string();
   }
-
+  
   //  Returns the address portion of an IP in binary format,
   //  as a string containing a sequence of 0 and 1
   //
@@ -865,11 +865,11 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public func to_hex() -> String {
     return String(self.host_address, radix: 16);
   }
-
+  
   public func netmask() -> IPAddress {
     return self.from(self.prefix.netmask(), self.prefix);
   }
-
+  
   //  Returns the broadcast address for the given IP.
   //
   //    ip = IPAddress("172.16.10.64/24")
@@ -881,7 +881,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     return self.from(self.network().host_address + (self.size() - BigUInt(1)), self.prefix);
     // IPv4.parse_u32(self.broadcast_u32, self.prefix)
   }
-
+  
   //  Checks if the IP address is actually a network
   //
   //    ip = IPAddress("172.16.10.64/24")
@@ -898,7 +898,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     return self.prefix.num != self.ip_bits.bits &&
       self.host_address == self.network().host_address;
   }
-
+  
   //  Returns a new IPv4 object with the network Int
   //  for the given IP.
   //
@@ -913,18 +913,18 @@ public class IPAddress : Equatable, CustomStringConvertible {
   class func to_network(_ adr: BigUInt, _ host_prefix: UInt8) -> BigUInt {
     return (adr >> Int(host_prefix)) << Int(host_prefix);
   }
-
+  
   public func sub(_ other: IPAddress) -> BigUInt {
     if (self.host_address > other.host_address) {
       return self.host_address - other.host_address;
     }
     return other.host_address - self.host_address;
   }
-
+  
   public func add(_ other: IPAddress) -> [IPAddress] {
     return IPAddress.aggregate([self.clone(), other.clone()]);
   }
-
+  
   public class func to_s_vec(_ vec: [IPAddress]) -> [String] {
     var ret: [String] = [String]();
     for i in vec {
@@ -932,7 +932,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return ret;
   }
-
+  
   public class func to_string_vec(_ vec: [IPAddress]) -> [String] {
     var ret: [String] = [String]();
     for i in vec {
@@ -943,7 +943,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public class func to_string_vec(_ vec: [IPAddress]?) -> [String] {
     return to_string_vec(vec!);
   }
-
+  
   public class func to_ipaddress_vec(_ vec: [String]) -> [IPAddress]? {
     var ret: [IPAddress] = [IPAddress]();
     for ipstr in vec {
@@ -955,7 +955,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return ret;
   }
-
+  
   //  Returns a new IPv4 object with the
   //  first host IP address in the range.
   //
@@ -978,7 +978,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public func first() -> IPAddress {
     return self.from(self.network().host_address + self.ip_bits.host_ofs, self.prefix);
   }
-
+  
   //  Like its sibling method IPv4// first, this method
   //  returns a new IPv4 object with the
   //  last host IP address in the range.
@@ -1002,7 +1002,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public func last() -> IPAddress {
     return self.from(self.broadcast().host_address - self.ip_bits.host_ofs, self.prefix);
   }
-
+  
   //  Iterates over all the hosts IP addresses for the given
   //  network (or IP address).
   //
@@ -1025,7 +1025,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
       i = i + BigUInt(1);
     }
   }
-
+  
   public func inc() -> IPAddress? {
     let ret = self.clone();
     ret.host_address = ret.host_address + BigUInt(1);
@@ -1034,7 +1034,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return nil;
   }
-
+  
   public func dec() -> IPAddress? {
     let ret = self.clone();
     ret.host_address = ret.host_address - BigUInt(1);
@@ -1043,7 +1043,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return nil;
   }
-
+  
   //  Iterates over all the IP addresses for the given
   //  network (or IP address).
   //
@@ -1071,7 +1071,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
       i = i + BigUInt(1);
     }
   }
-
+  
   //  Spaceship operator to compare IPv4 objects
   //
   //  Comparing IPv4 addresses is useful to ordinate
@@ -1103,7 +1103,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
   //    [ip1,ip2,ip3].sort.map{|i| i.to_string}
   //      // => ["10.100.100.1/8","10.100.100.1/16","172.16.0.1/16"]
   //
-
+  
   //  Returns the Int of IP addresses included
   //  in the network. It also counts the network
   //  address and the broadcast address.
@@ -1120,7 +1120,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     return self.is_ipv4() == oth.is_ipv4() &&
       self.is_ipv6() == oth.is_ipv6();
   }
-
+  
   //  Checks whether a subnet includes the given IP address.
   //
   //  Accepts an IPAddress.IPv4 object.
@@ -1142,7 +1142,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     // println!("includes:{}=={}=>{}", self.to_string(), oth.to_string(), ret);
     return ret
   }
-
+  
   //  Checks whether a subnet includes all the
   //  given IPv4 objects.
   //
@@ -1174,8 +1174,8 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public func is_private() -> Bool {
     return self.vt_is_private(self);
   }
-
-
+  
+  
   //  Splits a network into different subnets
   //
   //  If the IP Address is a network, it can be divided into
@@ -1239,7 +1239,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     return net;
   }
   // alias_method :/, :split
-
+  
   //  Returns a new IPv4 object from the supernetting
   //  of the instance network.
   //
@@ -1273,7 +1273,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     // }
     return self.from(self.host_address, self.prefix.from(new_prefix)!).network();
   }
-
+  
   //  This method implements the subnetting function
   //  similar to the one described in RFC3531.
   //
@@ -1310,7 +1310,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return ret;
   }
-
+  
   //  Return the ip address in a format compatible
   //  with the IPv6 Mapped IPv4 addresses
   //
@@ -1324,7 +1324,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public func to_ipv6() -> IPAddress {
     return self.vt_to_ipv6(self);
   }
-
+  
   public func newprefix(_ num: UInt8) -> Prefix? {
     for i in num...self.ip_bits.bits-1 {
       let a = Float(Int(log2(Float(i))));
@@ -1334,6 +1334,6 @@ public class IPAddress : Equatable, CustomStringConvertible {
     }
     return nil
   }
-
-
+  
+  
 }

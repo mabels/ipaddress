@@ -16,12 +16,12 @@ func setup() -> Prefix128Test {
 }
 
 class Prefix128Tests : XCTestCase {
-
+  
   func test_initialize() {
     XCTAssertNil(Prefix128.create(129));
     XCTAssertNotNil(Prefix128.create(64));
   }
-
+  
   func test_method_bits() {
     let prefix = Prefix128.create(64)!;
     var str = "";
@@ -38,12 +38,12 @@ class Prefix128Tests : XCTestCase {
       XCTAssertEqual(v, Prefix128.create(k)!.netmask())
     }
   }
-
-    static var allTests : [(String, (Prefix128Tests) -> () throws -> Void)] {
-        return [
-("test_initialize", test_initialize),
-("test_method_bits", test_method_bits),
-("test_method_to_u32", test_method_to_u32),
-        ]
-    }
+  
+  static var allTests : [(String, (Prefix128Tests) -> () throws -> Void)] {
+    return [
+      ("test_initialize", test_initialize),
+      ("test_method_bits", test_method_bits),
+      ("test_method_to_u32", test_method_to_u32),
+    ]
+  }
 }

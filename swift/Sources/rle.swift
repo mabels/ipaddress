@@ -5,9 +5,9 @@ public class Last<T: Equatable&Hashable> {
   var val: Rle<T>?;
   var max_poses = [T: [Int]]();
   var ret: [Rle<T>] = [Rle<T>]();
-
+  
   public init() { }
-
+  
   func handle_last() {
     if (nil == val) {
       return;
@@ -46,22 +46,22 @@ public class Rle<T: Equatable&Hashable>: Equatable, CustomStringConvertible {
   var pos = 0;
   var cnt = 0;
   var max: Bool = false;
-
+  
   public init(part: T, pos: Int, cnt: Int, max: Bool) {
     self.part = part;
     self.pos = pos;
     self.cnt = cnt;
     self.max = max;
   }
-
+  
   public var description: String {
     return "<Rle@part:\(part),pos\(pos),cnt:\(cnt),max:\(max)>";
   }
-
+  
   public final class func ==(lhs: Rle<T>, rhs: Rle<T>) -> Bool {
     return lhs.eq(rhs)
   }
-
+  
   public func eq(_ other: Rle<T>) -> Bool {
     return part == other.part && pos == other.pos &&
       cnt == other.cnt && max == other.max;
@@ -69,7 +69,7 @@ public class Rle<T: Equatable&Hashable>: Equatable, CustomStringConvertible {
   public func ne(_ other: Rle<T>) -> Bool {
     return !eq(other);
   }
-
+  
   public class func code<T: Equatable&Hashable>(_ parts: [T]) -> [Rle<T>] {
     let last = Last<T>();
     //print("code");
@@ -85,5 +85,5 @@ public class Rle<T: Equatable&Hashable>: Equatable, CustomStringConvertible {
     last.handle_last();
     return last.ret;
   }
-
+  
 }

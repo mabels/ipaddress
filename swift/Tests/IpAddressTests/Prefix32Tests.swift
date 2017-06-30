@@ -44,14 +44,14 @@ func setup() -> Prefix32Test {
 }
 
 class Prefix32Tests: XCTestCase {
-
+  
   func test_attributes() {
     for (_, e) in setup().prefix_hash {
       let prefix = Prefix32.create(e)!;
       XCTAssertEqual(e, prefix.num);
     }
   }
-
+  
   func test_parse_netmask_to_prefix() {
     for (netmask, num) in setup().prefix_hash {
       // console.log(e);
@@ -115,21 +115,21 @@ class Prefix32Tests: XCTestCase {
     // console.log(">>>>", prefix.host_mask());
     XCTAssertEqual("0.255.255.255", Ipv4.from_int(prefix.host_mask(), 0)!.to_s());
   }
-
-    static var allTests : [(String, (Prefix32Tests) -> () throws -> Void)] {
-        return [
-("test_attributes", test_attributes),
-("test_parse_netmask_to_prefix", test_parse_netmask_to_prefix),
-("test_method_to_ip", test_method_to_ip),
-("test_method_to_s", test_method_to_s),
-("test_method_bits", test_method_bits),
-("test_method_to_u32", test_method_to_u32),
-("test_method_plus", test_method_plus),
-("test_method_minus", test_method_minus),
-("test_initialize", test_initialize),
-("test_method_octets", test_method_octets),
-("test_method_brackets", test_method_brackets),
-("test_method_hostmask", test_method_hostmask),
-        ]
-    }
+  
+  static var allTests : [(String, (Prefix32Tests) -> () throws -> Void)] {
+    return [
+      ("test_attributes", test_attributes),
+      ("test_parse_netmask_to_prefix", test_parse_netmask_to_prefix),
+      ("test_method_to_ip", test_method_to_ip),
+      ("test_method_to_s", test_method_to_s),
+      ("test_method_bits", test_method_bits),
+      ("test_method_to_u32", test_method_to_u32),
+      ("test_method_plus", test_method_plus),
+      ("test_method_minus", test_method_minus),
+      ("test_initialize", test_initialize),
+      ("test_method_octets", test_method_octets),
+      ("test_method_brackets", test_method_brackets),
+      ("test_method_hostmask", test_method_hostmask),
+    ]
+  }
 }
