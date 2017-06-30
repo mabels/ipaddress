@@ -1,7 +1,7 @@
 //import Prefix from './prefix';
 //import IpBits from './ip_bits';
 
-class Prefix128 {
+public class Prefix128 {
     // #[derive(Ord,PartialOrd,Eq,PartialEq,Debug,Copy,Clone)]
     // pub struct Prefix128 {
     // }
@@ -14,7 +14,7 @@ class Prefix128 {
     //      // => 64
     //
     //#[allow(unused_comparisons)]
-    class func create(_ num: UInt8) -> Prefix? {
+    public class func create(_ num: UInt8) -> Prefix? {
         if (num <= 128) {
             let ip_bits = IpBits.v6();
             let bits = ip_bits.bits;
@@ -28,7 +28,7 @@ class Prefix128 {
         return nil;
     }
 
-    class func from(_ my: Prefix, _ num: UInt8) -> Prefix? {
+    public class func from(_ my: Prefix, _ num: UInt8) -> Prefix? {
         return Prefix128.create(num);
     }
 }

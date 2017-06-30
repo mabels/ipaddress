@@ -68,7 +68,7 @@ export class IPAddress {
     }
 
     public lt(oth: IPAddress): boolean {
-        return this.cmp(oth) == -1;
+        return this.cmp(oth) < 0;
     }
 
     public lte(oth: IPAddress): boolean {
@@ -76,7 +76,7 @@ export class IPAddress {
     }
 
     public gt(oth: IPAddress): boolean {
-        return this.cmp(oth) == 1;
+      return this.cmp(oth) > 1;
     }
 
     public gte(oth: IPAddress): boolean {
@@ -1061,7 +1061,7 @@ export class IPAddress {
     //
     public each(func: EachFn) {
         let i = this.network().host_address;
-        while (i <= this.broadcast().host_address) {
+        while (i.lte(this.broadcast().host_address)) {
             func(this.from(i, this.prefix));
             i = i.add(Crunchy.one());
         }

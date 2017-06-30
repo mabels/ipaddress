@@ -1,110 +1,102 @@
 import XCTest
-@testable import swift
+//@testable import swift
 
 
-//import rle 
+@testable import IpAddress
 
-typealias RleInt = Rle<Int>
+//typealias Rle<Int> = Rle<Int>
 
-func assert_rle(left: [RleInt], right: [RleInt]) {
-    assert(left.count == right.count, "array length missmatch");
-    for i in  0...left.count {
-        assert(left[i].eq(right[i]), 
-            "left:\(left[i].toString()) right:\(right[i].toString())");
-    }
-}
-
-class rleTests: XCTestCase {
+class RleTests: XCTestCase {
   func testRle() {
-        let empty = [Int];
-        assert_rle(RleInt.code(empty), []);
-        assert_rle(RleInt.code([4711]), [
-                RleInt(
+        let empty = [Int]();
+        XCTAssertEqual(Rle<Int>.code(empty), [Rle<Int>]());
+        XCTAssertEqual(Rle<Int>.code([4711]), [
+                Rle<Int>(
                         part: 4711,
                         pos: 0,
                         cnt: 1,
                         max: true
                     )]);
-        assert_rle(RleInt.code([4711, 4711]), [
-                RleInt(
+        XCTAssertEqual(Rle<Int>.code([4711, 4711]), [
+                Rle<Int>(
                         part: 4711,
                         pos: 0,
                         cnt: 2,
                         max: true
                     )]);
-        assert_rle(RleInt.code([4711, 4711, 4811]), [
-                    RleInt(
+        XCTAssertEqual(Rle<Int>.code([4711, 4711, 4811]), [
+                    Rle<Int>(
                         part: 4711,
                         pos: 0,
                         cnt: 2,
                         max: true
                     ),
-                    RleInt(
+                    Rle<Int>(
                         part: 4811,
                         pos: 1,
                         cnt: 1,
                         max: true
                     )]);
-        assert_rle(RleInt.code([4711, 4711, 4811, 4711, 4711]), [
-                    RleInt(
+        XCTAssertEqual(Rle<Int>.code([4711, 4711, 4811, 4711, 4711]), [
+                    Rle<Int>(
                         part: 4711,
                         pos: 0,
                         cnt: 2,
                         max: true
                     ),
-                    RleInt(
+                    Rle<Int>(
                         part: 4811,
                         pos: 1,
                         cnt: 1,
                         max: true
                     ),
-                    RleInt(
+                    Rle<Int>(
                         part: 4711,
                         pos: 2,
                         cnt: 2,
                         max: true
                     )]);
-              assert_rle(RleInt.code([4711, 4711, 4711, 4811, 4711, 4711]), [
-                    RleInt(
+              XCTAssertEqual(Rle<Int>.code([4711, 4711, 4711, 4811, 4711, 4711]), [
+                    Rle<Int>(
                         part: 4711,
                         pos: 0,
                         cnt: 3,
                         max: true
                     ),
-                    RleInt(
+                    Rle<Int>(
                         part: 4811,
                         pos: 1,
                         cnt: 1,
                         max: true
                     ),
-                    RleInt(
+                    Rle<Int>(
                         part: 4711,
                         pos: 2,
                         cnt: 2,
                         max: false
                     )]
                    );
-                   assert_rle(RleInt.code([4711, 4711, 4711, 4811, 4711, 4711, 4911, 4911, 4911]), 
+                   XCTAssertEqual(Rle<Int>.code([4711, 4711, 4711, 4811, 4711, 4711, 4911, 4911, 4911]), 
                        [
-                        RleInt(
+                        Rle<Int>(
                            part: 4711,
                            pos: 0,
                            cnt: 3,
                            max: true
                        ),
-                       RleInt(
+                       Rle<Int>(
                            part: 4811,
                            pos: 1,
                            cnt: 1,
                            max: true
                        ),
-                       RleInt(
+                       Rle<Int>(
                            part: 4711,
                            pos: 2,
                            cnt: 2,
                            max: false
                        ),
-                       RleInt(
+                       Rle<Int>(
                            part: 4911,
                            pos: 3,
                            cnt: 3,
@@ -112,32 +104,32 @@ class rleTests: XCTestCase {
                        )]);
 
 
-              assert_rle(RleInt.code([0x2001, 0x888, 0, 0x6630, 0, 0, 0, 0]), [
-                   RleInt(
+              XCTAssertEqual(Rle<Int>.code([0x2001, 0x888, 0, 0x6630, 0, 0, 0, 0]), [
+                   Rle<Int>(
                        part: 0x2001,
                        pos: 0,
                        cnt: 1,
                        max: true
                    ),
-                   RleInt(
+                   Rle<Int>(
                        part: 0x888,
                        pos: 1,
                        cnt: 1,
                        max: true
                    ),
-                   RleInt(
+                   Rle<Int>(
                        part: 0,
                        pos: 2,
                        cnt: 1,
                        max: false
                    ),
-                   RleInt(
+                   Rle<Int>(
                        part: 0x6630,
                        pos: 3,
                        cnt: 1,
                        max: true
                    ),
-                   RleInt(
+                   Rle<Int>(
                        part: 0,
                        pos: 4,
                        cnt: 4,

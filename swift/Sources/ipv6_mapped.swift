@@ -3,7 +3,7 @@ import BigInt
 //import IpBits from './ip_bits';
 //import IPAddress from './ipaddress';
 
-class Ipv6Mapped {
+public class Ipv6Mapped {
     //  Ac
     //  It is usually identified as a IPv4 mapped IPv6 address, a particular
     //  IPv6 address which aids the transition from IPv4 to IPv6. The
@@ -80,7 +80,7 @@ class Ipv6Mapped {
     //    ip6.to_string
     //      // => "::ffff:13.1.68.3"
     //
-    class func create(_ str: String) -> IPAddress? {
+    public class func create(_ str: String) -> IPAddress? {
         // console.log("mapped-1");
         let (ip, o_netmask) = IPAddress.split_at_slash(str);
         let split_colon = ip.components(separatedBy: ":");
@@ -113,7 +113,7 @@ class Ipv6Mapped {
 
             var rebuild_ipv6 = "";
             var colon = "";
-            for i in 0...(split_colon.count - 1) {
+            for i in stride(from: 0, to: split_colon.count-1, by: 1) {
                 rebuild_ipv6 += colon;
                 rebuild_ipv6 += split_colon[i];
                 colon = ":";

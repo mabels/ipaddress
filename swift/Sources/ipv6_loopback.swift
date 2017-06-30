@@ -4,7 +4,7 @@
 //
 import BigInt
 
-class Ipv6Loopback {
+public class Ipv6Loopback {
     //    The loopback  address is a unicast localhost address. If an
     //  application in a host sends packets to this address, the IPv6 stack
     //  will loop these packets back on the same virtual interface.
@@ -48,7 +48,7 @@ class Ipv6Loopback {
     //    ip.to_string
     //      // => "::1/128"
     //
-    class func create() -> IPAddress {
+    public class func create() -> IPAddress {
         return Ipv6.from_int(BigUInt(1), 128)!;
     }
 }

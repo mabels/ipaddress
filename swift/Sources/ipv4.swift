@@ -6,8 +6,8 @@ import BigInt
 //import Prefix128 from './prefix128';
 //import Ipv6 from './ipv6';
 
-class Ipv4 {
-    class func from_int(_ addr: BigUInt, _ prefix_num: UInt8)-> IPAddress? {
+public class Ipv4 {
+    public class func from_int(_ addr: BigUInt, _ prefix_num: UInt8)-> IPAddress? {
         let prefix = Prefix32.create(prefix_num);
         if (prefix == nil) {
             return nil;
@@ -23,7 +23,7 @@ class Ipv4 {
         );
     }
 
-    class func create(_ str: String)-> IPAddress? {
+    public class func create(_ str: String)-> IPAddress? {
         // console.log("create:v4:", str);
         // let enable = str == "0.0.0.0/0";
         let (ip, netmask) = IPAddress.split_at_slash(str);
@@ -64,7 +64,7 @@ class Ipv4 {
         );
     }
 
-    class func ipv4_is_private(_ my: IPAddress) -> Bool {
+    public class func ipv4_is_private(_ my: IPAddress) -> Bool {
         return [IPAddress.parse("10.0.0.0/8")!,
             IPAddress.parse("169.254.0.0/16")!,
             IPAddress.parse("172.16.0.0/12")!,
@@ -72,11 +72,11 @@ class Ipv4 {
             .index(where: { $0.includes(my) }) != nil
     }
 
-    class func ipv4_is_loopback(_ my: IPAddress) -> Bool {
+    public class func ipv4_is_loopback(_ my: IPAddress) -> Bool {
         return IPAddress.parse("127.0.0.0/8")!.includes(my);
     }
 
-    class func to_ipv6(_ ia: IPAddress) -> IPAddress {
+    public class func to_ipv6(_ ia: IPAddress) -> IPAddress {
         return IPAddress(
             ip_bits: IpBits.v6(),
             host_address: ia.host_address,
@@ -99,7 +99,7 @@ class Ipv4 {
     //    ip.a?
     //      // => true
     //
-    class func is_class_a(_ my: IPAddress) -> Bool {
+    public class func is_class_a(_ my: IPAddress) -> Bool {
         // console.log("is_class_a:", my.to_string(), BigUInt(0x80000000), my.is_ipv4()); 
         return my.is_ipv4() && my.host_address < BigUInt(0x80000000);
     }
@@ -115,7 +115,7 @@ class Ipv4 {
     //    ip.b?
     //      // => true
     //
-    class func is_class_b(_ my: IPAddress) -> Bool {
+    public class func is_class_b(_ my: IPAddress) -> Bool {
         return my.is_ipv4() &&
             BigUInt(0x80000000) <= (my.host_address) &&
             my.host_address < BigUInt(0xc0000000);
@@ -132,7 +132,7 @@ class Ipv4 {
     //    ip.c?
     //      // => true
     //
-    class func is_class_c(_ my: IPAddress) -> Bool {
+    public class func is_class_c(_ my: IPAddress) -> Bool {
         return my.is_ipv4() &&
             BigUInt(0xc0000000) <= my.host_address &&
             my.host_address < BigUInt(0xe0000000);
@@ -161,7 +161,7 @@ class Ipv4 {
     //  Note that classes C, D and E will all have a default
     //  prefix of /24 or 255.255.255.0
     //
-    class func parse_classful(_ ip_si: String) -> IPAddress? {
+    public class func parse_classful(_ ip_si: String) -> IPAddress? {
         if (!IPAddress.is_valid_ipv4(ip_si)) {
             return nil;
         }

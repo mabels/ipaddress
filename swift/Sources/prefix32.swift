@@ -2,12 +2,12 @@
 //import Prefix from './prefix';
 //import IpBits from './ip_bits';
 
-class Prefix32 {
-    class func from(_ my: Prefix, _ num: UInt8) -> Prefix? {
+public class Prefix32 {
+    public class func from(_ my: Prefix, _ num: UInt8) -> Prefix? {
         return Prefix32.create(num);
     }
 
-    class func create(_ num: UInt8) -> Prefix? {
+    public class func create(_ num: UInt8) -> Prefix? {
         if (0 <= num && num <= 32) {
             let ip_bits = IpBits.v4();
             let bits = ip_bits.bits;

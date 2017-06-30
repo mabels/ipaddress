@@ -1,7 +1,7 @@
 
 //import IPAddress from './ipaddress';
 
-class Ipv6Unspec {
+public class Ipv6Unspec {
     //  The address with all zero bits is called the +unspecified+ address
     //  (corresponding to 0.0.0.0 in IPv4). It should be something like this:
     //
@@ -51,7 +51,7 @@ class Ipv6Unspec {
     //    ip.to_s
     //       // => => "::/128"
     //
-    class func create() -> IPAddress {
+    public class func create() -> IPAddress {
         return IPAddress.parse("::")!;
     }
     //  class IPv6::Unspecified

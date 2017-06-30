@@ -6,7 +6,7 @@
 //import Prefix128 from './prefix128';
 import BigInt
 
-class Ipv6 {
+public class Ipv6 {
     //  =Name
     //
     //  IPAddress::IPv6 - IP version 6 address manipulation library
@@ -64,7 +64,7 @@ class Ipv6 {
     //
     //
 
-    class func from_str(_ str: String, _ radix: Int, _ prefix: UInt8) -> IPAddress? {
+    public class func from_str(_ str: String, _ radix: Int, _ prefix: UInt8) -> IPAddress? {
         let num = BigUInt(str, radix: radix);
         if (num == nil) {
             return nil;
@@ -72,7 +72,7 @@ class Ipv6 {
         return Ipv6.from_int(num!, prefix);
     }
 
-    class func enhance_if_mapped(_ ip: IPAddress) -> IPAddress? {
+    public class func enhance_if_mapped(_ ip: IPAddress) -> IPAddress? {
         // console.log("------A");
         // println!("real mapped {:x} {:x}", &ip.host_address, ip.host_address.clone().shr(32));
         if (ip.is_mapped()) {
@@ -98,7 +98,7 @@ class Ipv6 {
             // console.log("------G");
             let mapped = Ipv4.from_int(num, ipv4_bits.bits - ip.prefix.host_prefix());
             // console.log("------H");
-            if (mapped != nil) {
+            if (mapped == nil) {
                 // println!("enhance_if_mapped-3");
                 return mapped;
             }
@@ -108,7 +108,7 @@ class Ipv6 {
         return ip;
     }
 
-    class func from_int(_ adr: BigUInt, _ prefix_num: UInt8) -> IPAddress? {
+    public class func from_int(_ adr: BigUInt, _ prefix_num: UInt8) -> IPAddress? {
         let prefix = Prefix128.create(prefix_num);
         if (prefix == nil) {
             return nil;
@@ -142,7 +142,7 @@ class Ipv6 {
     //
     //    ip6 = IPAddress "2001:db8::8:800:200c:417a/64"
     //
-    class func create(_ str: String) -> IPAddress? {
+    public class func create(_ str: String) -> IPAddress? {
         // console.log("1>>>>>>>>>", str);
         let (ip, o_netmask) = IPAddress.split_at_slash(str);
         // console.log("2>>>>>>>>>", str);
@@ -185,17 +185,16 @@ class Ipv6 {
         }
     } //  pub fn initialize
 
-    class func to_ipv6(_ ia: IPAddress) -> IPAddress {
+    public class func to_ipv6(_ ia: IPAddress) -> IPAddress {
         return ia.clone();
     }
 
-    class func ipv6_is_loopback(_ my: IPAddress) -> Bool {
+    public class func ipv6_is_loopback(_ my: IPAddress) -> Bool {
         // console.log("*************", my.host_address, BigUInt.one());
         return my.host_address == BigUInt(1);
     }
 
-
-    class func ipv6_is_private(_ my: IPAddress) -> Bool {
+    public class func ipv6_is_private(_ my: IPAddress) -> Bool {
         return IPAddress.parse("fd00::/8")!.includes(my);
     }
 

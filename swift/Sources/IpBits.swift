@@ -10,11 +10,11 @@ typealias ToString = (_ source: IpBits, _ num: BigUInt) -> String;
 
 
 // #[derive(Debug, Clone)]
-class IpBits {
+public class IpBits {
     let version: IpVersion;
     let vt_as_compressed_string: ToString;
     let vt_as_uncompressed_string: ToString;
-    let bits: UInt8;
+    public let bits: UInt8;
     let part_bits: UInt8;
     let dns_bits: UInt8;
     let rev_domain: String;
@@ -53,11 +53,11 @@ class IpBits {
         return self;
     }
 
-    func parts(_ bu: BigUInt)-> [UInt] {
+    public func parts(_ bu: BigUInt)-> [UInt] {
         var vec = [UInt]();
         var my = bu;
         let part_mod = BigUInt(1) << Int(self.part_bits);// - BigUInt::one();
-        for _ in 0...(self.bits / self.part_bits) {
+        for _ in 1...(self.bits / self.part_bits) {
             // console.log("parts-1:", my, part_mod, my.mod(part_mod), my.mod(part_mod).toString());
             let tmp = String(my % part_mod)
             let itmp = UInt(tmp)
@@ -68,14 +68,14 @@ class IpBits {
         return Array(vec.reversed());
     }
 
-    func as_compressed_string(_ bu: BigUInt) -> String {
+    public func as_compressed_string(_ bu: BigUInt) -> String {
         return (self.vt_as_compressed_string)(self, bu);
     }
-    func as_uncompressed_string(_ bu: BigUInt) -> String {
+    public func as_uncompressed_string(_ bu: BigUInt) -> String {
         return (self.vt_as_uncompressed_string)(self, bu);
     }
 
-    func dns_part_format(_ i: UInt) -> String {
+    public func dns_part_format(_ i: UInt) -> String {
         switch (self.version) {
             case IpVersion.V4: return "\(i)";
             case IpVersion.V6: return "\(String(i, radix: 16))";
@@ -83,7 +83,7 @@ class IpBits {
     }
 
     static var _v4 : IpBits?;
-    class func v4() -> IpBits {
+    public class func v4() -> IpBits {
       if (IpBits._v4 != nil) {
         return IpBits._v4!;
       }
@@ -102,7 +102,7 @@ class IpBits {
     }
 
     static var _v6 : IpBits?;
-    class func v6() -> IpBits {
+    public class func v6() -> IpBits {
       if (IpBits._v6 != nil) {
         return IpBits._v6!;
       }
@@ -137,7 +137,7 @@ class IpBits {
         var colon = "";
         var done = false;
         for rle in Rle<Int>.code(ip_bits.parts(host_address)) {
-            for _ in 0...rle.cnt {
+            for _ in 1...rle.cnt {
                 if (done || !(rle.part == 0 && rle.max)) {
                     ret += "\(colon)\(String(rle.part, radix: 16))";
                     colon = ":";
@@ -157,7 +157,7 @@ class IpBits {
         for part in ip_bits.parts(host_address) {
             ret += sep;
             let tmp = String((0x10000 + part), radix: 16);
-            ret += String(tmp.characters.suffix(1))
+            ret += String(tmp.characters.dropFirst(1))
             sep = ":";
         }
         return ret;
