@@ -76,7 +76,7 @@ export class IPAddress {
     }
 
     public gt(oth: IPAddress): boolean {
-      return this.cmp(oth) > 1;
+      return this.cmp(oth) > 0;
     }
 
     public gte(oth: IPAddress): boolean {
