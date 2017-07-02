@@ -7,4 +7,5 @@ namespace ipaddress
         V4,
         V6
     }
+
 }

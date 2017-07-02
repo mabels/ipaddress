@@ -51,7 +51,7 @@ namespace ipaddress
   {
     public static  IPAddress create()
     {
-      return IpV6.from_int(BigInteger.ONE, 128).unwrap();
+      return IpV6.from_int(new BigInteger(1), 128).unwrap();
     }
   }
 }

@@ -1,5 +1,7 @@
+
 using System;
 using System.Numerics;
+using System.Globalization;
 using System.Collections.Generic;
 
 namespace ipaddress
@@ -109,54 +111,64 @@ namespace ipaddress
 
     ///
 
-    public static IPAddress.VtIPAddress ipv6_to_ipv6 = [IPAddress my | return my.clone()];
-    public static IPAddress.VtBool ipv6_is_loopback = [IPAddress my | return my.host_address.equals(BigInteger.ONE)];
-    public static IPAddress.VtBool ipv6_is_private = [IPAddress my | return IPAddress.parse("fd00::/8").unwrap().includes(my)];
+    public static IPAddress ipv6_to_ipv6(IPAddress my) {
+      return my.clone();
+    }
+    public static bool ipv6_is_loopback(IPAddress my) {
+      return my.host_address == new BigInteger(1);
+    } 
+    public static bool ipv6_is_private(IPAddress my) { 
+      return IPAddress.parse("fd00::/8").unwrap().includes(my);
+    } 
 
     public static Result<IPAddress> from_str(String str, int radix, int prefix) {
       try
       {
-        var num = new BigInteger(str, radix)
-            return from_int(num, prefix);
-      }
-      catch (Throwable e)
-      {
-        return Result.Err("unparsable <<str>>")
+        NumberStyles tmp = NumberStyles.Integer;
+        if (radix == 16) {
+          tmp = NumberStyles.HexNumber;          
         }
+        var num = BigInteger.Parse(str, tmp);
+        return from_int(num, prefix);
+      }
+      catch (Exception )
+      {
+        return Result<IPAddress>.Err("unparsable <<str>>");
+      }
     }
 
     public static Result<IPAddress> enhance_if_mapped(IPAddress ip) {
       // println!("real mapped {:x} {:x}", &ip.host_address, ip.host_address.clone().shr(32));
       if (ip.is_mapped())
       {
-        return Result.Ok(ip);
+        return Result<IPAddress>.Ok(ip);
       }
-      var ipv6_top_96bit = ip.host_address.shiftRight(32);
-      if (ipv6_top_96bit.equals(BigInteger.valueOf(0xffff)))
+      var ipv6_top_96bit = ip.host_address >> 32;
+      if (ipv6_top_96bit == 0xffff)
       {
         // println!("enhance_if_mapped-1:{}", );
-        var num = ip.host_address.mod(BigInteger.ONE.shiftLeft(32));
-        if (num.equals(BigInteger.ZERO))
+        var num = ip.host_address % (new BigInteger(1) << 32);
+        if (num == 0)
         {
-          return Result.Ok(ip);
+          return Result<IPAddress>.Ok(ip);
         }
         //println!("ip:{},{:x}", ip.to_string(), num);
         var ipv4_bits = IpBits.V4;
         if (ipv4_bits.bits < ip.prefix.host_prefix())
         {
           //println!("enhance_if_mapped-2:{}:{}", ip.to_string(), ip.prefix.host_prefix());
-          return Result.Err('''enhance_if_mapped prefix not ipv4 compatible <<ip.prefix.host_prefix()>>''');
+          return Result<IPAddress>.Err("enhance_if_mapped prefix not ipv4 compatible <<ip.prefix.host_prefix()>>");
         }
-        var mapped = IpV4.from_u32(num.intValue(), ipv4_bits.bits - ip.prefix.host_prefix());
+        var mapped = IpV4.from_u32((UInt32)num, ipv4_bits.bits - ip.prefix.host_prefix());
         if (mapped.isErr())
         {
           //println!("enhance_if_mapped-3");
           return mapped;
         }
         // println!("real mapped!!!!!={}", mapped.clone().unwrap().to_string());
-        return Result.Ok(ip.setMapped(mapped.unwrap()))
+        return Result<IPAddress>.Ok(ip.setMapped(mapped.unwrap()));
         }
-      return Result.Ok(ip);
+      return Result<IPAddress>.Ok(ip);
     }
 
 
@@ -164,7 +176,7 @@ namespace ipaddress
       var prefix = Prefix128.create(prefixNum);
       if (prefix.isErr())
       {
-        return Result.Err(prefix.unwrapErr());
+        return Result<IPAddress>.Err(prefix.unwrapErr());
       }
       return enhance_if_mapped(new IPAddress(
               IpBits.V6,
@@ -199,29 +211,29 @@ namespace ipaddress
     ///    ip6 = IPAddress "2001:db8::8:800:200c:417a/64"
     ///
     public static Result<IPAddress> create(String str)  {
-      var splitted = IPAddress.split_at_slash(str);
+      var splitted = IPAddress.Split_at_slash(str);
       if (IPAddress.is_valid_ipv6(splitted.addr))
       {
         var o_num = IPAddress.split_to_num(splitted.addr);
         if (o_num.isErr())
         {
-          return Result.Err(o_num.unwrapErr());
+          return Result<IPAddress>.Err(o_num.unwrapErr());
         }
         var netmask = 128;
-        if (splitted.netmask !== null)
+        if (splitted.netmask != null)
         {
-          var network = splitted.netmask
-                var num_mask = IPAddress.parseInt(network, 10);
-          if (num_mask === null)
+          var network = splitted.netmask;
+          var num_mask = IPAddress.parseInt(network, 10);
+          if (!num_mask.HasValue)
           {
-            return Result.Err('''Invalid Netmask <<str>>''');
+            return Result<IPAddress>.Err("Invalid Netmask <<str>>");
           }
-          netmask = num_mask.intValue()
+          netmask = num_mask.Value;
             }
         var prefix = Prefix128.create(netmask);
         if (prefix.isErr())
         {
-          return Result.Err(prefix.unwrapErr());
+          return Result<IPAddress>.Err(prefix.unwrapErr());
         }
         return enhance_if_mapped(new IPAddress(
                 IpBits.V6,
@@ -230,10 +242,7 @@ namespace ipaddress
                 null,
                 ipv6_is_private, ipv6_is_loopback, ipv6_to_ipv6));
       }
-      else
-      {
-        return Result.Err('''Invalid IP <<str>>''');
-      }
+      return Result<IPAddress>.Err("Invalid IP <<str>>");
     }
 
 

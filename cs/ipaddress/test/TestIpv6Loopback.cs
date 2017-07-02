@@ -1,52 +1,54 @@
 using System;
 using System.Numerics;
-using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace ipaddress
 {
 
-class TestIpv6Loopback {
-    
-    static class IPv6LoopbackTest {
-        IPAddress ip
-        String s
-        String n
-        String string
-        BigInteger one
-        new(IPAddress ip, String s, String n,
-            String string, BigInteger one) {
-        this.ip = ip
-        this.s = s
-        this.n = n
-        this.string = string
-        this.one = one
+  class IPv6LoopbackTest
+  {
+    public IPAddress ip;
+    public String s;
+    public String n;
+    public String _str;
+    public BigInteger one;
+    public IPv6LoopbackTest(IPAddress ip, String s, String n,
+          String _str, BigInteger one)
+    {
+      this.ip = ip;
+      this.s = s;
+        this.n = n;
+        this._str = _str;
+        this.one = one;
         }
-    }
+  }
 
-    def IPv6LoopbackTest setup() {
+class TestIpv6Loopback {
+
+    IPv6LoopbackTest setup() {
         return new IPv6LoopbackTest(
             Ipv6Loopback.create(),
             "::1",
             "::1/128",
             "0000:0000:0000:0000:0000:0000:0000:0001/128",
-            BigInteger.ONE
+            new BigInteger(1)
         );
     }
 
-    @Test
-    public def test_attributes() {
-        val s = setup();
-        assertEquals(128, s.ip.prefix.num);
-        assertEquals(true, s.ip.is_loopback());
-        assertEquals(s.s, s.ip.to_s());
-        assertEquals(s.n, s.ip.to_string());
-        assertEquals(s.string, s.ip.to_string_uncompressed());
-        assertEquals(s.one, s.ip.host_address);
+    //@Test
+    void test_attributes() {
+        var s = setup();
+        Assert.AreEqual(128, s.ip.prefix.num);
+        Assert.AreEqual(true, s.ip.is_loopback());
+        Assert.AreEqual(s.s, s.ip.to_s());
+        Assert.AreEqual(s.n, s.ip.to_string());
+        Assert.AreEqual(s._str, s.ip.to_string_uncompressed());
+        Assert.AreEqual(s.one, s.ip.host_address);
     }
 
-    @Test
-    def test_method_ipv6() {
-        assertEquals(true, setup().ip.is_ipv6());
+    //@Test
+    void test_method_ipv6() {
+        Assert.AreEqual(true, setup().ip.is_ipv6());
     }
 }
 }

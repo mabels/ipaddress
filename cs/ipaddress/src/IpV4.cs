@@ -9,11 +9,11 @@ namespace ipaddress
   {
     public static bool ipv4_is_private(IPAddress my)
     {
-      return [IPAddress.parse("10.0.0.0/8").unwrap(),
+      return new List<IPAddress>{IPAddress.parse("10.0.0.0/8").unwrap(),
             IPAddress.parse("169.254.0.0/16").unwrap(),
             IPAddress.parse("172.16.0.0/12").unwrap(),
-            IPAddress.parse("192.168.0.0/16").unwrap()].findFirst[i | i.includes(my)] !== null
-      };
+        IPAddress.parse("192.168.0.0/16").unwrap()}.Find((i) => i.includes(my)) != null;
+    }
 
     public static bool ipv4_is_loopback(IPAddress my)
     {
@@ -27,10 +27,10 @@ namespace ipaddress
               ia.host_address,
               Prefix128.create(ia.prefix.num).unwrap(),
               null,
-              IpV6.ipv6_is_private, IpV6.ipv6_is_loopback, IpV6.ipv6_to_ipv6)
+        IpV6.ipv6_is_private, IpV6.ipv6_is_loopback, IpV6.ipv6_to_ipv6);
       } 
 
-    public static  Result<IPAddress> from_u32(long addr, int _prefix) {
+    public static  Result<IPAddress> from_u32(UInt32 addr, int _prefix) {
       var prefix = Prefix32.create(_prefix);
       if (prefix.isErr())
       {
@@ -48,12 +48,12 @@ namespace ipaddress
     }
 
     public static Result<IPAddress> create(string str)  {
-      var splitted = IPAddress.split_at_slash(str);
+      var splitted = IPAddress.Split_at_slash(str);
       if (!IPAddress.is_valid_ipv4(splitted.addr))
       {
-        return Result.Err("Invalid IP <<str>>");
+        return Result<IPAddress>.Err("Invalid IP <<str>>");
       }
-      var ip_prefix_num = Result<IPAddress>.Ok(32);
+      var ip_prefix_num = Result<int>.Ok(32);
       if (splitted.netmask != null)
       {
         //  netmask is defined
@@ -1086,7 +1086,7 @@ namespace ipaddress
     public static bool is_class_a(IPAddress my)
     {
       //      var ret = my.host_address.compareTo(x80000000)
-      return my.is_ipv4() && my.host_address.compareTo(x80000000) < 0;
+      return my.is_ipv4() && my.host_address < x80000000;
     }
 
     //  Checks whether the ip address belongs to a
@@ -1105,8 +1105,7 @@ namespace ipaddress
     //
     public static bool is_class_b(IPAddress my)
     {
-      return my.is_ipv4() && x80000000.compareTo(my.host_address) <= 0
-              && my.host_address.compareTo(xc0000000) < 0;
+      return my.is_ipv4() && x80000000 <= my.host_address && my.host_address < xc0000000;
     }
     //  Checks whether the ip address belongs to a
 
@@ -1125,8 +1124,7 @@ namespace ipaddress
 
     public static bool is_class_c(IPAddress my)
     {
-      return my.is_ipv4() && xc0000000.compareTo(my.host_address) <= 0
-        && my.host_address.compareTo(xe0000000) < 0
+      return my.is_ipv4() && xc0000000 <= my.host_address && my.host_address < xe0000000;
     }
     //  Return the ip address in a format compatible
 

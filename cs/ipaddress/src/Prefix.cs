@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Text;
 
 namespace ipaddress
 {
@@ -78,7 +79,7 @@ namespace ipaddress
 
     public BigInteger size()
     {
-      return new BigInteger(1) << (this.ip_bits.bits - this.num);
+      return (new BigInteger(1)) << (this.ip_bits.bits - this.num);
     }
 
     public static BigInteger new_netmask(int prefix, int bits)
@@ -87,7 +88,7 @@ namespace ipaddress
       var host_prefix = bits - prefix;
       for (var i = 0; i < prefix; i++)
       {
-        mask = mask + (new BigInteger(1) << (host_prefix + i));
+        mask = mask + ((new BigInteger(1)) << (host_prefix + i));
       }
       return mask;
     }
@@ -145,11 +146,19 @@ namespace ipaddress
     ///      ///  "1111111111111111111111111111111111111111111111111111111111111111"
     ///          "0000000000000000000000000000000000000000000000000000000000000000"
     ///
-    public string bits()
+    public String bits()
     {
-      return this.netmask().toString(2);
+      var r = new StringBuilder();
+      for (var i = 0; i < this.host_prefix(); ++i) {
+        r.Append("1");
+      }
+      for (var i = 0; i < this.num; ++i)
+      {
+        r.Append("0");
+      }
+      return r.ToString();
     }
-    public string to_s()
+    public String to_s()
     {
       return string.Format("%d", this.get_prefix());
     }

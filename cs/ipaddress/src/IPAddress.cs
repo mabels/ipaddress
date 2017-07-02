@@ -1,9 +1,22 @@
 using System;
 using System.Numerics;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Text;
 
 namespace ipaddress
 {
+
+  class SplitOnColon
+  {
+    public BigInteger ip;
+    public int size;
+    public SplitOnColon(BigInteger ip, int size)
+    {
+      this.ip = ip;
+      this.size = size;
+    }
+  }
 
   class IPAddress
   {
@@ -24,11 +37,11 @@ namespace ipaddress
     {
       return string.Format("IPAddress:«this.to_string()»@«this.hashCode»");
     }
-    static Pattern RE_MAPPED = Pattern.compile(":.+\\.");
-    static Pattern RE_IPV4 = Pattern.compile("\\.");
-    static Pattern RE_IPV6 = Pattern.compile(":");
+    static Regex RE_MAPPED = new Regex(":.+\\.");
+    static Regex RE_IPV4 = new Regex("\\.");
+    static Regex RE_IPV6 = new Regex(":");
 
-    IPAddress(IpBits ip_bits, BigInteger host_address, Prefix prefix,
+    public IPAddress(IpBits ip_bits, BigInteger host_address, Prefix prefix,
         IPAddress mapped, VtBool is_private, VtBool is_loopback,
         VtIPAddress to_ipv6)
     {
@@ -45,12 +58,9 @@ namespace ipaddress
     {
       if (mapped == null)
       {
-        this.setMapped(null);
+        return this.setMapped(null);
       }
-      else
-      {
-        this.setMapped(this.mapped.clone());
-      }
+      return  this.setMapped(this.mapped.clone());
     }
 
     public IPAddress from(BigInteger addr, Prefix prefix)
@@ -60,7 +70,7 @@ namespace ipaddress
       {
         map = this.mapped.clone();
       }
-      setMapped(addr, map, prefix.clone());
+      return setMapped(addr, map, prefix.clone());
     }
 
     public IPAddress setMapped(IPAddress mapped)
@@ -111,7 +121,7 @@ namespace ipaddress
     {
       return this.ip_bits.version == other.ip_bits.version &&
           this.prefix.equal(other.prefix) &&
-          this.host_address.equals(other.host_address) &&
+          this.host_address == other.host_address &&
                  ((this.mapped == null && this.mapped == other.mapped) || this.mapped.equal(other.mapped));
     }
 
@@ -128,9 +138,13 @@ namespace ipaddress
 
     public static List<IPAddress> sort(List<IPAddress> ipas)
     {
-      var ret = new List<IPAddress>(ipas);
-      Collections.sort(ret, [a, b | return a.compare(b) ])
-                     return ret;
+      var sorted = new List<IPAddress>(ipas);
+      sorted.Sort(
+        delegate (IPAddress a, IPAddress b) { 
+          return a.compare(b); 
+        }
+      );
+      return sorted;
     }
 
     /// Parse the argument string to create a new
@@ -152,49 +166,49 @@ namespace ipaddress
     ///
     public static Result<IPAddress> parse(String str)
     {
-      if (RE_MAPPED.matcher(str).find())
+      if (RE_MAPPED.IsMatch(str))
       {
         // println!("mapped:{}", &str);
         return Ipv6Mapped.create(str);
       }
       else
       {
-        if (RE_IPV4.matcher(str).find())
+        if (RE_IPV4.IsMatch(str))
         {
           // println!("ipv4:{}", &str);
           return IpV4.create(str);
         }
-        else if (RE_IPV6.matcher(str).find())
+        else if (RE_IPV6.IsMatch(str))
         {
           // println!("ipv6:{}", &str);
           return IpV6.create(str);
         }
       }
-      return Result<IPAddress>.Err(string.Format("Unknown IP Address <<%s>>", str);
+      return Result<IPAddress>.Err(string.Format("Unknown IP Address <<%s>>", str));
     }
 
-    class AddrNetmask
+    public class AddrNetmask
     {
       public string addr;
       public string netmask;
-      AddrNetmask(string addr, string netmask)
+      public AddrNetmask(string addr, string netmask)
       {
         this.addr = addr;
         this.netmask = netmask;
       }
     }
 
-    public static AddrNetmask split_at_slash(string str)
+    public static AddrNetmask Split_at_slash(string str)
     {
-      var slash = str.Trim().Split("/");
+      var slash = str.Trim().Split(new string[] { "/" }, StringSplitOptions.None);
       var addr = "";
-      if (slash.length >= 1)
+      if (slash.Length >= 1)
       {
-        addr = slash.get(0).trim();
+        addr = slash[0].Trim();
       }
-      if (slash.length >= 2)
+      if (slash.Length >= 2)
       {
-        return new AddrNetmask(addr, slash.get(1).trim());
+        return new AddrNetmask(addr, slash[1].Trim());
       }
       else
       {
@@ -254,55 +268,55 @@ namespace ipaddress
     ///   IPAddress::valid_ipv4? "172.16.10.1"
     ///     //=> true
     ///
-    public static Result<int> parse_ipv4_part(String i, String addr)
+    public static Result<UInt32> parse_ipv4_part(String i, String addr)
     {
       try
       {
-        var part = int.Parse(i);
+        var part = UInt32.Parse(i);
         if (part >= 256)
         {
-          return Result.Err(string.Format("IP items has to lower than 256. <<addr>>"));
+          return Result<UInt32>.Err(string.Format("IP items has to lower than 256. <<addr>>"));
         }
-        return Result<int>.Ok(part.intValue());
+        return Result<UInt32>.Ok(part);
       }
-      catch (NumberFormatException e)
+      catch (Exception )
       {
-        return Result.Err("IP must contain numbers <<addr>>");
+        return Result<UInt32>.Err("IP must contain numbers <<addr>>");
       }
     }
 
-                                   public static Result<UInt32> split_to_u32(String addr)
+    public static Result<UInt32> split_to_u32(String addr)
     {
-      var ip = 0L;
+      UInt32 ip = 0;
       var shift = 24;
-      var split_addr = addr.split("\\."); //.collect::<Vec<&str>>();
-      if (split_addr.length() > 4)
+      var split_addr = addr.Split(new string[] { "." }, StringSplitOptions.None); //.collect::<Vec<&str>>();
+      if (split_addr.Length > 4)
       {
           return Result<UInt32>.Err(string.Format("IP has not the right format:<<addr>>"));
       }
-      var split_addr_len = split_addr.length();
+      var split_addr_len = split_addr.Length;
       if (split_addr_len <= 1 && split_addr_len < 4)
       {
-        var part = IPAddress.parse_ipv4_part(split_addr.get(split_addr_len - 1), addr);
+        var part = IPAddress.parse_ipv4_part(split_addr[split_addr_len - 1], addr);
         if (part.isErr())
         {
-          return Result.Err(part.unwrapErr());
+          return Result<UInt32>.Err(part.unwrapErr());
         }
-        ip = part.unwrap()
-                split_addr = Arrays.copyOf(split_addr, split_addr_len - 1)
-            }
-      for (i : split_addr)
+        ip = part.unwrap();
+        Array.Resize(ref split_addr, split_addr.Length - 1);
+      }
+      foreach (var i in split_addr)
       {
         var part = IPAddress.parse_ipv4_part(i, addr);
         if (part.isErr())
         {
-          return Result.Err(part.unwrapErr());
+          return Result<UInt32>.Err(part.unwrapErr());
         }
         // println!("{}-{}", part_num, shift);
-        ip = ip.bitwiseOr(part.unwrap().longValue() << shift);
+        ip = ip | (part.unwrap() << shift);
         shift -= 8;
       }
-      return Result.Ok(ip);
+      return Result<UInt32>.Ok(ip);
     }
 
     public static bool is_valid_ipv4(String addr)
@@ -321,84 +335,76 @@ namespace ipaddress
     ///   IPAddress::valid_ipv6? "2002::DEAD::BEEF"
     ///     // => false
     ///
-    static class SplitOnColon
+
+    public static Result<SplitOnColon> Split_on_colon(String addr)
     {
-      public BigInteger ip
-            public int size
-            new(BigInteger ip, int size) {
-            this.ip = ip
-            this.size = size
-        }
-    }
-    public static Result<SplitOnColon> split_on_colon(String addr)
-    {
-      var parts = addr.trim().split(":")
-            var ip = BigInteger.ZERO
-            if (parts.length() == 1 && parts.get(0).isEmpty())
+      var parts = addr.Trim().Split(new string[] { "." }, StringSplitOptions.None);
+      var ip = new BigInteger(0);
+      if (parts.Length == 1 && parts[0].Length == 0)
       {
-        return Result.Ok(new SplitOnColon(ip, 0));
+        return Result<SplitOnColon>.Ok(new SplitOnColon(ip, 0));
       }
-      var parts_len = parts.length();
-      var shift = ((parts_len - 1) * 16)
-            for (i : parts)
+      var parts_len = parts.Length;
+      var shift = ((parts_len - 1) * 16);
+      foreach (var i in parts)
       {
         //println!("{}={}", addr, i);
-        var part = IPAddress.parseInt(i, 16)
-            if (part == null)
+        var part = IPAddress.parseInt(i, 16);
+        if (part == null)
         {
-          return Result.Err("IP must contain hex numbers <<addr>>-><<i>>");
+          return Result<SplitOnColon>.Err("IP must contain hex numbers <<addr>>-><<i>>");
         }
-        var part_num = part.intValue();
+        var part_num = part.Value;
         if (part_num >= 65536)
         {
-          return Result.Err("IP items has to lower than 65536. <<addr>>");
+          return Result<SplitOnColon>.Err("IP items has to lower than 65536. <<addr>>");
         }
-        ip = ip.add(BigInteger.valueOf(part_num).shiftLeft(shift));
+        ip = ip + (new BigInteger(part_num) << shift);
         shift -= 16;
       }
-      return Result.Ok(new SplitOnColon(ip, parts_len));
+      return Result<SplitOnColon>.Ok(new SplitOnColon(ip, parts_len));
     }
 
     public static Result<BigInteger> split_to_num(String addr)
     {
-      var pre_post = addr.trim().split("::")
-            if (pre_post.length == 0 && addr.contains("::"))
+      var pre_post = addr.Trim().Split(new string[] { "::" }, StringSplitOptions.None);
+      if (pre_post.Length == 0 && addr.Contains("::"))
       {
-        pre_post = Arrays.copyOf(pre_post, pre_post.length + 1)
-          pre_post.set(pre_post.length - 1, "")
-        }
-      if (pre_post.length == 1 && addr.contains("::"))
-      {
-        pre_post = Arrays.copyOf(pre_post, pre_post.length + 1)
-              pre_post.set(pre_post.length - 1, "")
-            }
-      if (pre_post.length() > 2)
-      {
-        return Result.Err("IPv6 only allow one :: <<addr>>");
+        Array.Resize(ref pre_post, pre_post.Length + 1);
+        pre_post[pre_post.Length - 1] = "";
       }
-      if (pre_post.length() == 2)
+      if (pre_post.Length == 1 && addr.Contains("::"))
+      {
+        Array.Resize(ref pre_post, pre_post.Length + 1);
+        pre_post[pre_post.Length - 1] = "";
+      }
+      if (pre_post.Length > 2)
+      {
+        return Result<BigInteger>.Err("IPv6 only allow one :: <<addr>>");
+      }
+      if (pre_post.Length == 2)
       {
         //println!("{}=::={}", pre_post[0], pre_post[1]);
-        var pre = IPAddress.split_on_colon(pre_post.get(0))
-                if (pre.isErr())
+        var pre = IPAddress.Split_on_colon(pre_post[0]);
+        if (pre.isErr())
         {
-          return Result.Err(pre.unwrapErr());
+          return Result<BigInteger>.Err(pre.unwrapErr());
         }
-        var post = IPAddress.split_on_colon(pre_post.get(1));
+        var post = IPAddress.Split_on_colon(pre_post[1]);
         if (post.isErr())
         {
-          return Result.Err(post.unwrapErr());
+          return Result<BigInteger>.Err(post.unwrapErr());
         }
         // println!("pre:{} post:{}", pre_parts, post_parts);
-        return Result.Ok((pre.unwrap().ip.shiftLeft(128 - (pre.unwrap().size * 16))).add(post.unwrap().ip));
+        return Result<BigInteger>.Ok((pre.unwrap().ip << (128 - (pre.unwrap().size * 16))) + post.unwrap().ip);
       }
       //println!("split_to_num:no double:{}", addr);
-      var ret = IPAddress.split_on_colon(addr);
+      var ret = IPAddress.Split_on_colon(addr);
       if (ret.isErr() || ret.unwrap().size != 128 / 16)
       {
-        return Result.Err("incomplete IPv6");
+        return Result<BigInteger>.Err("incomplete IPv6");
       }
-      return Result.Ok(ret.unwrap().ip);
+      return Result<BigInteger>.Ok(ret.unwrap().ip);
     }
 
     public static bool is_valid_ipv6(String addr)
@@ -414,7 +420,7 @@ namespace ipaddress
 
     public static int pos_to_idx(int pos, int len)
     {
-      var ilen = len //as isize;
+      var ilen = len; //as isize;
         // let ret = pos % ilen;
         var rem = ((pos % ilen) + ilen) % ilen;
       // println!("pos_to_idx:{}:{}=>{}:{}", pos, len, ret, rem);
@@ -423,15 +429,19 @@ namespace ipaddress
 
     public static List<IPAddress> aggregate(List<IPAddress> networks)
     {
-      if (networks.length() == 0)
+      if (networks.Count == 0)
       {
-        return new Vector<IPAddress>();
+        return new List<IPAddress>();
       }
-      if (networks.length() == 1)
+      if (networks.Count == 1)
       {
-        return new Vector<IPAddress>(#[networks.get(0).network()]);
-        }
-      var stack = IPAddress.sort(networks.map[i | i.network()])
+        return new List<IPAddress>(new List<IPAddress> { networks[0].network() });
+      }
+      var net = new List<IPAddress>();
+      foreach (var i in networks) {
+        net.Add(i.network()); 
+      }
+      var stack = IPAddress.sort(net);
 
         // for i in 0..networks.len() {
         //     println!("{}=={}", &networks[i].to_string_uncompressed(),
@@ -442,9 +452,9 @@ namespace ipaddress
       {
         if (pos < 0)
         {
-          pos = 0
+          pos = 0;
                 }
-        var stack_len = stack.length(); // borrow checker
+        var stack_len = stack.Count; // borrow checker
                                         // println!("loop:{}:{}", pos, stack_len);
                                         // if stack_len == 1 {
                                         //     println!("exit 1");
@@ -453,45 +463,45 @@ namespace ipaddress
         if (pos >= stack_len)
         {
           // println!("exit first:{}:{}", stack_len, pos);
-          return stack//.map[i| return i.network()];
+          return stack;//.map[i| return i.network()];
             }
         var first = IPAddress.pos_to_idx(pos, stack_len);
         pos = pos + 1;
         if (pos >= stack_len)
         {
           // println!("exit second:{}:{}", stack_len, pos);
-          return stack//.map[i| return i.network()];
-            }
+          return stack;//.map[i| return i.network()];
+        }
         var second = IPAddress.pos_to_idx(pos, stack_len);
         pos = pos + 1;
         //let mut firstUnwrap = first.unwrap();
-        if (stack.get(first).includes(stack.get(second)))
+        if (stack[first].includes(stack[second]))
         {
           pos = pos - 2;
           // println!("remove:1:{}:{}:{}=>{}", first, second, stack_len, pos + 1);
-          stack.remove(IPAddress.pos_to_idx(pos + 1, stack_len));
+          stack.RemoveAt(IPAddress.pos_to_idx(pos + 1, stack_len));
         }
         else
         {
-          var ipFirst = stack.get(first)
-                  stack.set(first, ipFirst.change_prefix(ipFirst.prefix.sub(1).unwrap()).unwrap());
+          var ipFirst = stack[first];
+          stack[first] = ipFirst.change_prefix(ipFirst.prefix.sub(1).unwrap()).unwrap();
           // println!("complex:{}:{}:{}:{}:P1:{}:P2:{}", pos, stack_len,
           // first, second,
           // stack[first].to_string(), stack[second].to_string());
-          if ((stack.get(first).prefix.num + 1) == stack.get(second).prefix.num &&
-             stack.get(first).includes(stack.get(second)))
+          if ((stack[first].prefix.num + 1) == stack[second].prefix.num &&
+             stack[first].includes(stack[second]))
           {
             pos = pos - 2;
             var idx = IPAddress.pos_to_idx(pos, stack_len);
-            stack.set(idx, stack.get(first).clone()); // kaputt
-            stack.remove(IPAddress.pos_to_idx(pos + 1, stack_len));
+            stack[idx] = stack[first].clone(); // kaputt
+            stack.RemoveAt(IPAddress.pos_to_idx(pos + 1, stack_len));
             // println!("remove-2:{}:{}", pos + 1, stack_len);
             pos = pos - 1; // backtrack
           }
           else
           {
-            var myFirst = stack.get(first)
-                      stack.set(first, myFirst.change_prefix(myFirst.prefix.add(1).unwrap()).unwrap()); //reset prefix
+            var myFirst = stack[first];
+            stack[first] = myFirst.change_prefix(myFirst.prefix.add(1).unwrap()).unwrap(); //reset prefix
                                                                                                         // println!("easy:{}:{}=>{}", pos, stack_len, stack[first].to_string());
             pos = pos - 1; // do it with second as first
           }
@@ -501,18 +511,18 @@ namespace ipaddress
       //;
     }
 
-    public int[] parts()
+    public List<int> parts()
     {
       return this.ip_bits.parts(this.host_address);
     }
 
     public String[] parts_hex_str()
     {
-      var parts = this.parts()
-            var String[] ret = newArrayOfSize(parts.length)
-            for (var i = 0; i < parts.length; i++)
+      var parts = this.parts();
+      var ret = new String[parts.Count];
+      for (var i = 0; i < parts.Count; i++)
       {
-        ret.set(i, String.format("%04x", parts.get(i)));
+        ret[i] = string.Format("%04x", parts[i]);
       }
       return ret;
     }
@@ -527,12 +537,12 @@ namespace ipaddress
     ///
     public String[] dns_rev_domains()
     {
-      var dns_networks = this.dns_networks()
-            var String[] ret = newArrayOfSize(dns_networks.length)
-            for (var i = 0; i < dns_networks.length; i++)
+      var dns_networks = this.dns_networks();
+      var ret = new String[dns_networks.Count];
+      for (var i = 0; i < dns_networks.Count; i++)
       {
         // println!("dns_rev_domains:{}:{}", this.to_string(), net.to_string());
-        ret.set(i, dns_networks.get(i).dns_reverse());
+        ret[i] = dns_networks[i].dns_reverse();
       }
       return ret;
     }
@@ -540,32 +550,32 @@ namespace ipaddress
 
     public String dns_reverse()
     {
-      var ret = new StringBuilder()
-            var dot = "";
+      var ret = new StringBuilder();
+      var dot = "";
       var dns_parts = this.dns_parts();
-      for (var i = ((this.prefix.host_prefix() + (this.ip_bits.dns_bits - 1)) / this.ip_bits.dns_bits); i < dns_parts.length(); i++)
+      for (var i = ((this.prefix.host_prefix() + (this.ip_bits.dns_bits - 1)) / this.ip_bits.dns_bits); i < dns_parts.Length; i++)
       {
-        ret.append(dot);
-        ret.append(this.ip_bits.dns_part_format(dns_parts.get(i)));
+        ret.Append(dot);
+        ret.Append(this.ip_bits.dns_part_format(dns_parts[i]));
         dot = ".";
       }
-      ret.append(dot);
-      ret.append(this.ip_bits.rev_domain);
-      return ret.toString();
+      ret.Append(dot);
+      ret.Append(this.ip_bits.rev_domain);
+      return ret.ToString();
     }
 
 
     public int[] dns_parts()
     {
-      var len = this.ip_bits.bits / this.ip_bits.dns_bits
-            var ret = newIntArrayOfSize(len)
-            var num = BigInteger.ZERO.add(this.host_address);
-      var mask = BigInteger.ONE.shiftLeft(this.ip_bits.dns_bits);
+      var len = this.ip_bits.bits / this.ip_bits.dns_bits;
+      var ret = new int[len];
+      var num = this.host_address;
+      var mask = new BigInteger(1) << this.ip_bits.dns_bits;
       for (var i = 0; i < len; i++)
       {
-        var part = num.mod(mask)
-                num = num.shiftRight(this.ip_bits.dns_bits);
-        ret.set(i, part.intValue());
+        var part = num % mask;
+        num = num >> this.ip_bits.dns_bits;
+        ret[i] = (int)part;
       }
       return ret;
     }
@@ -577,22 +587,22 @@ namespace ipaddress
          (((this.prefix.host_prefix()) / this.ip_bits.dns_bits) * this.ip_bits.dns_bits);
       if (next_bit_mask <= 0)
       {
-        return #[this.network()];
-         }
+        return new List<IPAddress> { this.network() };
+      }
       //  println!("dns_networks:{}:{}", this.to_string(), next_bit_mask);
       // dns_bits
-      var step_bit_net = BigInteger.ONE.shiftLeft(this.ip_bits.bits - next_bit_mask);
-      if (step_bit_net.equals(BigInteger.ZERO))
+      var step_bit_net = new BigInteger(1) << (this.ip_bits.bits - next_bit_mask);
+      if (step_bit_net == new BigInteger(0))
       {
-        return [this.network()];
-         }
-      var ret = new Vector<IPAddress>();
+        return new List<IPAddress> { this.network() };
+      }
+      var ret = new List<IPAddress>();
       var step = this.network().host_address;
       var prefix = this.prefix.from(next_bit_mask).unwrap();
-      while (step.compareTo(this.broadcast().host_address) <= 0)
+      while (step <= this.broadcast().host_address)
       {
-        ret.add(this.from(step, prefix));
-        step = step.add(step_bit_net);
+        ret.Add(this.from(step, prefix));
+        step = step + step_bit_net;
       }
       return ret;
     }
@@ -734,14 +744,14 @@ namespace ipaddress
       {
         return vec;
       }
-      return Result.Ok(IPAddress.aggregate(vec.unwrap()));
+      return Result<List<IPAddress>>.Ok(IPAddress.aggregate(vec.unwrap()));
     }
 
 
     public bool ip_same_kind(IPAddress oth)
     {
-      return this.ip_bits.version == oth.ip_bits.version
-        }
+      return this.ip_bits.version == oth.ip_bits.version;
+    }
 
     ///  Returns true if the address is an unspecified address
     ///
@@ -750,7 +760,7 @@ namespace ipaddress
 
     public bool is_unspecified()
     {
-      return this.host_address.equals(BigInteger.ZERO);
+      return this.host_address == new BigInteger(0);
     }
 
     ///  Returns true if the address is a loopback address
@@ -760,7 +770,7 @@ namespace ipaddress
 
     public bool is_loopback()
     {
-      return this.vt_is_loopback.run(this);
+      return this.vt_is_loopback(this);
     }
 
 
@@ -771,9 +781,9 @@ namespace ipaddress
 
     public bool is_mapped()
     {
-      var ffff = BigInteger.valueOf(0xffff) //.ONE.shiftLeft(16).sub(BigInteger.ONE)
-        return (this.mapped != null && (this.host_address.shiftRight(32).equals(ffff)))
-        }
+      var ffff = new BigInteger(0xffff); //.ONE.shiftLeft(16).sub(BigInteger.ONE)
+      return (this.mapped != null && (this.host_address >> 32) == ffff);
+    }
 
 
     ///  Returns the prefix portion of the IPv4 object
@@ -788,10 +798,10 @@ namespace ipaddress
     ///      ///  IPAddress::Prefix32
     ///
 
-    public Prefix prefix()
-    {
-      return this.prefix;
-    }
+    //public Prefix prefix()
+    //{
+    //  return this.prefix;
+    //}
 
 
 
@@ -807,16 +817,16 @@ namespace ipaddress
       return IPAddress.parse_netmask_to_prefix(addr).isOk();
     }
 
-    public static Result<Integer> netmask_to_prefix(BigInteger nm, int bits)
+    public static Result<int> netmask_to_prefix(BigInteger nm, int bits)
     {
       var prefix = 0;
-      var addr = BigInteger.ZERO.add(nm);
+      var addr = nm;
       var in_host_part = true;
-      var two = BigInteger.valueOf(2)
-            for (var i = 0; i < bits; i++)
+      var two = new BigInteger(2);
+      for (var i = 0; i < bits; i++)
       {
-        var bit = addr.mod(two).intValue()
-            if (in_host_part && bit == 0)
+        var bit = addr % two;
+        if (in_host_part && bit == 0)
         {
           prefix = prefix + 1;
         }
@@ -826,25 +836,25 @@ namespace ipaddress
         }
         else if (!in_host_part && bit == 0)
         {
-          return Result.Err("this is not a net mask <<nm>>");
+          return Result<int>.Err("this is not a net mask <<nm>>");
         }
-        addr = addr.shiftRight(1);
+        addr = addr >> 1;
       }
-      return Result.Ok(bits - prefix);
+      return Result<int>.Ok(bits - prefix);
     }
 
 
-    public static Result<Integer> parse_netmask_to_prefix(String my_str)
+    public static Result<int> parse_netmask_to_prefix(String my_str)
     {
       var is_number = IPAddress.parseInt(my_str, 10);
       if (is_number != null)
       {
-        return Result.Ok(is_number.intValue());
+        return Result<int>.Ok(is_number.Value);
       }
       var my = IPAddress.parse(my_str);
       if (my.isErr())
       {
-        return Result.Err("illegal netmask <<my.unwrap_err()>>");
+        return Result<int>.Err("illegal netmask <<my.unwrap_err()>>");
       }
       var my_ip = my.unwrap();
       return IPAddress.netmask_to_prefix(my_ip.host_address, my_ip.ip_bits.bits);
@@ -870,7 +880,7 @@ namespace ipaddress
     ///
     public Result<IPAddress> change_prefix(Prefix prefix)
     {
-      return Result.Ok(this.from(this.host_address, prefix));
+      return Result<IPAddress>.Ok(this.from(this.host_address, prefix));
     }
 
     public Result<IPAddress> change_prefix(int num)
@@ -878,9 +888,9 @@ namespace ipaddress
       var prefix = this.prefix.from(num);
       if (prefix.isErr())
       {
-        return Result.Err(prefix.unwrapErr());
+        return Result<IPAddress>.Err(prefix.unwrapErr());
       }
-      return Result.Ok(this.from(this.host_address, prefix.unwrap()));
+      return Result<IPAddress>.Ok(this.from(this.host_address, prefix.unwrap()));
     }
 
     public Result<IPAddress> change_netmask(String my_str)
@@ -888,7 +898,7 @@ namespace ipaddress
       var nm = IPAddress.parse_netmask_to_prefix(my_str);
       if (nm.isErr())
       {
-        return Result.Err(nm.unwrapErr());
+        return Result<IPAddress>.Err(nm.unwrapErr());
       }
       return this.change_prefix(nm.unwrap());
     }
@@ -905,11 +915,11 @@ namespace ipaddress
     ///
     public String to_string()
     {
-      var ret = new StringBuilder()
-            ret.append(this.to_s());
-      ret.append("/");
-      ret.append(this.prefix.to_s());
-      return ret.toString();
+      var ret = new StringBuilder();
+      ret.Append(this.to_s());
+      ret.Append("/");
+      ret.Append(this.prefix.to_s());
+      return ret.ToString();
     }
 
     public String to_s()
@@ -919,11 +929,11 @@ namespace ipaddress
 
     public String to_string_uncompressed()
     {
-      var ret = new StringBuilder()
-            ret.append(this.to_s_uncompressed());
-      ret.append("/");
-      ret.append(this.prefix.to_s());
-      return ret.toString();
+      var ret = new StringBuilder();
+      ret.Append(this.to_s_uncompressed());
+      ret.Append("/");
+      ret.Append(this.prefix.to_s());
+      return ret.ToString();
     }
 
     public String to_s_uncompressed()
@@ -936,7 +946,7 @@ namespace ipaddress
     {
       if (this.is_mapped())
       {
-        return String.format("%s%s", "::ffff:", this.mapped.to_s());
+        return string.Format("%s%s", "::ffff:", this.mapped.to_s());
       }
       return this.to_s();
     }
@@ -946,7 +956,7 @@ namespace ipaddress
       if (this.is_mapped())
       {
         var mapped = this.mapped;
-        return String.format("%s/%d", this.to_s_mapped(), mapped.prefix.num);
+        return string.Format("%s/%d", this.to_s_mapped(), mapped.prefix.num);
       }
       return this.to_string();
     }
@@ -964,25 +974,25 @@ namespace ipaddress
 
     public String bits()
     {
-      var num = this.host_address.toString(2);
-      var ret = new StringBuilder()
-            for (var i = num.length(); i < this.ip_bits.bits; i++)
+      var num = this.host_address.ToString("B");
+      var ret = new StringBuilder();
+      for (var i = num.Length; i < this.ip_bits.bits; i++)
       {
-        ret.append("0");
+        ret.Append("0");
       }
-      ret.append(num);
-      return ret.toString();
+      ret.Append(num);
+      return ret.ToString();
     }
 
     public String to_hex()
     {
-      return this.host_address.toString(16);
+      return this.host_address.ToString("X");
     }
 
     public IPAddress netmask()
     {
-      this.from(this.prefix.netmask(), this.prefix)
-        }
+      return this.from(this.prefix.netmask(), this.prefix);
+    }
 
     ///  Returns the broadcast address for the given IP.
     ///
@@ -994,8 +1004,8 @@ namespace ipaddress
 
     public IPAddress broadcast()
     {
-      var bcast = this.network().host_address.add(this.size()).subtract(BigInteger.ONE)
-          return this.from(bcast, this.prefix);
+      var bcast = this.network().host_address + (this.size()-1);
+      return this.from(bcast, this.prefix);
       // IPv4::parse_u32(this.broadcast_u32, this.prefix)
     }
 
@@ -1015,7 +1025,7 @@ namespace ipaddress
     public bool is_network()
     {
       return this.prefix.num != this.ip_bits.bits &&
-          this.host_address.equals(this.network().host_address);
+          this.host_address == this.network().host_address;
     }
 
     ///  Returns a new IPv4 object with the network number
@@ -1034,46 +1044,55 @@ namespace ipaddress
 
     public static BigInteger to_network(BigInteger adr, int host_prefix)
     {
-      return adr.shiftRight(host_prefix).shiftLeft(host_prefix);
+      return (adr >> host_prefix) << host_prefix;
     }
 
     public BigInteger sub(IPAddress other)
     {
-      if (this.host_address.compareTo(other.host_address) >= 0)
+      if (this.host_address >= other.host_address)
       {
-        return this.host_address.subtract(other.host_address);
+        return this.host_address - other.host_address;
       }
-      return other.host_address.subtract(this.host_address);
+      return other.host_address - this.host_address;
     }
 
     public List<IPAddress> add(IPAddress other)
     {
-      return IPAddress.aggregate(#[this, other]);
+      return IPAddress.aggregate(new List<IPAddress>{ this, other });
     }
 
     public List<String> to_s_vec(List<IPAddress> vec)
     {
-      return vec.map[i | return i.to_s()];
+      var r = new List<String>();
+      foreach(var i in vec) {
+        r.Add(i.to_s()); 
+      }
+      return r;
     }
 
     public static List<String> to_string_vec(List<IPAddress> vec)
     {
-      return vec.map[i | return i.to_string()];
+      var r = new List<String>();
+      foreach (var i in vec)
+      {
+        r.Add(i.to_string());
+      }
+      return r;
     }
 
     public static Result<List<IPAddress>> to_ipaddress_vec(List<String> vec)
     {
-      var ret = new Vector<IPAddress>()
-            for (ipstr : vec)
+      var ret = new List<IPAddress>();
+      foreach (var ipstr in vec)
       {
         var ipa = IPAddress.parse(ipstr);
         if (ipa.isErr())
         {
-          return Result.Err(ipa.unwrapErr());
+          return Result<List<IPAddress>>.Err(ipa.unwrapErr());
         }
-        ret.add(ipa.unwrap());
+        ret.Add(ipa.unwrap());
       }
-      return Result.Ok(ret);
+      return Result<List<IPAddress>>.Ok(ret);
     }
 
     ///  Returns a new IPv4 object with the
@@ -1097,7 +1116,7 @@ namespace ipaddress
     ///
     public IPAddress first()
     {
-      return this.from(this.network().host_address.add(this.ip_bits.host_ofs), this.prefix);
+      return this.from(this.network().host_address + (this.ip_bits.host_ofs), this.prefix);
     }
 
     ///  Like its sibling method IPv4/// first, this method
@@ -1123,7 +1142,7 @@ namespace ipaddress
 
     public IPAddress last()
     {
-      return this.from(this.broadcast().host_address.subtract(this.ip_bits.host_ofs), this.prefix);
+      return this.from(this.broadcast().host_address - this.ip_bits.host_ofs, this.prefix);
     }
 
     ///  Iterates over all the hosts IP addresses for the given
@@ -1142,18 +1161,15 @@ namespace ipaddress
     ///      ///  "10.0.0.6"
     ///
 
-    interface Each
-    {
-      void Run(IPAddress ipa)
-        }
+    public delegate void FnEach(IPAddress ipa);
 
-    public each_host(Each func)
+    public void each_host(FnEach func)
     {
       var i = this.first().host_address;
-      while (i.compareTo(this.last().host_address) <= 0)
+      while (i <= this.last().host_address)
       {
-        func.Run(this.from(i, this.prefix));
-        i = i.add(BigInteger.ONE);
+        func(this.from(i, this.prefix));
+        i = i + 1;
       }
     }
 
@@ -1178,13 +1194,13 @@ namespace ipaddress
     ///      ///  "10.0.0.7"
     ///
 
-    public each(Each func)
+    public void each(FnEach func)
     {
       var i = this.network().host_address;
-      while (i.compareTo(this.broadcast().host_address) <= 0)
+      while (i <= this.broadcast().host_address)
       {
-        func.Run(this.from(i, this.prefix));
-        i = i.add(BigInteger.ONE);
+        func(this.from(i, this.prefix));
+        i = i + 1;
       }
     }
 
@@ -1231,7 +1247,7 @@ namespace ipaddress
 
     public BigInteger size()
     {
-      return BigInteger.ONE.shiftLeft(this.prefix.host_prefix());
+      return new BigInteger(1) << (this.prefix.host_prefix());
     }
 
     public bool is_same_kind(IPAddress oth)
@@ -1259,10 +1275,10 @@ namespace ipaddress
     {
       var ret = this.is_same_kind(oth) &&
           this.prefix.num <= oth.prefix.num &&
-          this.network().host_address.equals(IPAddress.to_network(oth.host_address, this.prefix.host_prefix()));
+          this.network().host_address == IPAddress.to_network(oth.host_address, this.prefix.host_prefix());
       // println!("includes:{}=={}=>{}", this.to_string(), oth.to_string(), ret);
-      return ret
-        }
+      return ret;
+    }
 
     ///  Checks whether a subnet includes all the
     ///  given IPv4 objects.
@@ -1278,8 +1294,8 @@ namespace ipaddress
 
     public bool includes_all(List<IPAddress> oths)
     {
-      return oths.findFirst[oth | return !this.includes(oth) ] == null
-        }
+      return oths.Find((oth) => !this.includes(oth)) == null;
+    }
 
     ///  Checks if an IPv4 address objects belongs
     ///  to a private network RFC1918
@@ -1293,7 +1309,7 @@ namespace ipaddress
 
     public bool is_private()
     {
-      return this.vt_is_private.run(this);
+      return this.vt_is_private(this);
     }
 
     ///  Splits a network into different subnets
@@ -1330,21 +1346,21 @@ namespace ipaddress
 
     public static List<IPAddress> sum_first_found(List<IPAddress> arr)
     {
-      var dup = new Vector<IPAddress>(arr);
-      if (dup.length() < 2)
+      var dup = new List<IPAddress>(arr);
+      if (dup.Count < 2)
       {
         return dup;
       }
-      for (var i = dup.length() - 2; i >= 0; i--)
+      for (var i = dup.Count - 2; i >= 0; i--)
       {
-        var a = IPAddress.summarize(#[dup.get(i), dup.get(i + 1)]);
+        var a = IPAddress.summarize(new List<IPAddress>{ dup[i], dup[i + 1] });
             // println!("dup:{}:{}:{}", dup.len(), i, a.len());
-            if (a.length() == 1)
+        if (a.Count == 1)
         {
-          dup.set(i, a.get(0))
-                dup.remove(i + 1);
-          return dup
-            }
+          dup[i] = a[0];
+          dup.RemoveAt(i + 1);
+          return dup;
+        }
       }
       return dup;
     }
@@ -1353,7 +1369,7 @@ namespace ipaddress
     {
       if (subnets == 0 || (1 << this.prefix.host_prefix()) <= subnets)
       {
-        return Result.Err("Value <<subnets>> out of range");
+        return Result<List<IPAddress>>.Err("Value <<subnets>> out of range");
       }
       var networks = this.subnet(this.newprefix(subnets).unwrap().num);
       if (networks.isErr())
@@ -1361,11 +1377,11 @@ namespace ipaddress
         return networks;
       }
       var net = networks.unwrap();
-      while (net.length() != subnets)
+      while (net.Count != subnets)
       {
         net = IPAddress.sum_first_found(net);
       }
-      return Result.Ok(net);
+      return Result<List<IPAddress>>.Ok(net);
     }
 
     ///  Returns a new IPv4 object from the supernetting
@@ -1396,13 +1412,13 @@ namespace ipaddress
     {
       if (new_prefix >= this.prefix.num)
       {
-        return Result.Err("New prefix must be smaller than existing prefix: <<new_prefix>> >= <<this.prefix.num)>>")
-            }
+        return Result<IPAddress>.Err("New prefix must be smaller than existing prefix: <<new_prefix>> >= <<this.prefix.num)>>");
+      }
       // let mut new_ip = this.host_address.clone();
       // for _ in new_prefix..this.prefix.num {
       //     new_ip = new_ip << 1;
       // }
-      return Result.Ok(this.from(this.host_address, this.prefix.from(new_prefix).unwrap()).network());
+      return Result<IPAddress>.Ok(this.from(this.host_address, this.prefix.from(new_prefix).unwrap()).network());
     }
 
     ///  This method implements the subnetting function
@@ -1432,20 +1448,20 @@ namespace ipaddress
     {
       if (subprefix < this.prefix.num || this.ip_bits.bits < subprefix)
       {
-        return Result.Err("New prefix must be between prefix<<this.prefix.num>> <<subprefix>> and <<this.ip_bits.bits>>")
+        return Result<List<IPAddress>>.Err("New prefix must be between prefix<<this.prefix.num>> <<subprefix>> and <<this.ip_bits.bits>>");
             }
-      var ret = new Vector<IPAddress>();
+      var ret = new List<IPAddress>();
       var net = this.network();
       var prefix = net.prefix.from(subprefix).unwrap();
-      var host_address = net.host_address
-            for (var i = 0; i < (1 << (subprefix - this.prefix.num)); i++)
+      var host_address = net.host_address;
+      for (var i = 0; i < (1 << (subprefix - this.prefix.num)); i++)
       {
         net = net.from(host_address, prefix);
-        ret.add(net);
+        ret.Add(net);
         var size = net.size();
-        host_address = host_address.add(size);
+        host_address = host_address + size;
       }
-      return Result.Ok(ret);
+      return Result<List<IPAddress>>.Ok(ret);
     }
 
 
@@ -1474,22 +1490,22 @@ namespace ipaddress
     {
       for (var i = num; i < this.ip_bits.bits; i++)
       {
-        var a = Math.floor(Math.log(i) / Math.log(2));
-        if (a == Math.log(i) / Math.log(2))
+        var a = System.Math.Floor(System.Math.Log(i) / System.Math.Log(2));
+        if (a == System.Math.Log(i) / System.Math.Log(2))
         {
-          return this.prefix.add(a as int);
+          return this.prefix.add((int)a);
         }
       }
-      return Result.Err("newprefix not found <<num>>,<<this.ip_bits.bits>>");
+      return Result<Prefix>.Err("newprefix not found <<num>>,<<this.ip_bits.bits>>");
     }
 
-    public static Integer parseInt(String s, int radix)
+    public static int? parseInt(String s, int radix)
     {
       try
       {
-        return Integer.valueOf(s, radix);
+        return Convert.ToInt32(s, radix);
       }
-      catch (NumberFormatException n)
+      catch (Exception )
       {
         return null;
       }
@@ -1498,4 +1514,3 @@ namespace ipaddress
   }
 
 }
-                                   }

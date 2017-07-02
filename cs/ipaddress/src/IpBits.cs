@@ -190,13 +190,14 @@ namespace ipaddress
     //     return ret;
     // }
 
-    public string dns_part_format(int i)
+    public String dns_part_format(int i)
     {
       switch (this.version)
       {
         case IpVersion.V4: return string.Format("%d", i);
         case IpVersion.V6: return string.Format("%01x", i);
       }
+      throw new Exception("Unknown DNS Format");
     }
 
   }

@@ -1,51 +1,53 @@
 using System;
 using System.Numerics;
 using System.Collections.Generic;
+using NUnit.Framework;
 
 namespace ipaddress
 {
 
+  class IPv6UnspecifiedTest
+  {
+    public IPAddress ip;
+    public String to_s;
+    public String to_string;
+    public String to_string_uncompressed;
+    public BigInteger num;
+    public IPv6UnspecifiedTest(IPAddress ip, String to_s, String to_string,
+        String to_string_uncompressed, BigInteger num) {
+      this.ip = ip;
+          this.to_s = to_s;
+          this.to_string = to_string;
+          this.to_string_uncompressed = to_string_uncompressed;
+          this.num = num;
+        }
+  }
+
 class TestIpv6Unspec {
 
-    static class IPv6UnspecifiedTest {
-        public IPAddress ip
-        public String to_s
-        public String to_string
-        public String to_string_uncompressed
-        public BigInteger num
-        new(IPAddress ip, String to_s, String to_string,
-            String to_string_uncompressed, BigInteger num) {
-          this.ip = ip
-          this.to_s = to_s
-          this.to_string = to_string
-          this.to_string_uncompressed = to_string_uncompressed
-          this.num = num
-        }
-    }
-
-    public def IPv6UnspecifiedTest setup() {
+    IPv6UnspecifiedTest setup() {
         return new IPv6UnspecifiedTest(
             Ipv6Unspec.create(),
             "::",
             "::/128",
             "0000:0000:0000:0000:0000:0000:0000:0000/128",
-            BigInteger.ZERO);
+            new BigInteger(0));
     }
 
-    @Test
-    public def test_attributes() {
-        assertEquals(setup().ip.host_address, setup().num);
-        assertEquals(128, setup().ip.prefix().get_prefix());
-        assertEquals(true, setup().ip.is_unspecified());
-        assertEquals(setup().to_s, setup().ip.to_s());
-        assertEquals(setup().to_string, setup().ip.to_string());
-        assertEquals(setup().to_string_uncompressed,
+    //@Test
+    void test_attributes() {
+        Assert.AreEqual(setup().ip.host_address, setup().num);
+        Assert.AreEqual(128, setup().ip.prefix.get_prefix());
+        Assert.AreEqual(true, setup().ip.is_unspecified());
+        Assert.AreEqual(setup().to_s, setup().ip.to_s());
+        Assert.AreEqual(setup().to_string, setup().ip.to_string());
+        Assert.AreEqual(setup().to_string_uncompressed,
                    setup().ip.to_string_uncompressed());
     }
    
-    @Test 
-    public def test_method_ipv6() {
-        assertEquals(true, setup().ip.is_ipv6());
+    //@Test 
+    void test_method_ipv6() {
+        Assert.AreEqual(true, setup().ip.is_ipv6());
     }
 }
 }

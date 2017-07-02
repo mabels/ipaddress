@@ -1,5 +1,7 @@
+
 using System;
 using System.Numerics;
+using System.Text;
 using System.Collections.Generic;
 
 namespace ipaddress
@@ -83,49 +85,49 @@ namespace ipaddress
   class Ipv6Mapped
   {
     public static Result<IPAddress> create(String str) {
-      val ret = IPAddress.split_at_slash(str);
-      val split_colon = ret.addr.split(":");
-      if (split_colon.length <= 1)
+      var ret = IPAddress.Split_at_slash(str);
+      var split_colon = ret.addr.Split(new string[] { ":" }, StringSplitOptions.None);
+      if (split_colon.Length <= 1)
       {
         // println!("---1");
-        return Result.Err('''not mapped format-1: <<str>>''');
+        return Result<IPAddress>.Err("not mapped format-1: <<str>>");
       }
       var netmask = "";
-      if (ret.netmask !== null)
+      if (ret.netmask != null)
       {
-        netmask = String.format("/%d", ret.netmask);
+        netmask = string.Format("/%d", ret.netmask);
       }
-      val ipv4_str = split_colon.get(split_colon.length - 1)
+      var ipv4_str = split_colon[split_colon.Length - 1];
         if (IPAddress.is_valid_ipv4(ipv4_str))
       {
-        val ipv4 = IPAddress.parse(String.format("%s%s", ipv4_str, netmask));
+        var ipv4 = IPAddress.parse(string.Format("%s%s", ipv4_str, netmask));
         if (ipv4.isErr())
         {
           // println!("---2");
           return ipv4;
         }
         //mapped = Some(ipv4.unwrap());
-        val addr = ipv4.unwrap();
-        val ipv6_bits = IpBits.V6
-            val part_mod = ipv6_bits.part_mod;
-        val up_addr = addr.host_address;
-        val down_addr = addr.host_address;
+        var addr = ipv4.unwrap();
+        var ipv6_bits = IpBits.V6;
+            var part_mod = ipv6_bits.part_mod;
+        var up_addr = addr.host_address;
+        var down_addr = addr.host_address;
 
-        var rebuild_ipv6 = new StringBuilder()
+        var rebuild_ipv6 = new StringBuilder();
             var colon = "";
-        for (var i = 0; i < split_colon.length() - 1; i++)
+        for (var i = 0; i < split_colon.Length - 1; i++)
         {
-          rebuild_ipv6.append(colon);
-          rebuild_ipv6.append(split_colon.get(i));
+          rebuild_ipv6.Append(colon);
+          rebuild_ipv6.Append(split_colon[i]);
           colon = ":";
         }
-        rebuild_ipv6.append(colon);
-        val rebuild_ipv4 = String.format("%x:%x/%d",
-        up_addr.shiftRight(IpBits.V6.part_bits).mod(part_mod).intValue(),
-        down_addr.mod(part_mod).intValue(),
-        ipv6_bits.bits - addr.prefix.host_prefix());
-        rebuild_ipv6.append(rebuild_ipv4);
-        val r_ipv6 = IPAddress.parse(rebuild_ipv6.toString());
+        rebuild_ipv6.Append(colon);
+        var rebuild_ipv4 = string.Format("%x:%x/%d",
+          (up_addr >> IpBits.V6.part_bits) % part_mod,
+          down_addr % part_mod,
+          ipv6_bits.bits - addr.prefix.host_prefix());
+        rebuild_ipv6.Append(rebuild_ipv4);
+        var r_ipv6 = IPAddress.parse(rebuild_ipv6.ToString());
         if (r_ipv6.isErr())
         {
           // println!("---3|{}", &rebuild_ipv6);
@@ -135,15 +137,15 @@ namespace ipaddress
         {
           return r_ipv6;
         }
-        val ipv6 = r_ipv6.unwrap();
-        val p96bit = ipv6.host_address.shiftRight(32);
-        if (!p96bit.equals(BigInteger.ZERO))
+        var ipv6 = r_ipv6.unwrap();
+        var p96bit = ipv6.host_address >> (32);
+        if (p96bit != 0)
         {
           // println!("---4|{}", &rebuild_ipv6);
-          return Result.Err('''is not a mapped address:<<rebuild_ipv6>>''');
+          return Result<IPAddress>.Err("is not a mapped address:<<rebuild_ipv6>>");
         }
         {
-          val rr_ipv6 = IPAddress.parse(String.format("::ffff:%s", rebuild_ipv4));
+          var rr_ipv6 = IPAddress.parse(string.Format("::ffff:%s", rebuild_ipv4));
           if (rr_ipv6.isErr())
           {
             //println!("---3|{}", &rebuild_ipv6);
@@ -152,7 +154,7 @@ namespace ipaddress
           return rr_ipv6;
         }
       }
-      return Result.Err('''unknown mapped format:<<str>>''');
+      return Result<IPAddress>.Err("unknown mapped format:<<str>>");
     }
   }
 }
