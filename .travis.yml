@@ -22,6 +22,7 @@ script:
     - jdk_switcher use oraclejdk8
     - env
     - (cd java && mvn test -B -Dmaven.javadoc.skip=true)
+    - (cd cs/ipaddress && dotnet restore && dotnet build && dotnet test)       
     - (cd rust && cargo build --release --verbose)
     - (cd rust && cargo test --release --verbose)
     - (cd cpp && cmake -DCMAKE_BUILD_TYPE=Release . && make)
