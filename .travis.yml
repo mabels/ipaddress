@@ -1,5 +1,14 @@
 language: rust
+dotnet: 1.0.3
 dist: trusty
+
+#addons:
+#  apt:
+#    sources:
+#    - sourceline: 'deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ trusty main'
+#      key_url: 'https://apt-mo.trafficmanager.net/keys/microsoft.asc'
+#    packages:
+#    - dotnet-dev-1.0.4
 
 rust:
   - 1.8.0
@@ -21,6 +30,7 @@ script:
     - (cd js && npm install && npm test)
     - jdk_switcher use oraclejdk8
     - env
+    - find / -name dotnet -ls
     - (cd java && mvn test -B -Dmaven.javadoc.skip=true)
     - (cd cs/ipaddress && dotnet restore && dotnet build && dotnet test)       
     - (cd rust && cargo build --release --verbose)
