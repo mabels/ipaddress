@@ -16,6 +16,8 @@ IPAddress should have the same(some odd looking) api for:
 - javascript/typescript
 - java / xtend
 - cpp
+- swift
+- .net csharp
 
 The documentation is in ruby and hopefully in rust. 
 
@@ -71,6 +73,20 @@ For java
 
 currently i could not send my artefacts to maven-central
 out of a gpg problem with signing and subkeys
+I send it to jcenter
+
+For swift
+   
+  $ swift build
+  $ swift test
+
+For c#
+
+  $ dotnet restore
+  $ dotnet build 
+  $ dotnet test
+  $ dotnet build -c Release
+  $ nuget push  com.adviser.ipaddress.0.2.5.nupkg APIKEY -Source https://www.nuget.org/api/v2/package
 
 == Documentation
 

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>com.adviser.ipaddress</id>
+    <version>0.2.5</version>
+    <title>ipaddress</title>
+    <authors>meno.abels@adviser.com</authors>
+    <owners>meno.abels@adviser.com</owners>
+    <licenseUrl>https://github.com/mabels/ipaddress/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/mabels/ipaddress</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>a ipaddress library</description>
+    <releaseNotes>git log to rescue.</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>network ip ipv4 ipv6</tags>
+  </metadata>
+  <files>
+    <file src="bin/Release/netcoreapp1.1/ipaddress.dll" target="lib" />
+  </files>
+</package>
