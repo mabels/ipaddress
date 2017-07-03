@@ -121,7 +121,7 @@ namespace ipaddress
       return IPAddress.parse("fd00::/8").unwrap().includes(my);
     } 
 
-    public static Result<IPAddress> from_str(String str, int radix, int prefix) {
+    public static Result<IPAddress> from_str(String str, int radix, uint prefix) {
       try
       {
         NumberStyles tmp = NumberStyles.Integer;
@@ -159,7 +159,7 @@ namespace ipaddress
           //println!("enhance_if_mapped-2:{}:{}", ip.to_string(), ip.prefix.host_prefix());
           return Result<IPAddress>.Err("enhance_if_mapped prefix not ipv4 compatible <<ip.prefix.host_prefix()>>");
         }
-        var mapped = IpV4.from_u32((UInt32)num, ipv4_bits.bits - ip.prefix.host_prefix());
+        var mapped = IpV4.from_u32((UInt32)num, (ipv4_bits.bits - ip.prefix.host_prefix()));
         if (mapped.isErr())
         {
           //println!("enhance_if_mapped-3");
@@ -172,7 +172,7 @@ namespace ipaddress
     }
 
 
-    public static Result<IPAddress> from_int(BigInteger bi, int prefixNum) {
+    public static Result<IPAddress> from_int(BigInteger bi, uint prefixNum) {
       var prefix = Prefix128.create(prefixNum);
       if (prefix.isErr())
       {
@@ -219,7 +219,7 @@ namespace ipaddress
         {
           return Result<IPAddress>.Err(o_num.unwrapErr());
         }
-        var netmask = 128;
+        var netmask = 128u;
         if (splitted.netmask != null)
         {
           var network = splitted.netmask;

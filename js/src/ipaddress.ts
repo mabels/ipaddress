@@ -271,7 +271,7 @@ export class IPAddress {
             return null;
         }
         let split_addr_len = split_addr.length;
-        if (split_addr_len < 4) {
+        if (1 <= split_addr_len && split_addr_len < 4) {
             let part = IPAddress.parse_ipv4_part(split_addr[split_addr_len - 1]);
             if (part === null) {
                 return null;

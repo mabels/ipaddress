@@ -18,7 +18,7 @@ namespace ipaddress
     }
   }
 
-  class IPAddress
+  class IPAddress : IEquatable<IPAddress>
   {
     public IpBits ip_bits;
     public BigInteger host_address;
@@ -110,7 +110,7 @@ namespace ipaddress
       {
         return -1;
       }
-      else if (this.host_address > oth.host_address)
+      if (this.host_address > oth.host_address)
       {
         return 1;
       }
@@ -184,7 +184,7 @@ namespace ipaddress
           return IpV6.create(str);
         }
       }
-      return Result<IPAddress>.Err(string.Format("Unknown IP Address <<%s>>", str));
+      return Result<IPAddress>.Err(string.Format("Unknown IP Address <<{0}>>", str));
     }
 
     public class AddrNetmask
@@ -295,7 +295,7 @@ namespace ipaddress
           return Result<UInt32>.Err(string.Format("IP has not the right format:<<addr>>"));
       }
       var split_addr_len = split_addr.Length;
-      if (split_addr_len <= 1 && split_addr_len < 4)
+      if (1 <= split_addr_len && split_addr_len < 4)
       {
         var part = IPAddress.parse_ipv4_part(split_addr[split_addr_len - 1], addr);
         if (part.isErr())
@@ -338,7 +338,7 @@ namespace ipaddress
 
     public static Result<SplitOnColon> Split_on_colon(String addr)
     {
-      var parts = addr.Trim().Split(new string[] { "." }, StringSplitOptions.None);
+      var parts = addr.Trim().Split(new string[] { ":" }, StringSplitOptions.None);
       var ip = new BigInteger(0);
       if (parts.Length == 1 && parts[0].Length == 0)
       {
@@ -511,7 +511,7 @@ namespace ipaddress
       //;
     }
 
-    public List<int> parts()
+    public List<uint> parts()
     {
       return this.ip_bits.parts(this.host_address);
     }
@@ -522,7 +522,7 @@ namespace ipaddress
       var ret = new String[parts.Count];
       for (var i = 0; i < parts.Count; i++)
       {
-        ret[i] = string.Format("%04x", parts[i]);
+        ret[i] = parts[i].ToString("x4");
       }
       return ret;
     }
@@ -570,11 +570,11 @@ namespace ipaddress
       var len = this.ip_bits.bits / this.ip_bits.dns_bits;
       var ret = new int[len];
       var num = this.host_address;
-      var mask = new BigInteger(1) << this.ip_bits.dns_bits;
+      var mask = new BigInteger(1) << (int)this.ip_bits.dns_bits;
       for (var i = 0; i < len; i++)
       {
         var part = num % mask;
-        num = num >> this.ip_bits.dns_bits;
+        num = num >> (int)this.ip_bits.dns_bits;
         ret[i] = (int)part;
       }
       return ret;
@@ -591,7 +591,7 @@ namespace ipaddress
       }
       //  println!("dns_networks:{}:{}", this.to_string(), next_bit_mask);
       // dns_bits
-      var step_bit_net = new BigInteger(1) << (this.ip_bits.bits - next_bit_mask);
+      var step_bit_net = new BigInteger(1) << (int)(this.ip_bits.bits - next_bit_mask);
       if (step_bit_net == new BigInteger(0))
       {
         return new List<IPAddress> { this.network() };
@@ -817,7 +817,7 @@ namespace ipaddress
       return IPAddress.parse_netmask_to_prefix(addr).isOk();
     }
 
-    public static Result<int> netmask_to_prefix(BigInteger nm, int bits)
+    public static Result<uint> netmask_to_prefix(BigInteger nm, uint bits)
     {
       var prefix = 0;
       var addr = nm;
@@ -836,25 +836,25 @@ namespace ipaddress
         }
         else if (!in_host_part && bit == 0)
         {
-          return Result<int>.Err("this is not a net mask <<nm>>");
+          return Result<uint>.Err("this is not a net mask <<nm>>");
         }
         addr = addr >> 1;
       }
-      return Result<int>.Ok(bits - prefix);
+      return Result<uint>.Ok((uint)(bits - prefix));
     }
 
 
-    public static Result<int> parse_netmask_to_prefix(String my_str)
+    public static Result<uint> parse_netmask_to_prefix(String my_str)
     {
       var is_number = IPAddress.parseInt(my_str, 10);
       if (is_number != null)
       {
-        return Result<int>.Ok(is_number.Value);
+        return Result<uint>.Ok(is_number.Value);
       }
       var my = IPAddress.parse(my_str);
       if (my.isErr())
       {
-        return Result<int>.Err("illegal netmask <<my.unwrap_err()>>");
+        return Result<uint>.Err("illegal netmask <<my.unwrap_err()>>");
       }
       var my_ip = my.unwrap();
       return IPAddress.netmask_to_prefix(my_ip.host_address, my_ip.ip_bits.bits);
@@ -883,7 +883,7 @@ namespace ipaddress
       return Result<IPAddress>.Ok(this.from(this.host_address, prefix));
     }
 
-    public Result<IPAddress> change_prefix(int num)
+    public Result<IPAddress> change_prefix(uint num)
     {
       var prefix = this.prefix.from(num);
       if (prefix.isErr())
@@ -946,7 +946,7 @@ namespace ipaddress
     {
       if (this.is_mapped())
       {
-        return string.Format("%s%s", "::ffff:", this.mapped.to_s());
+        return string.Format("{0}{1}", "::ffff:", this.mapped.to_s());
       }
       return this.to_s();
     }
@@ -956,7 +956,7 @@ namespace ipaddress
       if (this.is_mapped())
       {
         var mapped = this.mapped;
-        return string.Format("%s/%d", this.to_s_mapped(), mapped.prefix.num);
+        return string.Format("{0}/{1}", this.to_s_mapped(), mapped.prefix.num);
       }
       return this.to_string();
     }
@@ -974,19 +974,24 @@ namespace ipaddress
 
     public String bits()
     {
-      var num = this.host_address.ToString("B");
       var ret = new StringBuilder();
-      for (var i = num.Length; i < this.ip_bits.bits; i++)
-      {
-        ret.Append("0");
+      var num = this.host_address; //.ToString("B");
+      var mask = (new BigInteger(1)) << (int)(this.ip_bits.bits-1);
+      while (mask > 0) {
+        //Console.WriteLine("num: {0} mask {1}", num, mask);
+        if ((num & mask) == 0) {
+          ret.Append("0");
+        } else {
+          ret.Append("1");
+        }
+        mask = mask >> 1;
       }
-      ret.Append(num);
       return ret.ToString();
     }
 
     public String to_hex()
     {
-      return this.host_address.ToString("X");
+      return this.host_address.ToString("x");
     }
 
     public IPAddress netmask()
@@ -1042,9 +1047,9 @@ namespace ipaddress
       return this.from(IPAddress.to_network(this.host_address, this.prefix.host_prefix()), this.prefix);
     }
 
-    public static BigInteger to_network(BigInteger adr, int host_prefix)
+    public static BigInteger to_network(BigInteger adr, uint host_prefix)
     {
-      return (adr >> host_prefix) << host_prefix;
+      return (adr >> (int)host_prefix) << (int)host_prefix;
     }
 
     public BigInteger sub(IPAddress other)
@@ -1247,7 +1252,7 @@ namespace ipaddress
 
     public BigInteger size()
     {
-      return new BigInteger(1) << (this.prefix.host_prefix());
+      return new BigInteger(1) << (int)(this.prefix.host_prefix());
     }
 
     public bool is_same_kind(IPAddress oth)
@@ -1365,9 +1370,9 @@ namespace ipaddress
       return dup;
     }
 
-    public Result<List<IPAddress>> split(int subnets)
+    public Result<List<IPAddress>> split(uint subnets)
     {
-      if (subnets == 0 || (1 << this.prefix.host_prefix()) <= subnets)
+      if (subnets == 0 || (1 << (int)this.prefix.host_prefix()) <= subnets)
       {
         return Result<List<IPAddress>>.Err("Value <<subnets>> out of range");
       }
@@ -1408,7 +1413,7 @@ namespace ipaddress
     ///  If +new_prefix+ is less than 1, returns 0.0.0.0/0
     ///
 
-    public Result<IPAddress> supernet(int new_prefix)
+    public Result<IPAddress> supernet(uint new_prefix)
     {
       if (new_prefix >= this.prefix.num)
       {
@@ -1444,7 +1449,7 @@ namespace ipaddress
     ///
 
 
-    public Result<List<IPAddress>> subnet(int subprefix)
+    public Result<List<IPAddress>> subnet(uint subprefix)
     {
       if (subprefix < this.prefix.num || this.ip_bits.bits < subprefix)
       {
@@ -1454,7 +1459,7 @@ namespace ipaddress
       var net = this.network();
       var prefix = net.prefix.from(subprefix).unwrap();
       var host_address = net.host_address;
-      for (var i = 0; i < (1 << (subprefix - this.prefix.num)); i++)
+      for (var i = 0; i < (1 << (int)(subprefix - this.prefix.num)); i++)
       {
         net = net.from(host_address, prefix);
         ret.Add(net);
@@ -1486,29 +1491,34 @@ namespace ipaddress
     //  private methods
     //
 
-    public Result<Prefix> newprefix(int num)
+    public Result<Prefix> newprefix(uint num)
     {
       for (var i = num; i < this.ip_bits.bits; i++)
       {
         var a = System.Math.Floor(System.Math.Log(i) / System.Math.Log(2));
         if (a == System.Math.Log(i) / System.Math.Log(2))
         {
-          return this.prefix.add((int)a);
+          return this.prefix.add((uint)a);
         }
       }
       return Result<Prefix>.Err("newprefix not found <<num>>,<<this.ip_bits.bits>>");
     }
 
-    public static int? parseInt(String s, int radix)
+    public static uint? parseInt(String s, int radix)
     {
       try
       {
-        return Convert.ToInt32(s, radix);
+        return Convert.ToUInt32(s, radix);
       }
       catch (Exception )
       {
         return null;
       }
+    }
+
+    bool IEquatable<IPAddress>.Equals(IPAddress other)
+    {
+      return this.equal(other);
     }
 
   }

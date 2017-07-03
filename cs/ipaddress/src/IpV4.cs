@@ -30,7 +30,7 @@ namespace ipaddress
         IpV6.ipv6_is_private, IpV6.ipv6_is_loopback, IpV6.ipv6_to_ipv6);
       } 
 
-    public static  Result<IPAddress> from_u32(UInt32 addr, int _prefix) {
+    public static  Result<IPAddress> from_u32(UInt32 addr, uint _prefix) {
       var prefix = Prefix32.create(_prefix);
       if (prefix.isErr())
       {
@@ -53,7 +53,7 @@ namespace ipaddress
       {
         return Result<IPAddress>.Err("Invalid IP <<str>>");
       }
-      var ip_prefix_num = Result<int>.Ok(32);
+      var ip_prefix_num = Result<uint>.Ok(32);
       if (splitted.netmask != null)
       {
         //  netmask is defined
@@ -1374,15 +1374,15 @@ namespace ipaddress
       var ip = o_ip.unwrap();
       if (IpV4.is_class_a(ip))
       {
-        return IPAddress.parse(string.Format("%s/8", ip.to_s()));
+        return IPAddress.parse(string.Format("{0}/8", ip.to_s()));
       }
       else if (IpV4.is_class_b(ip))
       {
-        return IPAddress.parse(string.Format("%s/16", ip.to_s()));
+        return IPAddress.parse(string.Format("{0}/16", ip.to_s()));
       }
       else if (IpV4.is_class_c(ip))
       {
-        return IPAddress.parse(string.Format("%s/24", ip.to_s()));
+        return IPAddress.parse(string.Format("{0}/24", ip.to_s()));
       }
       return Result<IPAddress>.Ok(ip);
     }

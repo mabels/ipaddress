@@ -12,7 +12,7 @@ namespace ipaddress
     ///    prefix = IPAddressPrefix128.new 64
     ///      ///  64
     ///
-    public static Result<Prefix> create(int num)
+    public static Result<Prefix> create(uint num)
     {
       if (num <= 128)
       {
@@ -27,10 +27,10 @@ namespace ipaddress
                 (p, _num) => { return create(_num); }
         ));
       }
-      return Result<Prefix>.Err(string.Format("Prefix must be in range 0..128, got: «%d»", num));
+      return Result<Prefix>.Err(string.Format("Prefix must be in range 0..128, got: «{0}»", num));
     }
 
-    public Result<Prefix> from(int num)
+    public Result<Prefix> from(uint num)
     {
       return create(num);
     }

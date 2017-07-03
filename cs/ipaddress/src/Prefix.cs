@@ -8,15 +8,15 @@ namespace ipaddress
 
   class Prefix
   {
-    public int num;
+    public uint num;
     public IpBits ip_bits;
     public BigInteger net_mask;
 
-    public delegate Result<Prefix> VtFrom(Prefix p, int n);
+    public delegate Result<Prefix> VtFrom(Prefix p, uint n);
 
     VtFrom vt_from;
 
-    public Prefix(int num, IpBits ip_bits, BigInteger netmask, VtFrom vtfrom)
+    public Prefix(uint num, IpBits ip_bits, BigInteger netmask, VtFrom vtfrom)
     {
       this.num = num;
       this.ip_bits = ip_bits;
@@ -67,7 +67,7 @@ namespace ipaddress
       }
     }
 
-    public Result<Prefix> from(int num)
+    public Result<Prefix> from(uint num)
     {
       return this.vt_from(this, num);
     }
@@ -79,16 +79,16 @@ namespace ipaddress
 
     public BigInteger size()
     {
-      return (new BigInteger(1)) << (this.ip_bits.bits - this.num);
+      return (new BigInteger(1)) << (int)(this.ip_bits.bits - this.num);
     }
 
-    public static BigInteger new_netmask(int prefix, int bits)
+    public static BigInteger new_netmask(uint prefix, uint bits)
     {
       var mask = new BigInteger(0);
       var host_prefix = bits - prefix;
       for (var i = 0; i < prefix; i++)
       {
-        mask = mask + ((new BigInteger(1)) << (host_prefix + i));
+        mask = mask + ((new BigInteger(1)) << (int)(host_prefix + i));
       }
       return mask;
     }
@@ -98,7 +98,7 @@ namespace ipaddress
       return this.net_mask;
     }
 
-    public int get_prefix()
+    public uint get_prefix()
     {
       return this.num;
     }
@@ -117,7 +117,7 @@ namespace ipaddress
       var ret = new BigInteger(0);
       for (var i = 0; i < this.ip_bits.bits - this.num; i++)
       {
-        ret = ret << 1 + 1;
+        ret = (ret << 1) + 1;
       }
       return ret;
     }
@@ -131,7 +131,7 @@ namespace ipaddress
     ///    prefix.host_prefix
     ///      ///  128
     ///
-    public int host_prefix()
+    public uint host_prefix()
     {
       return (this.ip_bits.bits) - this.num;
     }
@@ -160,10 +160,10 @@ namespace ipaddress
     }
     public String to_s()
     {
-      return string.Format("%d", this.get_prefix());
+      return string.Format("{0}", this.get_prefix());
     }
 
-    public int to_i()
+    public uint to_i()
     {
       return this.get_prefix();
     }
@@ -172,7 +172,7 @@ namespace ipaddress
     {
       return this.from(this.get_prefix() + other.get_prefix());
     }
-    public Result<Prefix> add(int other)
+    public Result<Prefix> add(uint other)
     {
       return this.from(this.get_prefix() + other);
     }
@@ -180,7 +180,7 @@ namespace ipaddress
     {
       return this.sub(other.get_prefix());
     }
-    public Result<Prefix> sub(int other)
+    public Result<Prefix> sub(uint other)
     {
       if (other > this.get_prefix())
       {

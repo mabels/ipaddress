@@ -1,9 +1,11 @@
 using System;
 using System.Numerics;
 using System.Collections.Generic;
-using NUnit.Framework;
+using Xunit;
+using ipaddress;
 
-namespace ipaddress
+//ipaddress
+namespace address_test
 {
 
   class Prefix32Test
@@ -14,152 +16,164 @@ namespace ipaddress
     public     String netmask24;
     public     String netmask30;
     public List<String> netmasks = new List<String>();
-    public Dictionary<String, int> prefix_hash = new Dictionary<String, int>();
-    public Dictionary<List<UInt32>, int> octets_hash = new Dictionary<List<UInt32>, int>();
-    public     Dictionary<int, UInt32> u32_hash = new Dictionary<int, UInt32>();
+    public Dictionary<String, uint> prefix_hash = new Dictionary<String, uint>();
+    public Dictionary<List<uint>, uint> octets_hash = new Dictionary<List<uint>, uint>();
+    public     Dictionary<uint, UInt32> u32_hash = new Dictionary<uint, UInt32>();
     public Prefix32Test(String netmask0, String netmask8, String netmask16,
-            String netmask24, String netmask30) {
+        String netmask24, String netmask30) {
       this.netmask0 = netmask0;
-            this.netmask8 = netmask8;
-            this.netmask16 = netmask16;
-            this.netmask24 = netmask24;
-            this.netmask30 = netmask30;
-        }
+      this.netmask8 = netmask8;
+      this.netmask16 = netmask16;
+      this.netmask24 = netmask24;
+      this.netmask30 = netmask30;
+    }
   }
 
 
-  class TestPrefix32 {
+  public class TestPrefix32 {
 
 
     Prefix32Test setup() {
-        var p32t = new Prefix32Test(
-            "0.0.0.0",
-            "255.0.0.0",
-            "255.255.0.0",
-            "255.255.255.0",
-            "255.255.255.252");
-        p32t.netmasks.Add(p32t.netmask0);
-        p32t.netmasks.Add(p32t.netmask8);
-        p32t.netmasks.Add(p32t.netmask16);
-        p32t.netmasks.Add(p32t.netmask24);
-        p32t.netmasks.Add(p32t.netmask30);
-        p32t.prefix_hash.Add("0.0.0.0", 0);
-        p32t.prefix_hash.Add("255.0.0.0", 8);
-        p32t.prefix_hash.Add("255.255.0.0", 16);
-        p32t.prefix_hash.Add("255.255.255.0", 24);
-        p32t.prefix_hash.Add("255.255.255.252", 30);
+      var p32t = new Prefix32Test(
+          "0.0.0.0",
+          "255.0.0.0",
+          "255.255.0.0",
+          "255.255.255.0",
+          "255.255.255.252");
+      p32t.netmasks.Add(p32t.netmask0);
+      p32t.netmasks.Add(p32t.netmask8);
+      p32t.netmasks.Add(p32t.netmask16);
+      p32t.netmasks.Add(p32t.netmask24);
+      p32t.netmasks.Add(p32t.netmask30);
+      p32t.prefix_hash.Add("0.0.0.0", 0);
+      p32t.prefix_hash.Add("255.0.0.0", 8);
+      p32t.prefix_hash.Add("255.255.0.0", 16);
+      p32t.prefix_hash.Add("255.255.255.0", 24);
+      p32t.prefix_hash.Add("255.255.255.252", 30);
 
       p32t.octets_hash.Add(new List<UInt32>{ 0, 0, 0, 0}, 0);
       p32t.octets_hash.Add(new List<UInt32> { 255, 0, 0, 0 }, 8);
-        p32t.octets_hash.Add(new List<UInt32> { 255, 255, 0, 0}, 16);
-        p32t.octets_hash.Add(new List<UInt32> { 255, 255, 255, 0}, 24);
-        p32t.octets_hash.Add(new List<UInt32> { 255, 255, 255, 252}, 30);
-        
-        p32t.u32_hash.Add(0, 0);
-        p32t.u32_hash.Add(8, 4278190080);
-        p32t.u32_hash.Add(16, 4294901760);
-        p32t.u32_hash.Add(24, 4294967040);
-        p32t.u32_hash.Add(30, 4294967292);
-        return p32t;
+      p32t.octets_hash.Add(new List<UInt32> { 255, 255, 0, 0}, 16);
+      p32t.octets_hash.Add(new List<UInt32> { 255, 255, 255, 0}, 24);
+      p32t.octets_hash.Add(new List<UInt32> { 255, 255, 255, 252}, 30);
+
+      p32t.u32_hash.Add(0, 0);
+      p32t.u32_hash.Add(8, 4278190080);
+      p32t.u32_hash.Add(16, 4294901760);
+      p32t.u32_hash.Add(24, 4294967040);
+      p32t.u32_hash.Add(30, 4294967292);
+      return p32t;
     }
 
-    [Test]
-    void test_attributes() {
-      foreach (var num in setup().prefix_hash.Values) {
+    
+      [Xunit.Fact]
+        public void test_attributes() {
+          foreach (var num in setup().prefix_hash.Values) {
             var prefix = Prefix32.create(num).unwrap();
-        Assert.AreEqual(num, prefix.num);
+            Xunit.Assert.Equal(num, prefix.num);
+          }
         }
-    }
 
-    [Test]
-    void test_parse_netmask_to_prefix() {
-      foreach (var kp in setup().prefix_hash)
-      {
-        var netmask = kp.Key;
-        var num = kp.Value;
-        var prefix = IPAddress.parse_netmask_to_prefix(netmask).unwrap();
-        Assert.AreEqual(num, prefix);
-      }
-    }
-    [Test]
-    void test_method_to_ip()
-    {
-      foreach (var kp in setup().prefix_hash)
-      {
-        var netmask = kp.Key;
-        var num = kp.Value;
-        var prefix = Prefix32.create(num).unwrap();
-        Assert.AreEqual(netmask, prefix.to_ip_str());
-      }
-    }
-    [Test]
-    void test_method_to_s() {
-        var prefix = Prefix32.create(8).unwrap();
-      Assert.AreEqual("8", prefix.to_s());
-    }
-    [Test]
-    void test_method_bits() {
-        var prefix = Prefix32.create(16).unwrap();
-      Assert.AreEqual("11111111111111110000000000000000", prefix.bits());
-    }
-    [Test]
-    void test_method_to_u32() {
-      foreach (var kp in setup().u32_hash)
-      {
-        var num = kp.Key;
-        var ip32 = kp.Value;
-        Assert.AreEqual(ip32, Prefix32.create(num).unwrap().netmask());
-      } 
-    }
-    [Test]
-    void test_method_plus() {
-        var p1 = Prefix32.create(8).unwrap();
-        var p2 = Prefix32.create(10).unwrap();
-        Assert.AreEqual(18, p1.add_prefix(p2).unwrap().num);
-      Assert.AreEqual(12, p1.add(4).unwrap().num);
-    }
-    [Test]
-    void test_method_minus() {
-        var p1 = Prefix32.create(8).unwrap();
-        var p2 = Prefix32.create(24).unwrap();
-        Assert.AreEqual(16, p1.sub_prefix(p2).unwrap().num);
-        Assert.AreEqual(16, p2.sub_prefix(p1).unwrap().num);
-        Assert.AreEqual(20, p2.sub(4).unwrap().num);
-    }
-    [Test]
-    void test_initialize() {
-      Assert.IsTrue(Prefix32.create(33).isErr());
-        Assert.IsTrue(Prefix32.create(8).isOk());
-    }
-    [Test]
-    void test_method_octets()
-    {
-      foreach (var kp in setup().octets_hash) {
-        var arr = kp.Key;
-      var pref = kp.Value;
-      var prefix = Prefix32.create(pref).unwrap();
-        Assert.AreEqual(prefix.ip_bits.parts(prefix.netmask()), arr);
-    } 
-    }
-    [Test]
-    void test_method_brackets() {
-      foreach (var kp in setup().octets_hash)
-      {
-        var arr = kp.Key;
-        var pref = kp.Value;
-        var prefix = Prefix32.create(pref).unwrap();
-        for (var index = 0; index < arr.Count; index++)
-        {
-          var oct = arr[index];
-          Assert.AreEqual(prefix.ip_bits.parts(prefix.netmask())[index], oct);
+    
+      [Xunit.Fact]
+        void test_parse_netmask_to_prefix() {
+          foreach (var kp in setup().prefix_hash)
+          {
+            var netmask = kp.Key;
+            var num = kp.Value;
+            var prefix = IPAddress.parse_netmask_to_prefix(netmask).unwrap();
+            Xunit.Assert.Equal(num, prefix);
+          }
         }
-      }
-    }
-    [Test]
-    void test_method_hostmask() {
-        var prefix = Prefix32.create(8).unwrap();
-        Assert.AreEqual("0.255.255.255",
-                     IpV4.from_u32((UInt32)prefix.host_mask(), 0).unwrap().to_s());
-    }
-}
+    
+      [Xunit.Fact]
+        void test_method_to_ip()
+        {
+          foreach (var kp in setup().prefix_hash)
+          {
+            var netmask = kp.Key;
+            var num = kp.Value;
+            var prefix = Prefix32.create(num).unwrap();
+            Xunit.Assert.Equal(netmask, prefix.to_ip_str());
+          }
+        }
+    
+      [Xunit.Fact]
+        void test_method_to_s() {
+          var prefix = Prefix32.create(8).unwrap();
+          Xunit.Assert.Equal("8", prefix.to_s());
+        }
+    
+      [Xunit.Fact]
+        void test_method_bits() {
+          var prefix = Prefix32.create(16).unwrap();
+          Xunit.Assert.Equal("11111111111111110000000000000000", prefix.bits());
+        }
+    
+      [Xunit.Fact]
+        void test_method_to_u32() {
+          foreach (var kp in setup().u32_hash)
+          {
+            var num = kp.Key;
+            var ip32 = kp.Value;
+            Xunit.Assert.Equal(ip32, Prefix32.create(num).unwrap().netmask());
+          }
+        }
+    
+      [Xunit.Fact]
+        void test_method_plus() {
+          var p1 = Prefix32.create(8).unwrap();
+          var p2 = Prefix32.create(10).unwrap();
+          Xunit.Assert.Equal(18u, p1.add_prefix(p2).unwrap().num);
+          Xunit.Assert.Equal(12u, p1.add(4).unwrap().num);
+        }
+    
+      [Xunit.Fact]
+        void test_method_minus() {
+          var p1 = Prefix32.create(8).unwrap();
+          var p2 = Prefix32.create(24).unwrap();
+          Xunit.Assert.Equal(16u, p1.sub_prefix(p2).unwrap().num);
+          Xunit.Assert.Equal(16u, p2.sub_prefix(p1).unwrap().num);
+          Xunit.Assert.Equal(20u, p2.sub(4).unwrap().num);
+        }
+    
+      [Xunit.Fact]
+        void test_initialize() {
+          Xunit.Assert.True(Prefix32.create(33).isErr());
+          Xunit.Assert.True(Prefix32.create(8).isOk());
+        }
+    
+      [Xunit.Fact]
+        void test_method_octets()
+        {
+          foreach (var kp in setup().octets_hash) {
+            var arr = kp.Key;
+            var pref = kp.Value;
+            var prefix = Prefix32.create(pref).unwrap();
+            Xunit.Assert.Equal(prefix.ip_bits.parts(prefix.netmask()), arr);
+          }
+        }
+    
+      [Xunit.Fact]
+        void test_method_brackets() {
+          foreach (var kp in setup().octets_hash)
+          {
+            var arr = kp.Key;
+            var pref = kp.Value;
+            var prefix = Prefix32.create(pref).unwrap();
+            for (var index = 0; index < arr.Count; index++)
+            {
+              var oct = arr[index];
+              Xunit.Assert.Equal(prefix.ip_bits.parts(prefix.netmask())[index], oct);
+            }
+          }
+        }
+    
+      [Xunit.Fact]
+        void test_method_hostmask() {
+          var prefix = Prefix32.create(8).unwrap();
+          Xunit.Assert.Equal("0.255.255.255",
+              IpV4.from_u32((UInt32)prefix.host_mask(), 0).unwrap().to_s());
+        }
+  }
 }

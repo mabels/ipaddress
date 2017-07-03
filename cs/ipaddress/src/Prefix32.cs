@@ -6,7 +6,7 @@ namespace ipaddress
 {
   class Prefix32
   {
-    public  Result<Prefix> from(Prefix my, int num)  {
+    public  Result<Prefix> from(Prefix my, uint num)  {
       return create(num);
     }
     ///  Gives the prefix in IPv4 dotted decimal format,
@@ -17,7 +17,7 @@ namespace ipaddress
     ///    prefix.to_ip
     ///      ///  "255.255.255.0"
     ///
-    public static Result<Prefix> create(int num) {
+    public static Result<Prefix> create(uint num) {
       if (0 <= num && num <= 32)
       {
         var ip_bits = IpBits.V4;
@@ -26,7 +26,7 @@ namespace ipaddress
 
                                             (p, _num) => create(_num)));
         }
-      return Result<Prefix>.Err(string.Format("Prefix must be in range 0..32, got: %d", num));
+      return Result<Prefix>.Err(string.Format("Prefix must be in range 0..32, got: {0}", num));
     }
   }
 }

@@ -18,7 +18,7 @@ namespace ipaddress
       var _last = this.value;
 
       List<int> max_rles;
-      if (max_poses.ContainsKey(_last.part))
+      if (!max_poses.ContainsKey(_last.part))
       {
         max_rles = new List<int>();
         max_poses.Add(_last.part, max_rles);
@@ -55,14 +55,14 @@ namespace ipaddress
   }
 
 
-  class Rle
+  class Rle : IEquatable<Rle>
   {
-    public int part;
+    public uint part;
     public int pos;
     public int cnt;
     public bool max;
 
-    public Rle(int part, int pos, int cnt, bool max)
+    public Rle(uint part, int pos, int cnt, bool max)
     {
       this.part = part;
       this.pos = pos;
@@ -75,6 +75,11 @@ namespace ipaddress
       return "<Rle@part:{:x},pos:{},cnt:{},max:{}> self.part, self.pos, self.cnt, self.max)";
     }
 
+    bool IEquatable<Rle>.Equals(Rle other)
+    {
+      return eq(other);
+    }
+
     public bool eq(Rle other)
     {
       return this.part == other.part && this.pos == other.pos &&
@@ -82,7 +87,7 @@ namespace ipaddress
     }
 
 
-    public static List<Rle> code(List<int> parts)
+    public static List<Rle> code(List<uint> parts)
     {
       var last = new Last();
       // println!("code");
@@ -103,5 +108,7 @@ namespace ipaddress
       last.handle_last();
       return last.ret;
     }
+
+
   }
 }

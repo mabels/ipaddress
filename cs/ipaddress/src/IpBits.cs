@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ipaddress
 {
@@ -8,9 +9,9 @@ namespace ipaddress
   class IpBits
   {
     public IpVersion version;
-    public int bits;
-    public int part_bits;
-    public int dns_bits;
+    public uint bits;
+    public uint part_bits;
+    public uint dns_bits;
     public String rev_domain;
     public BigInteger part_mod;
     public BigInteger host_ofs;
@@ -19,7 +20,7 @@ namespace ipaddress
     public Vt_to_string vt_as_uncompressed_string;
 
     public IpBits(IpVersion ver, Vt_to_string cp, Vt_to_string ucp,
-      int bits, int part_bits, int dns_bits, String rev_domain,
+      uint bits, uint part_bits, uint dns_bits, String rev_domain,
       BigInteger part_mod, BigInteger host_ofs)
     {
       this.version = ver;
@@ -35,17 +36,17 @@ namespace ipaddress
 
     public delegate string Vt_to_string(IpBits ip_bits, BigInteger host_address);
 
-    private static string ipv4_as_compressed(IpBits ip_bits, BigInteger host_address)
+    static string ipv4_as_compressed(IpBits ip_bits, BigInteger host_address)
     {
-      var ret = "";
+      var ret = new StringBuilder();
       var sep = "";
       foreach (var part in ip_bits.parts(host_address))
       {
-        ret += sep;
-        ret += part;
+        ret.Append(sep);
+        ret.Append(part);
         sep = ".";
       }
-      return ret;
+      return ret.ToString();
     }
 
     public static IpBits v4()
@@ -63,10 +64,10 @@ namespace ipaddress
     }
     public static IpBits V4 = v4();
 
-    private static string ipv6_as_compressed(IpBits ip_bits, BigInteger host_address)
+    static string ipv6_as_compressed(IpBits ip_bits, BigInteger host_address)
     {
       //println!("ipv6_as_compressed:{}", host_address);
-      var ret = "";
+      var ret = new StringBuilder();
       var the_colon = ":";
       var the_empty = "";
       var colon = the_empty;
@@ -78,12 +79,13 @@ namespace ipaddress
         {
           if (done || !(rle.part == 0 && rle.max))
           {
-            ret += string.Format("%s%x", colon, rle.part);
+            ret.Append(colon);
+            ret.Append(rle.part.ToString("x"));
             colon = the_colon;
           }
           else if (rle.part == 0 && rle.max)
           {
-            ret += "::";
+            ret.Append("::");
             colon = the_empty;
             done = true;
             abort = true;
@@ -91,20 +93,20 @@ namespace ipaddress
         }
       }
 
-      return ret;
+      return ret.ToString();
     }
 
-    private static string ipv6_as_uncompressed(IpBits ip_bits, BigInteger host_address)
+    static string ipv6_as_uncompressed(IpBits ip_bits, BigInteger host_address)
     {
-      var ret = "";
+      var ret = new StringBuilder();
       var sep = "";
       foreach (var part in ip_bits.parts(host_address))
       {
-        ret += sep;
-        ret += string.Format("%04x", part);
+        ret.Append(sep);
+        ret.Append(part.ToString("x4"));
         sep = ":";
       }
-      return ret;
+      return ret.ToString();
     }
 
     public static IpBits v6()
@@ -127,7 +129,7 @@ namespace ipaddress
       return "IpBits: «this.version»";
     }
 
-    public static List<int> reverse(List<int> data)
+    public static List<uint> reverse(List<uint> data)
     {
       var right = data.Count - 1;
       for (var left = 0; left < right; left++, right--)
@@ -140,17 +142,17 @@ namespace ipaddress
       return data;
     }
 
-    public List<int> parts(BigInteger bu)
+    public List<uint> parts(BigInteger bu)
     {
       var len = (this.bits / this.part_bits);
-      var vec = new List<int>();
+      var vec = new List<uint>();
       var my = bu;
-      var part_mod = new BigInteger(1) << this.part_bits;// - BigUint::one();
+      var part_mod = (new BigInteger(1)) << (int)this.part_bits;// - BigUint::one();
       for (var i = 0; i < len; i++)
       {
-        var v = (int)(my % part_mod);
+        var v = (uint)(my % part_mod);
         vec.Add(v);
-        my = my >> this.part_bits;
+        my = my >> (int)this.part_bits;
       }
       return IpBits.reverse(vec);
     }
@@ -194,10 +196,11 @@ namespace ipaddress
     {
       switch (this.version)
       {
-        case IpVersion.V4: return string.Format("%d", i);
-        case IpVersion.V6: return string.Format("%01x", i);
+        case IpVersion.V4: return i.ToString();
+        case IpVersion.V6: return i.ToString("x");
+        default: throw new Exception("Unknown DNS Format");
       }
-      throw new Exception("Unknown DNS Format");
+
     }
 
   }

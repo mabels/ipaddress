@@ -95,12 +95,12 @@ namespace ipaddress
       var netmask = "";
       if (ret.netmask != null)
       {
-        netmask = string.Format("/%d", ret.netmask);
+        netmask = string.Format("/{0}", ret.netmask);
       }
       var ipv4_str = split_colon[split_colon.Length - 1];
         if (IPAddress.is_valid_ipv4(ipv4_str))
       {
-        var ipv4 = IPAddress.parse(string.Format("%s%s", ipv4_str, netmask));
+        var ipv4 = IPAddress.parse(string.Format("{0}{1}", ipv4_str, netmask));
         if (ipv4.isErr())
         {
           // println!("---2");
@@ -122,9 +122,9 @@ namespace ipaddress
           colon = ":";
         }
         rebuild_ipv6.Append(colon);
-        var rebuild_ipv4 = string.Format("%x:%x/%d",
-          (up_addr >> IpBits.V6.part_bits) % part_mod,
-          down_addr % part_mod,
+        var rebuild_ipv4 = string.Format("{0}:{1}/{2}",
+          ((up_addr >> (int)IpBits.V6.part_bits) % part_mod).ToString("x"),
+          (down_addr % part_mod).ToString("x"),
           ipv6_bits.bits - addr.prefix.host_prefix());
         rebuild_ipv6.Append(rebuild_ipv4);
         var r_ipv6 = IPAddress.parse(rebuild_ipv6.ToString());
@@ -145,7 +145,7 @@ namespace ipaddress
           return Result<IPAddress>.Err("is not a mapped address:<<rebuild_ipv6>>");
         }
         {
-          var rr_ipv6 = IPAddress.parse(string.Format("::ffff:%s", rebuild_ipv4));
+          var rr_ipv6 = IPAddress.parse(string.Format("::ffff:{0}", rebuild_ipv4));
           if (rr_ipv6.isErr())
           {
             //println!("---3|{}", &rebuild_ipv6);
