@@ -1,7 +1,8 @@
 
-[![Build Status](https://travis-ci.org/mabels/ipaddress.svg?branch=master)](https://travis-ci.org/mabels/ipaddress)
+[![Build Status](https://img.shields.io/travis/USER/REPO.svg)](https://travis-ci.org/mabels/ipaddress)
 [![npm](https://img.shields.io/npm/v/ipaddress.svg)](https://www.npmjs.com/package/ipaddress)
 [![cargo](https://img.shields.io/crates/v/ipaddress.svg)](https://crates.io/crates/ipaddress)
+[![ruby](https://img.shields.io/gem/dv/construqt-ipaddress/stable.svg)](https://rubygems.org/gems/construqt-ipaddress/)
 
 = IPAddress
 
