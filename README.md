@@ -1,6 +1,7 @@
 
 [![Build Status](https://travis-ci.org/mabels/ipaddress.svg?branch=master)](https://travis-ci.org/mabels/ipaddress)
 [![npm](https://img.shields.io/npm/v/ipaddress.svg)](https://www.npmjs.com/package/ipaddress)
+[![cargo](https://img.shields.io/crates/v/ipaddress.svg)](https://crates.io/crates/ipaddress)
 
 = IPAddress
 

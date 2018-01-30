@@ -1,16 +1,19 @@
 [package]
 name = "ipaddress"
 description = "an library to handle ipv4 and ipv6 numbers"
-repository = "https://github.com/mabels/ipaddress"
 readme = "../README.md"
+documentation = "https://docs.rs/ipaddress/0.1.1/ipaddress/"
+homepage = "https://github.com/mabels/ipaddress"
+repository = "https://github.com/mabels/ipaddress.git"
 keywords = ["ip","network"]
 license = "MIT"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Meno Abels <meno.abels@adviser.com>"]
 
 [dependencies]
 num = "0.1.32"
 num-traits = "0.1.32"
 num-integer = "0.1.32"
-regex = "0.1.71"
-lazy_static = "*"
+regex = "0.2.5"
+libc = "0.2.15"
+lazy_static = "1.0.0"

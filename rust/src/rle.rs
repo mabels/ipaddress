@@ -45,7 +45,7 @@ impl<T: Eq + Hash + Display + Copy + Clone + LowerHex> Last<T> {
         return;
     }
     let ref mut _last = self.val.as_mut().unwrap();
-    let mut max_rles = self.max_poses.entry(_last.part.clone()).or_insert(Vec::new());
+    let max_rles = self.max_poses.entry(_last.part.clone()).or_insert(Vec::new());
     for idx in max_rles.clone() {
         let ref mut prev = self.ret[idx];
         if prev.cnt > _last.cnt {
