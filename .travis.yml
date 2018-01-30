@@ -10,7 +10,7 @@ addons:
     - dotnet-dev-1.0.4
 
 rust:
-  - 1.8.0
+  - 1.23.0
 
 before_install:
   - sudo apt-get -qq update
