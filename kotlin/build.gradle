@@ -1,0 +1,35 @@
+group = "com.adviser.ipaddress"
+version = "1.0.0-SNAPSHOT"
+
+
+buildscript {
+  ext.kotlin_version = '1.2.40'
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+  }
+}
+
+apply plugin: "kotlin"
+
+sourceSets {
+  deploy
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+  testCompile  'junit:junit:4.11'
+}
+
+test.testClassesDir = project.tasks.compileTestKotlin.destinationDir
+
+task wrapper(type: Wrapper) {
+  gradleVersion="4.1"
+}
