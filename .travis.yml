@@ -10,11 +10,11 @@ addons:
     - dotnet-dev-1.0.4
 
 rust:
-  - 1.23.0
+  - 1.26.2
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libboost-all-dev cmake maven2
+  - sudo apt-get install -y libboost-all-dev cmake maven2 gradle
 
 install:
     - rvm use 2.2
@@ -29,6 +29,7 @@ script:
     - (cd js && npm install && npm test)
     - jdk_switcher use oraclejdk8
     - (cd java && mvn test -B -Dmaven.javadoc.skip=true)
+    - (cd kotlin && gradle test)
     - (cd cs/ipaddress && dotnet restore && dotnet build && dotnet test)       
     - (cd rust && cargo build --release --verbose)
     - (cd rust && cargo test --release --verbose)
