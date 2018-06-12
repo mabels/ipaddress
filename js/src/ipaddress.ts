@@ -1149,7 +1149,7 @@ export class IPAddress {
     //    ip.include_all?(addr1,addr2)
     //      // => true
     //
-    public includes_all(oths: [IPAddress]): boolean {
+    public includes_all(oths: IPAddress[]): boolean {
         for (let oth of oths) {
             if (!this.includes(oth)) {
                 return false;
