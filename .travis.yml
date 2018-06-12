@@ -14,13 +14,14 @@ rust:
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y libboost-all-dev cmake maven2 gradle
+  - sudo apt-get install -y libboost-all-dev cmake 
+#    maven3 gradle
 
 install:
     - rvm use 2.2
     - gem install jeweler
     - gem install test-unit
-    - nvm install 6
+    - nvm install 8
 
 script:
     - rvm use 2.2
