@@ -26,28 +26,6 @@
 #script:
 #    - rvm use 2.2
 #    - (cd ruby && rake test)
-#    - (cd go/ipaddress && go test -v)
-#    - (cd js && npm install && npm test)
-#    - jdk_switcher use oraclejdk8
-#    - (cd java && mvn test -B -Dmaven.javadoc.skip=true)
-#    - (cd kotlin && gradle test)
-#    - (cd cs/ipaddress && dotnet restore && dotnet build && dotnet test)       
-#    - (cd rust && cargo build --release --verbose)
-#    - (cd rust && cargo test --release --verbose)
-#    - (cd cpp && cmake -DCMAKE_BUILD_TYPE=Release . && make)
-#    - ./cpp/test/Release/*/test_crunchy
-#    - ./cpp/test/Release/*/test_ipaddress
-#    - ./cpp/test/Release/*/test_ipv4
-#    - ./cpp/test/Release/*/test_ipv6
-#    - ./cpp/test/Release/*/test_ipv6_loopback
-#    - ./cpp/test/Release/*/test_ipv6_mapped
-#    - ./cpp/test/Release/*/test_ipv6_unspec
-#    - ./cpp/test/Release/*/test_option
-#    - ./cpp/test/Release/*/test_prefix128
-#    - ./cpp/test/Release/*/test_prefix32
-#    - ./cpp/test/Release/*/test_result
-#    - ./cpp/test/Release/*/test_rle
-#
 
 
 matrix:
