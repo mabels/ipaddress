@@ -17,6 +17,7 @@ IPAddress should have the same(some odd looking) api for:
 - go / golang
 - javascript/typescript
 - java / xtend
+- java / kotlin
 - cpp
 - swift
 - .net csharp
