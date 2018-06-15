@@ -57,6 +57,7 @@ matrix:
       before_script:
         - cd ruby
       script:
+        - gem install jeweler
         - rake test
     - language: go
       go: "1.8"
