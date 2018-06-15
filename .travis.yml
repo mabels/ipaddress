@@ -53,12 +53,13 @@
 matrix:
   include:
     - language: ruby
-      ruby: 2.2
+      rvm: 2.2
       before_script:
         - cd ruby
       script:
         - ruby test
     - language: go
+      go: "1.8"
       before_script:
         - cd go/ipaddress
       script:
@@ -82,13 +83,9 @@ matrix:
         - cd kotlin
       script:
         - gradle test
-    - language: kotlin
-      jdk: oraclejdk8
-      before_script:
-        - cd kotlin
-      script:
-        - gradle test
     - language: csharp
+      mono: none
+      dotnet: 1.1.5
       before_script:
         - cd cs/ipaddress
       script:
@@ -96,6 +93,7 @@ matrix:
         - dotnet build 
         - dotnet test
     - language: rust
+      rust: stable
       before_script:
         - cd rust
       script:
