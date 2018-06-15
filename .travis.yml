@@ -36,6 +36,7 @@ matrix:
         - cd ruby
       script:
         - gem install jeweler
+        - gem install test-unit
         - rake test
     - language: go
       go: "1.8"
