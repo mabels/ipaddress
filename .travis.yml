@@ -1,49 +1,112 @@
-language: rust
-dist: trusty
+#language: rust
+#dist: trusty
+#
+#addons:
+#  apt:
+#    sources:
+#    - sourceline: 'deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ trusty main'
+#      key_url: 'https://apt-mo.trafficmanager.net/keys/microsoft.asc'
+#    packages:
+#    - dotnet-dev-1.0.4
+#
+#rust:
+#  - 1.26.2
+#
+#before_install:
+#  - sudo apt-get -qq update
+#  - sudo apt-get install -y libboost-all-dev cmake 
+##    maven3 gradle
+#
+#install:
+#    - rvm use 2.2
+#    - gem install jeweler
+#    - gem install test-unit
+#    - nvm install 8
+#
+#script:
+#    - rvm use 2.2
+#    - (cd ruby && rake test)
+#    - (cd go/ipaddress && go test -v)
+#    - (cd js && npm install && npm test)
+#    - jdk_switcher use oraclejdk8
+#    - (cd java && mvn test -B -Dmaven.javadoc.skip=true)
+#    - (cd kotlin && gradle test)
+#    - (cd cs/ipaddress && dotnet restore && dotnet build && dotnet test)       
+#    - (cd rust && cargo build --release --verbose)
+#    - (cd rust && cargo test --release --verbose)
+#    - (cd cpp && cmake -DCMAKE_BUILD_TYPE=Release . && make)
+#    - ./cpp/test/Release/*/test_crunchy
+#    - ./cpp/test/Release/*/test_ipaddress
+#    - ./cpp/test/Release/*/test_ipv4
+#    - ./cpp/test/Release/*/test_ipv6
+#    - ./cpp/test/Release/*/test_ipv6_loopback
+#    - ./cpp/test/Release/*/test_ipv6_mapped
+#    - ./cpp/test/Release/*/test_ipv6_unspec
+#    - ./cpp/test/Release/*/test_option
+#    - ./cpp/test/Release/*/test_prefix128
+#    - ./cpp/test/Release/*/test_prefix32
+#    - ./cpp/test/Release/*/test_result
+#    - ./cpp/test/Release/*/test_rle
+#
 
-addons:
-  apt:
-    sources:
-    - sourceline: 'deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ trusty main'
-      key_url: 'https://apt-mo.trafficmanager.net/keys/microsoft.asc'
-    packages:
-    - dotnet-dev-1.0.4
 
-rust:
-  - 1.26.2
-
-before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y libboost-all-dev cmake 
-#    maven3 gradle
-
-install:
-    - rvm use 2.2
-    - gem install jeweler
-    - gem install test-unit
-    - nvm install 8
-
-script:
-    - rvm use 2.2
-    - (cd ruby && rake test)
-    - (cd go/ipaddress && go test -v)
-    - (cd js && npm install && npm test)
-    - jdk_switcher use oraclejdk8
-    - (cd java && mvn test -B -Dmaven.javadoc.skip=true)
-    - (cd kotlin && gradle test)
-    - (cd cs/ipaddress && dotnet restore && dotnet build && dotnet test)       
-    - (cd rust && cargo build --release --verbose)
-    - (cd rust && cargo test --release --verbose)
-    - (cd cpp && cmake -DCMAKE_BUILD_TYPE=Release . && make)
-    - ./cpp/test/Release/*/test_crunchy
-    - ./cpp/test/Release/*/test_ipaddress
-    - ./cpp/test/Release/*/test_ipv4
-    - ./cpp/test/Release/*/test_ipv6
-    - ./cpp/test/Release/*/test_ipv6_loopback
-    - ./cpp/test/Release/*/test_ipv6_mapped
-    - ./cpp/test/Release/*/test_ipv6_unspec
-    - ./cpp/test/Release/*/test_option
-    - ./cpp/test/Release/*/test_prefix128
-    - ./cpp/test/Release/*/test_prefix32
-    - ./cpp/test/Release/*/test_result
-    - ./cpp/test/Release/*/test_rle
+matrix:
+  include:
+    - language: ruby
+      ruby: 2.2
+      before_script:
+        - cd ruby
+      script:
+        - ruby test
+    - language: go
+      before_script:
+        - cd go/ipaddress
+      script:
+        - go test -v
+    - language: node_js
+      node_js: "8"
+      before_script:
+        - cd js
+      script:
+        - npm install 
+        - npm test
+    - language: java
+      jdk: oraclejdk8
+      before_script:
+        - cd java
+      script:
+        - mvn test -B -Dmaven.javadoc.skip=true
+    - language: java
+      jdk: oraclejdk8
+      before_script:
+        - cd kotlin
+      script:
+        - gradle test
+    - language: kotlin
+      jdk: oraclejdk8
+      before_script:
+        - cd kotlin
+      script:
+        - gradle test
+    - language: csharp
+      before_script:
+        - cd cs/ipaddress
+      script:
+        - dotnet restore 
+        - dotnet build 
+        - dotnet test
+    - language: rust
+      before_script:
+        - cd rust
+      script:
+        - cargo test --release 
+    - language: cpp
+      before_install:
+        - sudo apt-get -qq update
+        - sudo apt-get install -y libboost-all-dev cmake 
+      before_script:
+        - cd cpp
+      script:
+        - cmake -DCMAKE_BUILD_TYPE=Release .
+        - make
+        - ./test/Release/*/test_crunchy
