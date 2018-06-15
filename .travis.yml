@@ -57,7 +57,7 @@ matrix:
       before_script:
         - cd ruby
       script:
-        - ruby test
+        - rake test
     - language: go
       go: "1.8"
       before_script:
