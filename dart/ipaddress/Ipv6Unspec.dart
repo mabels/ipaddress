@@ -1,4 +1,3 @@
-
 import 'IPAddress.dart';
 
 ///  The address with all zero bits is called the +unspecified+ address
@@ -51,7 +50,7 @@ import 'IPAddress.dart';
 ///       ///  => "::/128"
 ///
 class Ipv6Unspec {
-     static IPAddress create() {
-        return IPAddress.parse("::").unwrap();
-    }
+  static IPAddress create() {
+    return IPAddress.parse("::").unwrap();
+  }
 }
