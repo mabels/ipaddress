@@ -86,7 +86,7 @@ class Ipv6Mapped {
     final split_colon = ret.addr.split(":");
     if (split_colon.length <= 1) {
       // println!("---1");
-      return Result.Err('''not mapped format-1: <<str>>''');
+      return Result.Err("not mapped format-1: ${str}");
     }
     var netmask = "";
     if (ret.netmask != null) {
@@ -127,7 +127,7 @@ ${(up_addr >> (IpBits.V6.part_bits % part_mod.toInt())).toRadixString(16)}:${(do
       }
       final ipv6 = r_ipv6.unwrap();
       final p96bit = ipv6.host_address >> 32;
-      if (p96bit != BigInt.from(0)) {
+      if (p96bit != BigInt.zero) {
         // println!("---4|{}", &rebuild_ipv6);
         return Result.Err("is not a mapped address:${rebuild_ipv6}");
       }

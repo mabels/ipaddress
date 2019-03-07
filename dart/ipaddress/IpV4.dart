@@ -43,7 +43,7 @@ class IpV4 {
   static Result<IPAddress> create(String str) {
     final splitted = IPAddress.split_at_slash(str);
     if (!IPAddress.is_valid_ipv4(splitted.addr)) {
-      return Result.Err('''Invalid IP <<str>>''');
+      return Result.Err("IpV4-create: Invalid IP ${str}");
     }
     var ip_prefix_num = Result.Ok(32);
     if (splitted.netmask != null) {
@@ -1312,7 +1312,7 @@ class IpV4 {
   //
   static Result<IPAddress> parse_classful(String ip_s) {
     if (!IPAddress.is_valid_ipv4(ip_s)) {
-      return Result.Err('''Invalid IP <<ip_si>>''');
+      return Result.Err("parse_classful: Invalid IP ${ip_s}");
     }
     final o_ip = IPAddress.parse(ip_s);
     if (o_ip.isErr()) {

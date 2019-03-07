@@ -21,7 +21,7 @@ class IPv6LoopbackTest {
 
 IPv6LoopbackTest setup() {
   return IPv6LoopbackTest(Ipv6Loopback.create(), "::1", "::1/128",
-      "0000:0000:0000:0000:0000:0000:0000:0001/128", BigInt.from(1));
+      "0000:0000:0000:0000:0000:0000:0000:0001/128", BigInt.one);
 }
 
 void main() {

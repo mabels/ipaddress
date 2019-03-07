@@ -147,13 +147,13 @@ void main() {
 
   test("test_method_size", () {
     var ip = IPAddress.parse("2001:db8::8:800:200c:417a/64").unwrap();
-    expect(BigInt.from(1) << 64, ip.size());
+    expect(BigInt.one << 64, ip.size());
     ip = IPAddress.parse("2001:db8::8:800:200c:417a/32").unwrap();
-    expect(BigInt.from(1) << 96, ip.size());
+    expect(BigInt.one << 96, ip.size());
     ip = IPAddress.parse("2001:db8::8:800:200c:417a/120").unwrap();
-    expect(BigInt.from(1) << 8, ip.size());
+    expect(BigInt.one << 8, ip.size());
     ip = IPAddress.parse("2001:db8::8:800:200c:417a/124").unwrap();
-    expect(BigInt.from(1) << 4, ip.size());
+    expect(BigInt.one << 4, ip.size());
   });
 
   test("test_method_includes", () {

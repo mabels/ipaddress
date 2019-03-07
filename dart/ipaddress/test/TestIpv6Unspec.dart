@@ -21,7 +21,7 @@ class IPv6UnspecifiedTest {
 
 IPv6UnspecifiedTest setup() {
   return IPv6UnspecifiedTest(Ipv6Unspec.create(), "::", "::/128",
-      "0000:0000:0000:0000:0000:0000:0000:0000/128", BigInt.from(0));
+      "0000:0000:0000:0000:0000:0000:0000:0000/128", BigInt.zero);
 }
 
 void main() {

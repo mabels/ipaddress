@@ -117,7 +117,7 @@ class IPAddress {
   static Result<int> split_to_u32(String addr) {
     var ip = 0;
     var shift = 24;
-    var split_addr = addr.split("\\."); //.collect::<Vec<&str}();
+    var split_addr = addr.split("."); //.collect::<Vec<&str}();
     if (split_addr.length > 4) {
       return Result.Err("IP has not the right format:${addr}");
     }
@@ -160,7 +160,7 @@ class IPAddress {
 
   IPAddress from(BigInt addr, Prefix prefix) {
     IPAddress map = null;
-    if (map != null) {
+    if (this.mapped != null) {
       map = this.mapped.clone();
     }
     return setMapped(addr, map, prefix.clone());
@@ -171,7 +171,7 @@ class IPAddress {
   }
 
   IPAddress setMapped(BigInt hostAddr, IPAddress mapped, Prefix prefix) {
-    return IPAddress(this.ip_bits, hostAddr, this.prefix, this.mapped,
+    return IPAddress(this.ip_bits, hostAddr, prefix, mapped,
         this.vt_is_private, this.vt_is_loopback, this.vt_to_ipv6);
   }
 
@@ -261,7 +261,7 @@ class IPAddress {
   ///
   static Result<SplitOnColon> split_on_colon(String addr) {
     final parts = addr.trim().split(":");
-    var ip = BigInt.from(0);
+    var ip = BigInt.zero;
     if (parts.length == 1 && parts.first.isEmpty) {
       return Result.Ok(SplitOnColon(ip, 0));
     }
@@ -342,7 +342,7 @@ class IPAddress {
     if (networks.length == 1) {
       return [networks.first.network()];
     }
-    final stack = IPAddress.sort(networks.map((i) => i.network()));
+    final stack = IPAddress.sort(networks.map((i) => i.network()).toList());
 
     // for i in 0..networks.len() {
     //     println!("{}=={}", &networks[i].to_string_uncompressed(),
@@ -375,7 +375,7 @@ class IPAddress {
       if (stack.first.includes(stack[second])) {
         pos = pos - 2;
         // println!("remove:1:{}:{}:{}=>{}", first, second, stack_len, pos + 1);
-        stack.remove(IPAddress.pos_to_idx(pos + 1, stack_len));
+        stack.removeAt(IPAddress.pos_to_idx(pos + 1, stack_len));
       } else {
         final ipFirst = stack.first;
         stack[first] =
@@ -388,7 +388,7 @@ class IPAddress {
           pos = pos - 2;
           final idx = IPAddress.pos_to_idx(pos, stack_len);
           stack[idx] = stack[first].clone(); // kaputt
-          stack.remove(IPAddress.pos_to_idx(pos + 1, stack_len));
+          stack.removeAt(IPAddress.pos_to_idx(pos + 1, stack_len));
           // println!("remove-2:{}:{}", pos + 1, stack_len);
           pos = pos - 1; // backtrack
         } else {
@@ -440,10 +440,10 @@ class IPAddress {
     var ret = "";
     var dot = "";
     final dns_parts = this.dns_parts();
-    for (var i = ((this.prefix.host_prefix() + (this.ip_bits.dns_bits - 1)) ~/
-            this.ip_bits.dns_bits);
+    for (var i = ((this.prefix.host_prefix() + (this.ip_bits.dns_bits - 1)) 
+                 ~/ this.ip_bits.dns_bits);
         i < dns_parts.length;
-        i++) {
+       i++) {
       ret += dot;
       ret += this.ip_bits.dns_part_format(dns_parts[i]);
       dot = ".";
@@ -457,7 +457,7 @@ class IPAddress {
     final len = this.ip_bits.bits ~/ this.ip_bits.dns_bits;
     List<int> ret = List.generate(len, (_) => 0);
     var num = this.host_address;
-    var mask = BigInt.from(1) << this.ip_bits.dns_bits;
+    var mask = BigInt.one << this.ip_bits.dns_bits;
     for (var i = 0; i < len; i++) {
       var part = num % mask;
       num = num >> this.ip_bits.dns_bits;
@@ -476,8 +476,8 @@ class IPAddress {
     }
     //  println!("dns_networks:{}:{}", this.to_string(), next_bit_mask);
     // dns_bits
-    final step_bit_net = BigInt.from(1) << (this.ip_bits.bits - next_bit_mask);
-    if (step_bit_net == BigInt.from(0)) {
+    final step_bit_net = BigInt.one << (this.ip_bits.bits - next_bit_mask);
+    if (step_bit_net == BigInt.zero) {
       return [this.network()];
     }
     var ret = List<IPAddress>();
@@ -636,7 +636,7 @@ class IPAddress {
   ///
 
   bool is_unspecified() {
-    return this.host_address == BigInt.from(0);
+    return this.host_address == BigInt.zero;
   }
 
   ///  Returns true if the address is a loopback address
@@ -692,11 +692,11 @@ class IPAddress {
     final two = BigInt.from(2);
     for (var i = 0; i < bits; i++) {
       final bit = addr % two;
-      if (in_host_part && bit == 0) {
+      if (in_host_part && bit == BigInt.zero) {
         prefix = prefix + 1;
-      } else if (in_host_part && bit == 1) {
+      } else if (in_host_part && bit == BigInt.one) {
         in_host_part = false;
-      } else if (!in_host_part && bit == 0) {
+      } else if (!in_host_part && bit == BigInt.zero) {
         return Result.Err("this is not a net mask ${nm}");
       }
       addr = addr >> 1;
@@ -743,6 +743,7 @@ class IPAddress {
     if (prefix.isErr()) {
       return Result.Err(prefix.unwrapErr());
     }
+    print("change_prefix_int:${num}:${prefix.unwrap().num}:${prefix.unwrap().net_mask}");
     return Result.Ok(this.from(this.host_address, prefix.unwrap()));
   }
 
@@ -767,7 +768,7 @@ class IPAddress {
     ret += this.to_s();
     ret += "/";
     ret += this.prefix.to_s();
-    return ret.toString();
+    return ret;
   }
 
   String to_s() {
@@ -825,7 +826,8 @@ class IPAddress {
   }
 
   IPAddress netmask() {
-    this.from(this.prefix.netmask(), this.prefix);
+    print("netmask:${this.prefix.netmask()}:${this.prefix.to_s()}");
+    return this.from(this.prefix.netmask(), this.prefix);
   }
 
   ///  Returns the broadcast address for the given IP.
@@ -837,7 +839,7 @@ class IPAddress {
   ///
 
   IPAddress broadcast() {
-    final bcast = (this.network().host_address + this.size()) - BigInt.from(1);
+    final bcast = (this.network().host_address + this.size()) - BigInt.one;
     return this.from(bcast, this.prefix);
     // IPv4::parse_u32(this.broadcast_u32, this.prefix)
   }
@@ -895,7 +897,7 @@ class IPAddress {
   }
 
   static List<String> to_string_vec(List<IPAddress> vec) {
-    return vec.map((i) => i.to_string());
+    return vec.map((i) => i.to_string()).toList();
   }
 
   static Result<List<IPAddress>> to_ipaddress_vec(List<String> vec) {
@@ -980,7 +982,7 @@ class IPAddress {
     var i = this.first().host_address;
     while (i.compareTo(this.last().host_address) <= 0) {
       func(this.from(i, this.prefix));
-      i = i + BigInt.from(1);
+      i = i + BigInt.one;
     }
   }
 
@@ -1009,7 +1011,7 @@ class IPAddress {
     var i = this.network().host_address;
     while (i.compareTo(this.broadcast().host_address) <= 0) {
       func(this.from(i, this.prefix));
-      i = i + BigInt.from(1);
+      i = i + BigInt.one;
     }
   }
 
@@ -1055,7 +1057,7 @@ class IPAddress {
   ///
 
   BigInt size() {
-    return BigInt.from(1) << this.prefix.host_prefix();
+    return BigInt.one << this.prefix.host_prefix();
   }
 
   bool is_same_kind(IPAddress oth) {
@@ -1099,7 +1101,7 @@ class IPAddress {
   ///
 
   bool includes_all(List<IPAddress> oths) {
-    return oths.indexWhere((oth) => !this.includes(oth)) >= 0;
+    return oths.indexWhere((oth) => !this.includes(oth)) < 0;
   }
 
   ///  Checks if an IPv4 address objects belongs
@@ -1158,7 +1160,7 @@ class IPAddress {
       // println!("dup:{}:{}:{}", dup.len(), i, a.len());
       if (a.length == 1) {
         dup[i] = a[0];
-        dup.remove(i + 1);
+        dup.removeAt(i + 1);
         return dup;
       }
     }

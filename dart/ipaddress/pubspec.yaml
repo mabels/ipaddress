@@ -1,4 +1,29 @@
 name: "ipaddress"
 
-dependencies:
-  test: ^1.5.3
+version: 1.2.3
+description: >-
+  Have you been turned into a newt?  Would you like to be?
+  This package can help. It has all of the
+  newt-transmogrification functionality you have been looking
+  for.
+author: Natalie Weizenbaum <nweiz@google.com>
+homepage: https://example-pet-store.com/newtify
+documentation: https://example-pet-store.com/newtify/docs
+
+scripts:
+  test:
+    - dart TestIpAddress.dart
+    - dart TestIpv4.dart
+    - dart TestIpv6.dart
+    - dart TestIpv6Loopback.dart
+    - dart TestIpv6Mapped.dart
+    - dart TestIpv6Unspec.dart
+    - dart TestPrefix128.dart
+    - dart TestPrefix32.dart
+    - dart TestRle.dart
+
+environment:
+  sdk: '>=2.0.0'
+
+dev_dependencies:
+  test: '>=1.5.3'

@@ -108,7 +108,7 @@ class IpV6 {
 
   static final VtIPAddress ipv6_to_ipv6 = (IPAddress my) => my.clone();
   static final VtBool ipv6_is_loopback =
-      (IPAddress my) => my.host_address == BigInt.from(0);
+      (IPAddress my) => my.host_address == BigInt.one;
   static final VtBool ipv6_is_private =
       (IPAddress my) => IPAddress.parse("fd00::/8").unwrap().includes(my);
 
@@ -129,8 +129,8 @@ class IpV6 {
     final ipv6_top_96bit = ip.host_address >> 32;
     if (ipv6_top_96bit == BigInt.from(0xffff)) {
       // println!("enhance_if_mapped-1:{}", );
-      final num = ip.host_address % (BigInt.from(1) << 32);
-      if (num == BigInt.from(0)) {
+      final num = ip.host_address % (BigInt.one << 32);
+      if (num == BigInt.zero) {
         return Result.Ok(ip);
       }
       //println!("ip:{},{:x}", ip.to_string(), num);
@@ -138,7 +138,7 @@ class IpV6 {
       if (ipv4_bits.bits < ip.prefix.host_prefix()) {
         //println!("enhance_if_mapped-2:{}:{}", ip.to_string(), ip.prefix.host_prefix());
         return Result.Err(
-            '''enhance_if_mapped prefix not ipv4 compatible <<ip.prefix.host_prefix()>>''');
+            "enhance_if_mapped prefix not ipv4 compatible ${ip.prefix.host_prefix()}");
       }
       final mapped =
           IpV4.from_u32(num.toInt(), ipv4_bits.bits - ip.prefix.host_prefix());
@@ -198,7 +198,7 @@ class IpV6 {
         final network = splitted.netmask;
         final num_mask = IPAddress.parseInt(network, 10);
         if (num_mask == null) {
-          return Result.Err('''Invalid Netmask <<str>>''');
+          return Result.Err("Invalid Netmask ${str}");
         }
         netmask = num_mask.toInt();
       }
@@ -215,7 +215,7 @@ class IpV6 {
           ipv6_is_loopback,
           ipv6_to_ipv6));
     } else {
-      return Result.Err('''Invalid IP <<str>>''');
+      return Result.Err("Invalid IP ${str}");
     }
   }
 }

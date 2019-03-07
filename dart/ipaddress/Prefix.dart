@@ -52,20 +52,20 @@ class Prefix {
   }
 
   BigInt size() {
-    return BigInt.from(1) << (this.ip_bits.bits - this.num);
+    return BigInt.one << (this.ip_bits.bits - this.num);
   }
 
   static BigInt new_netmask(int prefix, int bits) {
-    var mask = BigInt.from(0);
+    var mask = BigInt.zero;
     final host_prefix = bits - prefix;
     for (var i = 0; i < prefix; i++) {
-      mask += BigInt.from(1) << (host_prefix + i);
+      mask += BigInt.one << (host_prefix + i);
     }
     return mask;
   }
 
   BigInt netmask() {
-    return BigInt.from(0) + this.net_mask;
+    return this.net_mask;
   }
 
   int get_prefix() {
@@ -82,9 +82,9 @@ class Prefix {
   ///      ///  "0.0.0.255"
   ///
   BigInt host_mask() {
-    var ret = BigInt.from(0);
+    var ret = BigInt.zero;
     for (var i = 0; i < this.ip_bits.bits - this.num; i++) {
-      ret = (ret << 1) + BigInt.from(1);
+      ret = (ret << 1) + BigInt.one;
     }
     return ret;
   }

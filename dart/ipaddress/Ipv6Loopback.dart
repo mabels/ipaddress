@@ -46,6 +46,6 @@ import 'IpV6.dart';
 ///
 class Ipv6Loopback {
   static IPAddress create() {
-    return IpV6.from_int(BigInt.from(1), 128).unwrap();
+    return IpV6.from_int(BigInt.one, 128).unwrap();
   }
 }

@@ -35,8 +35,8 @@ class IPAddress(
 
     fun from(addr: BigInteger, prefix: Prefix): IPAddress {
         var map: IPAddress? = null
-        if (map != null) {
-            map = this.mapped?.clone()
+        if (this.mapped != null) {
+            map = this.mapped.clone()
         }
         return setMapped(addr, map, prefix.clone())
     }

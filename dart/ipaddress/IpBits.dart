@@ -41,7 +41,7 @@ class IpBits {
       return ret.toString();
     };
     return IpBits(IpVersion.V4, ipv4_as_compressed, ipv4_as_compressed, 32, 8,
-        8, "in-addr.arpa", BigInt.from(1) << 8, BigInt.from(1));
+        8, "in-addr.arpa", BigInt.one << 8, BigInt.one);
   }
 
   static final IpBits V4 = v4();
@@ -76,13 +76,13 @@ class IpBits {
       var sep = "";
       for (var part in ip_bits.parts(host_address)) {
         ret += sep;
-        ret += part.toRadixString(16).padLeft(4);
+        ret += part.toRadixString(16).padLeft(4, '0');
         sep = ":";
       }
       return ret.toString();
     };
     return IpBits(IpVersion.V6, ipv6_as_compressed, ipv6_as_uncompressed, 128,
-        16, 4, "ip6.arpa", BigInt.from(1) << 16, BigInt.from(0));
+        16, 4, "ip6.arpa", BigInt.one << 16, BigInt.zero);
   }
 
   static final IpBits V6 = v6();
@@ -103,13 +103,14 @@ class IpBits {
   }
 
   List<int> parts(BigInt bu) {
-    final len = (this.bits / this.part_bits);
-    List<int> vec = [];
-    var my = BigInt.from(0) + bu;
-    var part_mod = BigInt.from(1) << this.part_bits; // - BigUint::one();
+    final len = (this.bits ~/ this.part_bits);
+    List<int> vec = List.generate(len, (_) => 0);
+    var my = bu;
+    var part_mod = BigInt.one << this.part_bits; // - BigUint::one();
     for (var i = 0; i < len; i++) {
       final v = (my % part_mod).toInt();
       vec[i] = v;
+      // print("${i} ${v} ${my} ${part_mod}");
       my = my >> this.part_bits;
     }
     return IpBits.reverse(vec);
@@ -154,7 +155,7 @@ class IpBits {
       case IpVersion.V4:
         return i.toString();
       case IpVersion.V6:
-        return i.toRadixString(16).padLeft(1);
+        return i.toRadixString(16);
     }
     throw UnimplementedError('unknown ip version');
   }

@@ -62,14 +62,14 @@ void main() {
 
   test("test_parse_netmask_to_prefix", () {
     setup().prefix_hash.forEach((netmask, num) {
-      final prefix = IPAddress.parse_netmask_to_prefix(netmask).unwrap();
-      expect(num, prefix);
+      final prefix = IPAddress.parse_netmask_to_prefix(netmask);
+      expect(num, prefix.unwrap());
     });
   });
   test("test_method_to_ip", () {
     setup().prefix_hash.forEach((netmask, num) {
-      final prefix = Prefix32.create(num).unwrap();
-      expect(netmask, prefix.to_ip_str());
+      final prefix = Prefix32.create(num);
+      expect(netmask, prefix.unwrap().to_ip_str());
     });
   });
 
