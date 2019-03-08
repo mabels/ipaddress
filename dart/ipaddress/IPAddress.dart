@@ -24,6 +24,10 @@ class SplitOnColon {
   SplitOnColon(this.ip, this.size);
 }
 
+String dumpStack(List<IPAddress> args) {
+  return args.map((ip) => ip.to_string()).join('][');
+}
+
 class IPAddress {
   static final RE_MAPPED = RegExp(":.+\\.");
   static final RE_IPV4 = RegExp("\\.");
@@ -353,15 +357,15 @@ class IPAddress {
         pos = 0;
       }
       final stack_len = stack.length; // borrow checker
-      print("loop:${pos}:${stack_len}");
+      // print("loop:${pos}:${stack_len}");
       if (pos >= stack_len) {
-        print("exit first:${stack_len}:${pos}");
+        // print("exit first:${stack_len}:${pos}");
         return stack; //.map[i| return i.network()];
       }
       final first = IPAddress.pos_to_idx(pos, stack_len);
       pos = pos + 1;
       if (pos >= stack_len) {
-        print("exit second:${stack_len}:${pos}");
+        // print("exit second:${stack_len}:${pos}");
         return stack; //.map[i| return i.network()];
       }
       final second = IPAddress.pos_to_idx(pos, stack_len);
@@ -369,31 +373,33 @@ class IPAddress {
       //let mut firstUnwrap = first.unwrap();
       if (stack.first.includes(stack[second])) {
         pos = pos - 2;
-        print("remove:1:${first}:${second}:${stack_len}=>${pos+1}");
+        // print("remove:1:${first}:${second}:${stack_len}=>${pos+1}");
         stack.removeAt(IPAddress.pos_to_idx(pos + 1, stack_len));
       } else {
-        final ipFirst = stack.first;
+        final ipFirst = stack[first];
         stack[first] =
             ipFirst.change_prefix(ipFirst.prefix.sub(1).unwrap()).unwrap();
-        print("complex:${pos}:${stack_len}:${first}:${second}:P1:${stack[first].to_string()}:P2:${stack[second].to_string()}");
+        // print("complex:${pos}:${stack_len}:${first}:${second}:P1:${stack[first].to_string()}:P2:${stack[second].to_string()}:${dumpStack(stack)}");
         if ((stack[first].prefix.num + 1) == stack[second].prefix.num &&
             stack[first].includes(stack[second])) {
           pos = pos - 2;
           final idx = IPAddress.pos_to_idx(pos, stack_len);
           stack[idx] = stack[first].clone(); // kaputt
           stack.removeAt(IPAddress.pos_to_idx(pos + 1, stack_len));
-          print("remove-2:${pos+1}:${stack_len}");
+          // print("remove-2:${pos+1}:${stack_len}:${dumpStack(stack)}");
           pos = pos - 1; // backtrack
         } else {
           final myFirst = stack[first];
           stack[first] = myFirst
               .change_prefix(myFirst.prefix.add(1).unwrap())
               .unwrap(); //reset prefix
-          print("easy:${pos}:${stack_len}=>${myFirst.to_string()}:${stack[first].to_string()}");
+          // print("easy:${pos}:${stack_len}=>${myFirst.hashCode}:${myFirst.to_string()}:${stack[first].hashCode}:${stack[first].to_string()}:${dumpStack(stack)}");
           pos = pos - 1; // do it with second as first
         }
       }
     }
+    // print("agg=${pos}, ${stack.length}");
+    // return stack;
   }
 
   List<int> parts() {
@@ -734,7 +740,7 @@ class IPAddress {
     if (prefix.isErr()) {
       return Result.Err(prefix.unwrapErr());
     }
-    print("change_prefix_int:${num}:${prefix.unwrap().num}:${prefix.unwrap().net_mask}");
+    // print("change_prefix_int:${num}:${prefix.unwrap().num}:${prefix.unwrap().net_mask}");
     return Result.Ok(this.from(this.host_address, prefix.unwrap()));
   }
 
@@ -817,7 +823,7 @@ class IPAddress {
   }
 
   IPAddress netmask() {
-    print("netmask:${this.prefix.netmask()}:${this.prefix.to_s()}");
+    // print("netmask:${this.prefix.netmask()}:${this.prefix.to_s()}");
     return this.from(this.prefix.netmask(), this.prefix);
   }
 
