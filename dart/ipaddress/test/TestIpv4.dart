@@ -562,6 +562,7 @@ void main() {
     ip2 = IPAddress.parse("10.0.1.1/24").unwrap();
     var ip3 = IPAddress.parse("10.0.2.1/24").unwrap();
     var ip4 = IPAddress.parse("10.0.3.1/24").unwrap();
+    print("============");
     expect(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2, ip3, ip4])),
         ["10.0.0.0/22"]);
 

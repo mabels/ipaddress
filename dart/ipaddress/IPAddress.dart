@@ -344,9 +344,8 @@ class IPAddress {
     }
     final stack = IPAddress.sort(networks.map((i) => i.network()).toList());
 
-    // for i in 0..networks.len() {
-    //     println!("{}=={}", &networks[i].to_string_uncompressed(),
-    //         &stack[i].to_string_uncompressed());
+    // for (var i in stack) {
+    //   print("${i.to_string_uncompressed()}");
     // }
     var pos = 0;
     while (true) {
@@ -354,19 +353,15 @@ class IPAddress {
         pos = 0;
       }
       final stack_len = stack.length; // borrow checker
-      // println!("loop:{}:{}", pos, stack_len);
-      // if stack_len == 1 {
-      //     println!("exit 1");
-      //     break;
-      // }
+      print("loop:${pos}:${stack_len}");
       if (pos >= stack_len) {
-        // println!("exit first:{}:{}", stack_len, pos);
+        print("exit first:${stack_len}:${pos}");
         return stack; //.map[i| return i.network()];
       }
       final first = IPAddress.pos_to_idx(pos, stack_len);
       pos = pos + 1;
       if (pos >= stack_len) {
-        // println!("exit second:{}:{}", stack_len, pos);
+        print("exit second:${stack_len}:${pos}");
         return stack; //.map[i| return i.network()];
       }
       final second = IPAddress.pos_to_idx(pos, stack_len);
@@ -374,35 +369,31 @@ class IPAddress {
       //let mut firstUnwrap = first.unwrap();
       if (stack.first.includes(stack[second])) {
         pos = pos - 2;
-        // println!("remove:1:{}:{}:{}=>{}", first, second, stack_len, pos + 1);
+        print("remove:1:${first}:${second}:${stack_len}=>${pos+1}");
         stack.removeAt(IPAddress.pos_to_idx(pos + 1, stack_len));
       } else {
         final ipFirst = stack.first;
         stack[first] =
             ipFirst.change_prefix(ipFirst.prefix.sub(1).unwrap()).unwrap();
-        // println!("complex:{}:{}:{}:{}:P1:{}:P2:{}", pos, stack_len,
-        // first, second,
-        // stack[first].to_string(), stack[second].to_string());
+        print("complex:${pos}:${stack_len}:${first}:${second}:P1:${stack[first].to_string()}:P2:${stack[second].to_string()}");
         if ((stack[first].prefix.num + 1) == stack[second].prefix.num &&
             stack[first].includes(stack[second])) {
           pos = pos - 2;
           final idx = IPAddress.pos_to_idx(pos, stack_len);
           stack[idx] = stack[first].clone(); // kaputt
           stack.removeAt(IPAddress.pos_to_idx(pos + 1, stack_len));
-          // println!("remove-2:{}:{}", pos + 1, stack_len);
+          print("remove-2:${pos+1}:${stack_len}");
           pos = pos - 1; // backtrack
         } else {
           final myFirst = stack[first];
           stack[first] = myFirst
               .change_prefix(myFirst.prefix.add(1).unwrap())
               .unwrap(); //reset prefix
-          // println!("easy:{}:{}=>{}", pos, stack_len, stack[first].to_string());
+          print("easy:${pos}:${stack_len}=>${myFirst.to_string()}:${stack[first].to_string()}");
           pos = pos - 1; // do it with second as first
         }
       }
     }
-    // println!("agg={}:{}", pos, stack.len());
-    //;
   }
 
   List<int> parts() {
@@ -440,7 +431,7 @@ class IPAddress {
     var ret = "";
     var dot = "";
     final dns_parts = this.dns_parts();
-    for (var i = ((this.prefix.host_prefix() + (this.ip_bits.dns_bits - 1)) 
+    for (var i = ((this.prefix.host_prefix() + (this.ip_bits.dns_bits - 1))
                  ~/ this.ip_bits.dns_bits);
         i < dns_parts.length;
        i++) {

@@ -89,7 +89,7 @@ void main() {
       expect(num, IPAddress.parse(ip).unwrap().host_address));
   });
 
-  // 
+  //
   // test_method_bits() {
   // final bits = "0010000000000001000011011011100000000000000000000" +
   // "000000000000000000000000000100000001000000000000010000" +
@@ -111,7 +111,7 @@ void main() {
     expect(true, ip6.is_mapped());
   });
 
-  // 
+  //
   // test_method_literal() {
   // final str = "2001-0db8-0000-0000-0008-0800-200c-417a.ipv6-literal.net";
   // expect(str, setup().ip.literal());
@@ -136,13 +136,14 @@ void main() {
 
   test("test_method_network_u128", () {
     expect(IpV6.from_int(
-      BigInt.parse("42540766411282592856903984951653826560"), 64).unwrap(),
-      setup().ip.network());
+      BigInt.parse("42540766411282592856903984951653826560"), 64).unwrap().to_s(),
+      setup().ip.network().to_s());
   });
 
   test("test_method_broadcast_u128", () {
-    expect(IpV6.from_int(BigInt.parse("42540766411282592875350729025363378175"), 64).unwrap(),
-      setup().ip.broadcast());
+    expect(
+      IpV6.from_int(BigInt.parse("42540766411282592875350729025363378175"), 64).unwrap().to_s(),
+      setup().ip.broadcast().to_s());
   });
 
   test("test_method_size", () {
@@ -320,7 +321,7 @@ void main() {
     // expect(expanded, @klass.expand("2001:0db8::cd30"));
     // expect(expanded, @klass.expand("2001:0db8::cd3"));
     // }
-    
+
     test("test_classmethod_compress", () {
       final compressed = "2001:db8:0:cd30::";
       final expanded = "2001:0db8:0000:cd30:0000:0000:0000:0000";
@@ -337,9 +338,9 @@ void main() {
       );
     });
 
-    
+
     test("test_classmethod_parse_hex", () {
       expect(setup().ip.to_string(), IpV6.from_str(setup().hex, 16, 64).unwrap().to_string());
     });
   }
-  
+
