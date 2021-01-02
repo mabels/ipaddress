@@ -34,7 +34,7 @@ jobs:
 
     - name: "build cs"
       run: |
-        cd cs && echo "build cs"
+        cd cs/ipaddress && echo "build cs"
         dotnet restore
         dotnet build 
         dotnet test
