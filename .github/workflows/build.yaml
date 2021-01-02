@@ -95,6 +95,8 @@ jobs:
       with:
         fetch-depth: 1
 
+    - uses: fwilhe2/setup-kotlin@main
+
     - name: "build kotlin"
       run: |
         cd kotlin && echo "build kotlin"
