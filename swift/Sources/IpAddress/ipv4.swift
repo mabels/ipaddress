@@ -69,7 +69,7 @@ public class Ipv4 {
             IPAddress.parse("169.254.0.0/16")!,
             IPAddress.parse("172.16.0.0/12")!,
             IPAddress.parse("192.168.0.0/16")!]
-      .index(where: { $0.includes(my) }) != nil
+      .firstIndex(where: { $0.includes(my) }) != nil
   }
   
   public class func ipv4_is_loopback(_ my: IPAddress) -> Bool {

@@ -32,15 +32,15 @@ class Ipv6MappedTests: XCTestCase {
       s: "::ffff:172.16.10.1",
       sstr: "::ffff:172.16.10.1/32",
       string: "0000:0000:0000:0000:0000:ffff:ac10:0a01/128",
-      u128: BigUInt("281473568475649")!,
+      u128: BigUInt("281473568475649"),
       address: "::ffff:ac10:a01/128"
     );
-    ipv6.valid_mapped["::13.1.68.3"] = BigUInt("281470899930115")!;
-    ipv6.valid_mapped["0:0:0:0:0:ffff:129.144.52.38"] = BigUInt("281472855454758")!;
-    ipv6.valid_mapped["::ffff:129.144.52.38"] = BigUInt("281472855454758")!;
-    ipv6.valid_mapped_ipv6["::ffff:13.1.68.3"] = BigUInt("281470899930115")!;
-    ipv6.valid_mapped_ipv6["0:0:0:0:0:ffff:8190:3426"] = BigUInt("281472855454758")!;
-    ipv6.valid_mapped_ipv6["::ffff:8190:3426"] = BigUInt("281472855454758")!;
+    ipv6.valid_mapped["::13.1.68.3"] = BigUInt("281470899930115");
+    ipv6.valid_mapped["0:0:0:0:0:ffff:129.144.52.38"] = BigUInt("281472855454758");
+    ipv6.valid_mapped["::ffff:129.144.52.38"] = BigUInt("281472855454758");
+    ipv6.valid_mapped_ipv6["::ffff:13.1.68.3"] = BigUInt("281470899930115");
+    ipv6.valid_mapped_ipv6["0:0:0:0:0:ffff:8190:3426"] = BigUInt("281472855454758");
+    ipv6.valid_mapped_ipv6["::ffff:8190:3426"] = BigUInt("281472855454758");
     ipv6.valid_mapped_ipv6_conversion["::ffff:13.1.68.3"] = "13.1.68.3";
     ipv6.valid_mapped_ipv6_conversion["0:0:0:0:0:ffff:8190:3426"] = "129.144.52.38";
     ipv6.valid_mapped_ipv6_conversion["::ffff:8190:3426"] = "129.144.52.38";

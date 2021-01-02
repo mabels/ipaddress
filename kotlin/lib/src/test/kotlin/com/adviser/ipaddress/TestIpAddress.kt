@@ -1,6 +1,8 @@
 package com.adviser.ipaddress.kotlin
 
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertTrue
+
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -50,6 +52,7 @@ class TestIpAddress {
 
     @Test
     fun test_method_ipaddress() {
+        // assertTrue(false, "someLibraryMethod should return 'true'")
         assertTrue(IPAddress.parse(setup().valid_ipv4).isOk())
         assertTrue(IPAddress.parse(setup().valid_ipv6).isOk())
         assertTrue(IPAddress.parse(setup().valid_mapped).isOk())

@@ -1,9 +1,17 @@
+// swift-tools-version:5.3
 import PackageDescription
 
 let package = Package(
     name: "IpAddress",
-    targets: [],
     dependencies: [
-      .Package(url: "https://github.com/lorentey/BigInt.git", majorVersion: 2, minor: 2)
+      .package(url: "https://github.com/attaswift/BigInt.git", from: "5.2.1")
+    ],
+    targets: [
+	.target(
+            name: "IpAddress",
+            dependencies: ["BigInt"]),
+        .testTarget(
+            name: "IpAddressTests",
+            dependencies: ["BigInt", "IpAddress"])
     ]
 )

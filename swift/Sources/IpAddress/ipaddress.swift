@@ -9,9 +9,10 @@ typealias ToIpv4 = (_ source: IPAddress) -> IPAddress;
 public typealias EachFn = (_ source: IPAddress) -> Void;
 
 extension String {
-  public func index(of char: Character) -> Int? {
-    if let idx = characters.index(of: char) {
-      return characters.distance(from: startIndex, to: idx)
+  public func index(of char: Character) -> String.Index? {
+    if let idx = self.firstIndex(of: char) {
+      // return self.distance(from: startIndex, to: idx)
+      return idx;
     }
     return nil
   }
@@ -452,7 +453,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     var ret = [String]();
     let leading = 1 << UInt(self.ip_bits.part_bits);
     for i in self.parts() {
-      ret.append(String(String(leading + UInt(i), radix: 16).characters.dropFirst(1)));
+      ret.append(String(String(leading + Int(i), radix: 16).dropFirst(1)));
     }
     return ret;
   }
@@ -856,7 +857,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
   public func bits() -> String {
     let num = String(self.host_address, radix: 2);
     var ret = "";
-    for _ in num.characters.count...Int(self.ip_bits.bits-1) {
+    for _ in num.count...Int(self.ip_bits.bits-1) {
       ret += "0";
     }
     ret += num;
@@ -1225,7 +1226,7 @@ public class IPAddress : Equatable, CustomStringConvertible {
     return dup;
   }
   public func split(_ subnets: UInt) -> [IPAddress]? {
-    if (subnets == 0 || (1 << UInt(self.prefix.host_prefix())) <= subnets) {
+    if (subnets == 0 || BigUInt(1 << self.prefix.host_prefix()) <= subnets) {
       return nil;
     }
     let networks = self.subnet(self.newprefix(UInt8(subnets))!.num);

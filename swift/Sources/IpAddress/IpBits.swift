@@ -157,7 +157,7 @@ public class IpBits {
     for part in ip_bits.parts(host_address) {
       ret += sep;
       let tmp = String((0x10000 + part), radix: 16);
-      ret += String(tmp.characters.dropFirst(1))
+      ret += String(tmp.dropFirst(1))
       sep = ":";
     }
     return ret;

@@ -1,7 +1,6 @@
 package com.adviser.ipaddress.kotlin
 
-import org.junit.Assert.assertArrayEquals
-import org.junit.Test
+import kotlin.test.Test
 import java.math.BigInteger
 import kotlin.test.assertEquals
 

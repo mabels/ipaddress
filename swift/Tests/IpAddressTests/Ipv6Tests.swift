@@ -109,10 +109,10 @@ class Ipv6Tests : XCTestCase {
     XCTAssertEqual(false, setup().ip.is_network());
   }
   func test_method_network_u128() {
-    XCTAssertNotNil(Ipv6.from_int(BigUInt("42540766411282592856903984951653826560")!, 64)!.eq(setup().ip.network()));
+    XCTAssertNotNil(Ipv6.from_int(BigUInt("42540766411282592856903984951653826560"), 64)!.eq(setup().ip.network()));
   }
   func test_method_broadcast_u128() {
-    XCTAssertNotNil(Ipv6.from_int(BigUInt("42540766411282592875350729025363378175")!, 64)!.eq(setup().ip.broadcast()));
+    XCTAssertNotNil(Ipv6.from_int(BigUInt("42540766411282592875350729025363378175"), 64)!.eq(setup().ip.broadcast()));
   }
   func test_method_size() {
     var ip = IPAddress.parse("2001:db8::8:800:200c:417a/64")!;

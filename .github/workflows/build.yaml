@@ -105,6 +105,7 @@ jobs:
     - name: "build kotlin"
       run: |
         cd kotlin && echo "build kotlin"
+        gradle build
         gradle test
 
   ruby:
@@ -147,4 +148,5 @@ jobs:
     - name: "build swift"
       run: |
         cd swift && echo "build swift"
-        swift --version
+        swift build
+        swift test

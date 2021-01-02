@@ -71,11 +71,11 @@ class Ipv4Tests : XCTestCase {
     ipv4t.netmask_values["192.168.0.0/24"] = "255.255.255.0"
     ipv4t.netmask_values["192.168.100.4/30"] = "255.255.255.252"
     
-    ipv4t.decimal_values["0.0.0.0/0"] = BigUInt("0")!
-    ipv4t.decimal_values["10.0.0.0/8"] = BigUInt("167772160")!
-    ipv4t.decimal_values["172.16.0.0/16"] = BigUInt("2886729728")!
-    ipv4t.decimal_values["192.168.0.0/24"] = BigUInt("3232235520")!
-    ipv4t.decimal_values["192.168.100.4/30"] = BigUInt("3232261124")!
+    ipv4t.decimal_values["0.0.0.0/0"] = BigUInt("0")
+    ipv4t.decimal_values["10.0.0.0/8"] = BigUInt("167772160")
+    ipv4t.decimal_values["172.16.0.0/16"] = BigUInt("2886729728")
+    ipv4t.decimal_values["192.168.0.0/24"] = BigUInt("3232235520")
+    ipv4t.decimal_values["192.168.100.4/30"] = BigUInt("3232261124")
     
     
     ipv4t.broadcast["10.0.0.0/8"] = "10.255.255.255/8"

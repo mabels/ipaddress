@@ -1,7 +1,6 @@
 package com.adviser.ipaddress.kotlin
 
-import org.junit.Test
-
+import kotlin.test.Test
 
 class TestRle {
 

@@ -36,10 +36,10 @@ func setup() -> Prefix32Test {
   p32t.octets_hash[24] = [255, 255, 255, 0];
   p32t.octets_hash[30] = [255, 255, 255, 252];
   p32t.u32_hash[0] = BigUInt(0);
-  p32t.u32_hash[8] = BigUInt("4278190080")!;
-  p32t.u32_hash[16] = BigUInt("4294901760")!;
-  p32t.u32_hash[24] = BigUInt("4294967040")!;
-  p32t.u32_hash[30] = BigUInt("4294967292")!;
+  p32t.u32_hash[8] = BigUInt("4278190080");
+  p32t.u32_hash[16] = BigUInt("4294901760");
+  p32t.u32_hash[24] = BigUInt("4294967040");
+  p32t.u32_hash[30] = BigUInt("4294967292");
   return p32t;
 }
 
