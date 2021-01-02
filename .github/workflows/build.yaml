@@ -16,6 +16,9 @@ jobs:
       with:
         fetch-depth: 1
 
+    - name: boost
+      run: sudo apt-get update && sudo apt-get install -yq libboost1.65-dev
+
     - name: "build cpp"
       run: |
         cd cpp && echo "build cpp"
@@ -43,6 +46,8 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 1
+
+    - uses: cedx/setup-dart@v2
 
     - name: "build dart"
       run: |
