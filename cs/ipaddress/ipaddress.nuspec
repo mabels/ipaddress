@@ -15,6 +15,6 @@
     <tags>network ip ipv4 ipv6</tags>
   </metadata>
   <files>
-    <file src="bin/Release/netcoreapp1.1/ipaddress.dll" target="lib" />
+    <file src="bin/Release/netcoreapp2.1/ipaddress.dll" target="lib" />
   </files>
 </package>
