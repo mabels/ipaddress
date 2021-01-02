@@ -1,8 +1,10 @@
 package ipaddress
 
-import "math/big"
-import "bytes"
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+	"math/big"
+)
 
 type IpBits struct {
 	Version                   Family
@@ -94,7 +96,7 @@ func v6const() *IpBits {
 
 func (ipb IpBits) String() string {
 	return fmt.Sprintf("IpBits:version:{%d},bits:{%d},part_bits:{%d},dns_bits:{%d},rev_domain:{%s},part_mod:{%s},host_ofs:{%s}",
-		ipb.Version, ipb.Bits, ipb.Part_bits, ipb.Dns_bits, ipb.Rev_domain, ipb.Part_mod, ipb.Host_ofs)
+		ipb.Version, ipb.Bits, ipb.Part_bits, ipb.Dns_bits, ipb.Rev_domain, ipb.Part_mod.String(), ipb.Host_ofs.String())
 }
 
 func reverse(numbers []uint16) []uint16 {

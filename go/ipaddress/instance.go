@@ -750,7 +750,7 @@ func (self *IPAddress) Is_private() bool {
 
 func (self *IPAddress) Split(subnets uint) ResultIPAddresses {
 	if subnets == 0 || (1<<self.Prefix.Host_prefix()) <= subnets {
-		out := fmt.Sprintf("Value %s out of range", subnets)
+		out := fmt.Sprintf("Value %d out of range", subnets)
 		return &Errors{&out}
 	}
 	prefix, _ := self.Newprefix(subnets)

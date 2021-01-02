@@ -10,7 +10,7 @@ type Rle struct {
 }
 
 func (r *Rle) String() string {
-	return fmt.Sprintf("Rle:Part:{%d},Pos:{%d},Cnt:{%d},Max:{%d}",
+	return fmt.Sprintf("Rle:Part:{%d},Pos:{%d},Cnt:{%d},Max:{%t}",
 		r.Part, r.Pos, r.Cnt, r.Max)
 }
 

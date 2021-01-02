@@ -1,9 +1,11 @@
 package ipaddress
 
-import "fmt"
-import "strings"
-import "bytes"
-import "math/big"
+import (
+	"bytes"
+	"fmt"
+	"math/big"
+	"strings"
+)
 
 // import "ipaddress"
 
@@ -99,7 +101,7 @@ func Ipv6MappedNew(str string) ResultIPAddress {
 	// let mapped: Option<IPAddress> = None;
 	netmask := ""
 	if o_netmask != nil {
-		netmask = fmt.Sprintf("/%s", o_netmask)
+		netmask = fmt.Sprintf("/%s", *o_netmask)
 	}
 	ipv4_str := split_colon[len(split_colon)-1]
 	if Is_valid_ipv4(ipv4_str) {
@@ -148,7 +150,7 @@ func Ipv6MappedNew(str string) ResultIPAddress {
 		p96bit := big.NewInt(0).Rsh(&ipv6.Host_address, 32)
 		if big.NewInt(0).Cmp(p96bit) != 0 {
 			// fmt.Printf("---4|%s", &rebuild_ipv6);
-			tmp := fmt.Sprintf("is not a mapped address:%s", rebuild_ipv6)
+			tmp := fmt.Sprintf("is not a mapped address:%s", rebuild_ipv6_str)
 			// fmt.Printf("Ipv6MappedNew-5:%s:%s\n", tmp, p96bit.String())
 			return &Error{&tmp}
 		}

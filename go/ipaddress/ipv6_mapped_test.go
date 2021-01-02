@@ -1,8 +1,10 @@
 package ipaddress
 
-import "testing"
-import "math/big"
-import "fmt"
+import (
+	"fmt"
+	"math/big"
+	"testing"
+)
 
 type IPv6MappedTest struct {
 	ip                           IPAddress
@@ -51,7 +53,7 @@ func TestIpv6Mapped(tx *testing.T) {
 			for ip, u128 := range s.valid_mapped {
 				// fmt.Printf("-%s--%s\n", ip, u128);
 				if Parse(ip).IsErr() {
-					fmt.Printf("%s\n", Parse(ip).UnwrapErr())
+					fmt.Printf("%s\n", *Parse(ip).UnwrapErr())
 				}
 				t.assert_bool(true, Parse(ip).IsOk())
 				t.assert_bigint(u128, Parse(ip).Unwrap().Host_address)

@@ -1,7 +1,9 @@
 package ipaddress
 
-import "math/big"
-import "testing"
+import (
+	"math/big"
+	"testing"
+)
 
 // type gochaFunc func() string
 
@@ -43,7 +45,7 @@ func (self *MyTesting) assert(b bool) {
 
 func (self *MyTesting) assert_bool(a bool, b bool) {
 	if a != b {
-		self.t.Errorf("[%s] != [%s]", a, b)
+		self.t.Errorf("[%t] != [%t]", a, b)
 	}
 }
 
