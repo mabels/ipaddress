@@ -19,8 +19,9 @@ jobs:
     - name: "build cpp"
       run: |
         cd cpp && echo "build cpp"
+        cmake -DCMAKE_BUILD_TYPE=Release .
         make
-
+        ./test/Release/*/test_crunchy
   cs:
     runs-on: ['ubuntu-latest']
     steps:
@@ -59,7 +60,8 @@ jobs:
     - name: "build go"
       run: |
         cd go/ipaddress && echo "build go"
-        go test -y
+        go version
+        go test -v
 
   java:
     runs-on: ['ubuntu-latest']
@@ -104,6 +106,10 @@ jobs:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 1
+
+    - uses: actions/setup-ruby@v1
+      with:
+      ruby-version: '2.7'
 
     - name: "build ruby"
       run: |
