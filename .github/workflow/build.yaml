@@ -1,0 +1,127 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  cpp:
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: "build cpp"
+      run: |
+        cd cpp && echo "build cpp"
+        make
+
+  cs:
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: "build cs"
+      run: |
+        cd cs && echo "build cs"
+        dotnet restore
+        dotnet build 
+        dotnet test
+        dotnet build -c Release
+
+  dart:
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: "build dart"
+      run: |
+        cd dart/ipaddress && echo "build dart"
+        dart pub get
+        dart test
+
+  go:
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: "build go"
+      run: |
+        cd go/ipaddress && echo "build go"
+        go test -y
+
+  java:
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: "build java"
+      run: |
+        cd java && echo "build java"
+        mvn test -B -Dmaven.javadoc.skip=true
+
+  js:
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: "build js"
+      run: |
+        cd js && echo "build js"
+        npm install
+        npm run test
+
+  kotlin:
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: "build kotlin"
+      run: |
+        cd kotlin && echo "build kotlin"
+        gradle test
+
+  ruby:
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: "build ruby"
+      run: |
+        cd ruby && echo "build ruby"
+        gem install jeweler
+        gem install test-unit
+        rake test
+
+  rust:
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: "build rust"
+      run: |
+        cd rust && echo "build rust"
+        cargo test --release 
+
+  swift:
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: "build swift"
+      run: |
+        cd swift && echo "build swift"
+        swift --version

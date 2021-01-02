@@ -31,7 +31,7 @@
 matrix:
   include:
     - language: ruby
-      rvm: 2.2
+      rvm: 2.7
       before_script:
         - cd ruby
       script:
@@ -39,33 +39,33 @@ matrix:
         - gem install test-unit
         - rake test
     - language: go
-      go: "1.8"
+      go: "1.15"
       before_script:
         - cd go/ipaddress
       script:
         - go test -v
     - language: node_js
-      node_js: "8"
+      node_js: "12"
       before_script:
         - cd js
       script:
         - npm install 
         - npm test
     - language: java
-      jdk: oraclejdk8
+      jdk: oraclejdk11
       before_script:
         - cd java
       script:
         - mvn test -B -Dmaven.javadoc.skip=true
     - language: java
-      jdk: oraclejdk8
+      jdk: oraclejdk11
       before_script:
         - cd kotlin
       script:
         - gradle test
     - language: csharp
       mono: none
-      dotnet: 1.1.5
+      dotnet: 3.1
       before_script:
         - cd cs/ipaddress
       script:
@@ -78,6 +78,15 @@ matrix:
         - cd rust
       script:
         - cargo test --release 
+    - language: dart
+      dart: stable
+      before_script:
+        - cd dart
+      script:
+        - cmake -DCMAKE_BUILD_TYPE=Release .
+        - make
+        - ./test/Release/*/test_crunchy
+
     - language: cpp
       before_install:
         - sudo apt-get -qq update
