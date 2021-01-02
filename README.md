@@ -186,7 +186,7 @@ decimal octets from the IP address:
   ip.octets
     #=> [172,16,10,1]
 
-Shortcut method IPv4#[], provides access to a given octet whithin the
+Shortcut method IPv4#[], provides access to a given octet within the
 range:
 
   ip[1]
@@ -208,7 +208,7 @@ object. For example:
   ip.to_string
     #=> "172.16.10.l/25"
     
-If you need to use a netmask in IPv4 format, you can achive so by
+If you need to use a netmask in IPv4 format, you can achieve so by
 using the IPv4#netmask= method
 
   ip.netmask = "255.255.255.252"
@@ -374,7 +374,7 @@ IPAddress allows you to create and manipulate objects using the old
 and deprecated (but apparently still popular) classful networks concept.
 
 Classful networks and addresses don't have a prefix: their subnet mask
-is univocally identified by their address, and therefore diveded in classes.
+is univocally identified by their address, and therefore divided in classes.
 As per RFC 791, these classes are:
 
 * Class A, from 0.0.0.0 to 127.255.255.255
@@ -477,7 +477,7 @@ Where IPv4#split really shines is with the so called "uneven subnetting".
 You are not limited to split a network into a power-of-two numbers of
 subnets: IPAddress lets you create any number of subnets, and it will
 try to organize the new created network in the best possible way, making
-an efficent allocation of the space.
+an efficient allocation of the space.
 
 An example here is worth a thousand words. Let's use the same network
 as the previous examples:
