@@ -17,7 +17,7 @@ jobs:
         fetch-depth: 1
 
     - name: boost
-      run: sudo apt-get update && sudo apt-get install -yq libboost1.65-dev
+      run: sudo apt-get update && sudo apt-get install -yq libboost1.65-dev libboost-system1.65-dev libboost-regex1.65-dev
 
     - name: "build cpp"
       run: |
