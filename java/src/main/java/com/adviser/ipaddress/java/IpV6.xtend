@@ -109,7 +109,7 @@ class IpV6 {
     public final static IPAddress.VtBool ipv6_is_loopback = [ IPAddress my | return my.host_address.equals(BigInteger.ONE) ];
     public final static IPAddress.VtBool ipv6_is_private = [ IPAddress my | return IPAddress.parse("fd00::/8").unwrap().includes(my) ];
 
-    public static def Result<IPAddress> from_str(String str, int radix, int prefix) {
+    static def Result<IPAddress> from_str(String str, int radix, int prefix) {
         try {
             val num = new BigInteger(str, radix)
             return from_int(num, prefix);
@@ -118,7 +118,7 @@ class IpV6 {
         }
     }
 
-    public static def Result<IPAddress> enhance_if_mapped(IPAddress ip) {
+    static def Result<IPAddress> enhance_if_mapped(IPAddress ip) {
         // println!("real mapped {:x} {:x}", &ip.host_address, ip.host_address.clone().shr(32));
         if(ip.is_mapped()) {
             return Result.Ok(ip);
@@ -148,7 +148,7 @@ class IpV6 {
     }
 
 
-    public static def Result<IPAddress> from_int(BigInteger bi, int prefixNum) {
+    static def Result<IPAddress> from_int(BigInteger bi, int prefixNum) {
         val prefix = Prefix128.create(prefixNum);
         if(prefix.isErr()) {
             return Result.Err(prefix.unwrapErr());
@@ -185,7 +185,7 @@ class IpV6 {
 
     ///    ip6 = IPAddress "2001:db8::8:800:200c:417a/64"
     ///
-    public static def Result<IPAddress> create(String str)  {
+    static def Result<IPAddress> create(String str)  {
         val splitted = IPAddress.split_at_slash(str);
         if (IPAddress.is_valid_ipv6(splitted.addr)) {
             val o_num = IPAddress.split_to_num(splitted.addr);

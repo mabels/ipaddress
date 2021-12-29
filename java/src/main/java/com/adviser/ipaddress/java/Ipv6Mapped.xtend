@@ -79,7 +79,7 @@ import java.math.BigInteger
 ///      ///  "::ffff:13.1.68.3"
 ///
 class Ipv6Mapped {
-    public static def Result<IPAddress> create(String str) {
+    static def Result<IPAddress> create(String str) {
         val ret = IPAddress.split_at_slash(str);
         val split_colon = ret.addr.split(":");
         if(split_colon.length <= 1) {

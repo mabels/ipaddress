@@ -1,12 +1,13 @@
 package com.adviser.ipaddress.java
 
-import org.junit.Test
-import static org.junit.Assert.assertArrayEquals;
 
-public class TestRle {
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+
+class TestRle {
     
     @Test
-    public def test_rle() {
+    def test_rle() {
         assertArrayEquals(Rle.code(#[]), #[]);
         assertArrayEquals(Rle.code(#[4711]), #[new Rle(
                          4711,

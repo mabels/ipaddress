@@ -1,7 +1,7 @@
 package com.adviser.ipaddress.java
 
 class Prefix32 {
-    public def Result<Prefix> from(Prefix my, int num)  {
+    def Result<Prefix> from(Prefix my, int num)  {
         return create(num);
     }
     ///  Gives the prefix in IPv4 dotted decimal format,
@@ -12,7 +12,7 @@ class Prefix32 {
     ///    prefix.to_ip
     ///      ///  "255.255.255.0"
     ///
-    public static def Result<Prefix> create(int num) {
+    static def Result<Prefix> create(int num) {
         if(0 <= num && num <= 32) {
             val ip_bits = IpBits.V4;
             val bits = ip_bits.bits;

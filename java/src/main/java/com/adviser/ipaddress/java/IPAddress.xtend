@@ -12,17 +12,17 @@ class IPAddress {
     public final BigInteger host_address
     public final Prefix prefix
     public final IPAddress mapped
-    public interface VtBool {
+    interface VtBool {
        def boolean run(IPAddress ipa);
     }
     public final VtBool vt_is_private
     public final VtBool vt_is_loopback
-    public interface VtIPAddress {
+    interface VtIPAddress {
         def IPAddress run(IPAddress ipa);
     }
     public final VtIPAddress vt_to_ipv6
 
-    override def String toString() {
+    override String toString() {
         return '''IPAddress:«this.to_string()»@«this.hashCode»'''
     }
     static final Pattern RE_MAPPED = Pattern.compile(":.+\\.");
@@ -41,7 +41,7 @@ class IPAddress {
         this.vt_to_ipv6 = to_ipv6
     }
         
-    override def IPAddress clone() {
+    override IPAddress clone() {
       if (mapped === null) {
         this.setMapped(null)
       } else {
@@ -49,7 +49,7 @@ class IPAddress {
       }
     }
     
-    public def IPAddress from(BigInteger addr, Prefix prefix) {
+    def IPAddress from(BigInteger addr, Prefix prefix) {
       var IPAddress map = null
       if (map !== null) {
         map = this.mapped.clone()
@@ -57,11 +57,11 @@ class IPAddress {
       setMapped(addr, map, prefix.clone())
     }
     
-    public def setMapped(IPAddress mapped) {
+    def setMapped(IPAddress mapped) {
       return setMapped(this.host_address, mapped, this.prefix.clone())
     }
 
-    public def setMapped(BigInteger hostAddr, IPAddress mapped, Prefix prefix) {
+    def setMapped(BigInteger hostAddr, IPAddress mapped, Prefix prefix) {
         return new IPAddress(
             this.ip_bits,
             BigInteger.ZERO.add(hostAddr),
@@ -72,11 +72,11 @@ class IPAddress {
             this.vt_to_ipv6)
     }
     
-    public override def boolean equals(Object oth) {
+    override boolean equals(Object oth) {
       return compare(oth as IPAddress) == 0
     }
 
-    public def int compare(IPAddress oth)  {
+    def int compare(IPAddress oth)  {
             if (this.ip_bits.version != oth.ip_bits.version) {
                 if (this.ip_bits.version == IpVersion.V6) {
                     return 1
@@ -93,23 +93,23 @@ class IPAddress {
             return this.prefix.compare(oth.prefix);
     }
 
-    public def boolean equal(IPAddress other) {
+    def boolean equal(IPAddress other) {
         return this.ip_bits.version == other.ip_bits.version &&
             this.prefix.equal(other.prefix) &&
             this.host_address.equals(other.host_address) &&
             ((this.mapped === null && this.mapped === other.mapped) || this.mapped.equal(other.mapped))
     }
     
-    public def boolean lt(IPAddress ipa) {
+    def boolean lt(IPAddress ipa) {
       return this.compare(ipa) < 0
     }
 
-    public def boolean gt(IPAddress ipa) {
+    def boolean gt(IPAddress ipa) {
       return this.compare(ipa) > 0
     }
 
 
-    public static def List<IPAddress> sort(List<IPAddress> ipas) {
+    static def List<IPAddress> sort(List<IPAddress> ipas) {
       val ret = new Vector<IPAddress>(ipas)
       Collections.sort(ret, [a, b| return a.compare(b) ])
       return ret
@@ -132,7 +132,7 @@ class IPAddress {
     /// ip_mapped.class
     ///   //=> IPAddress::IPv6::Mapped
     ///
-    public static def Result<IPAddress> parse(String str) {
+    static def Result<IPAddress> parse(String str) {
         if (RE_MAPPED.matcher(str).find()) {
             // println!("mapped:{}", &str);
             return Ipv6Mapped.create(str);
@@ -157,7 +157,7 @@ class IPAddress {
         }
     }
 
-    public static def AddrNetmask split_at_slash(String str) {
+    static def AddrNetmask split_at_slash(String str) {
         val slash = str.trim().split("/");
         var addr = ""
         if (slash.length >= 1) {
@@ -179,7 +179,7 @@ class IPAddress {
     ///   ip.ipv4?
     ///     //-> true
     ///
-    public def boolean is_ipv4() {
+    def boolean is_ipv4() {
         return this.ip_bits.version == IpVersion.V4
     }
 
@@ -190,7 +190,7 @@ class IPAddress {
     ///   ip.ipv6?
     ///     //-> false
     ///
-    public def boolean is_ipv6() {
+    def boolean is_ipv6() {
       return this.ip_bits.version == IpVersion.V6
     }
 
@@ -205,7 +205,7 @@ class IPAddress {
     ///  IPAddress::valid? "10.0.0.256"
     ///    //=> false
     ///
-    public static def boolean is_valid(String addr) {
+    static def boolean is_valid(String addr) {
         return IPAddress.is_valid_ipv4(addr) || IPAddress.is_valid_ipv6(addr);
     }
 
@@ -219,9 +219,9 @@ class IPAddress {
     ///   IPAddress::valid_ipv4? "172.16.10.1"
     ///     //=> true
     ///
-    public static def Result<Integer> parse_ipv4_part(String i, String addr) {
+    static def Result<Integer> parse_ipv4_part(String i, String addr) {
         try {
-            val part = new Integer(i)
+            val part = Integer.valueOf(i)
             if (part.intValue() >= 256) {
                 return Result.Err('''IP items has to lower than 256. <<addr>>''');
             }
@@ -231,7 +231,7 @@ class IPAddress {
         }
     }
 
-    public static def Result<Long> split_to_u32(String addr)  {
+    static def Result<Long> split_to_u32(String addr)  {
         var ip = 0L;
         var shift = 24;
         var split_addr = addr.split("\\."); //.collect::<Vec<&str>>();
@@ -259,7 +259,7 @@ class IPAddress {
         return Result.Ok(ip);
     }
     
-    public static def boolean is_valid_ipv4(String addr) {
+    static def boolean is_valid_ipv4(String addr) {
         return IPAddress.split_to_u32(addr).isOk();
     }
 
@@ -282,7 +282,7 @@ class IPAddress {
             this.size = size
         }
     }
-    public static def Result<SplitOnColon> split_on_colon(String addr)  {
+    static def Result<SplitOnColon> split_on_colon(String addr)  {
         val parts = addr.trim().split(":")
         var ip = BigInteger.ZERO
         if (parts.length() == 1 && parts.get(0).isEmpty()) {
@@ -306,7 +306,7 @@ class IPAddress {
         return Result.Ok(new SplitOnColon(ip, parts_len));
     }
 
-    public static def Result<BigInteger> split_to_num(String addr) {
+    static def Result<BigInteger> split_to_num(String addr) {
         var pre_post = addr.trim().split("::")
         if (pre_post.length === 0 && addr.contains("::")) {
           pre_post = Arrays.copyOf(pre_post, pre_post.length + 1)
@@ -340,7 +340,7 @@ class IPAddress {
         return Result.Ok(ret.unwrap().ip);
     }
     
-    public static def boolean is_valid_ipv6(String addr) {
+    static def boolean is_valid_ipv6(String addr) {
         return IPAddress.split_to_num(addr).isOk();
     }
 
@@ -350,7 +350,7 @@ class IPAddress {
     /// means it should be sorted lowers first and uniq
     ///
 
-    public static def int pos_to_idx(int pos, int len) {
+    static def int pos_to_idx(int pos, int len) {
         val ilen = len //as isize;
         // let ret = pos % ilen;
         val rem = ((pos % ilen) + ilen) % ilen;
@@ -358,7 +358,7 @@ class IPAddress {
         return rem;
     }
     
-    public static def List<IPAddress> aggregate(List<IPAddress> networks) {
+    static def List<IPAddress> aggregate(List<IPAddress> networks) {
         if (networks.length() == 0) {
             return new Vector<IPAddress>();
         }
@@ -425,11 +425,11 @@ class IPAddress {
         //;
     }
 
-    public def int[] parts() {
+    def int[] parts() {
         return this.ip_bits.parts(this.host_address);
     }
 
-    public def String[] parts_hex_str() {
+    def String[] parts_hex_str() {
         val parts = this.parts()
         var String[] ret = newArrayOfSize(parts.length)
         for (var i = 0; i < parts.length; i++) {
@@ -446,7 +446,7 @@ class IPAddress {
     ///    ip.dns_rev_domains
     ///      // => ["16.172.in-addr.arpa","17.172.in-addr.arpa"]
     ///
-    public def String[] dns_rev_domains() {
+    def String[] dns_rev_domains() {
         val dns_networks = this.dns_networks()
         var String[] ret = newArrayOfSize(dns_networks.length)
         for (var i = 0; i < dns_networks.length; i++) {
@@ -457,7 +457,7 @@ class IPAddress {
     }
 
 
-    public def String dns_reverse() {
+    def String dns_reverse() {
         val ret = new StringBuilder()
         var dot = "";
         val dns_parts = this.dns_parts();
@@ -472,7 +472,7 @@ class IPAddress {
     }
 
 
-    public def int[] dns_parts() {
+    def int[] dns_parts() {
         val len = this.ip_bits.bits/this.ip_bits.dns_bits
         var ret = newIntArrayOfSize(len)
         var num = BigInteger.ZERO.add(this.host_address);
@@ -485,7 +485,7 @@ class IPAddress {
         return ret;
     }
 
-    public def List<IPAddress> dns_networks() {
+    def List<IPAddress> dns_networks() {
         // +this.ip_bits.dns_bits-1
          val next_bit_mask = this.ip_bits.bits -
             (((this.prefix.host_prefix())/this.ip_bits.dns_bits)*this.ip_bits.dns_bits);
@@ -633,11 +633,11 @@ class IPAddress {
     ///      ///  ["2000:1::/32","2000:2::/31","2000:4::/32"]
     ///
     
-    public static def List<IPAddress> summarize(List<IPAddress> networks) {
+    static def List<IPAddress> summarize(List<IPAddress> networks) {
         return IPAddress.aggregate(networks);
     }
     
-    public static def Result<List<IPAddress>> summarize_str(List<String> netstr) {
+    static def Result<List<IPAddress>> summarize_str(List<String> netstr) {
         val vec = IPAddress.to_ipaddress_vec(netstr);
         if (vec.isErr()) {
             return vec;
@@ -646,7 +646,7 @@ class IPAddress {
     }
 
     
-    public def boolean ip_same_kind(IPAddress oth)  {
+    def boolean ip_same_kind(IPAddress oth)  {
         return this.ip_bits.version == oth.ip_bits.version
     }
 
@@ -655,7 +655,7 @@ class IPAddress {
     ///  See IPAddress::IPv6::Unspecified for more information
     ///
     
-    public def boolean is_unspecified() {
+    def boolean is_unspecified() {
         return this.host_address.equals(BigInteger.ZERO);
     }
 
@@ -664,7 +664,7 @@ class IPAddress {
     ///  See IPAddress::IPv6::Loopback for more information
     ///
     
-    public def boolean is_loopback() {
+    def boolean is_loopback() {
         return this.vt_is_loopback.run(this);
     }
 
@@ -674,7 +674,7 @@ class IPAddress {
     ///  See IPAddress::IPv6::Mapped for more information
     ///
     
-    public def boolean is_mapped() {
+    def boolean is_mapped() {
         val ffff = BigInteger.valueOf(0xffff) //.ONE.shiftLeft(16).sub(BigInteger.ONE)
         return (this.mapped !== null && (this.host_address.shiftRight(32).equals(ffff)))
     }
@@ -692,7 +692,7 @@ class IPAddress {
     ///      ///  IPAddress::Prefix32
     ///
     
-    public def Prefix prefix() {
+    def Prefix prefix() {
         return this.prefix;
     }
 
@@ -705,11 +705,11 @@ class IPAddress {
     ///     ///  true
     ///
     
-    public static def boolean is_valid_netmask(String addr) {
+    static def boolean is_valid_netmask(String addr) {
         return IPAddress.parse_netmask_to_prefix(addr).isOk();
     }
 
-    public static def Result<Integer> netmask_to_prefix(BigInteger nm, int bits) {
+    static def Result<Integer> netmask_to_prefix(BigInteger nm, int bits) {
         var prefix = 0;
         var addr = BigInteger.ZERO.add(nm);
         var in_host_part = true;
@@ -729,7 +729,7 @@ class IPAddress {
     }
 
 
-    public static def Result<Integer> parse_netmask_to_prefix(String my_str) {
+    static def Result<Integer> parse_netmask_to_prefix(String my_str) {
         val is_number = IPAddress.parseInt(my_str, 10);
         if (is_number !== null) {
             return Result.Ok(is_number.intValue());
@@ -760,11 +760,11 @@ class IPAddress {
     ///    puts ip
     ///      ///  172.16.100.4/22
     ///
-    public def Result<IPAddress> change_prefix(Prefix prefix) {
+    def Result<IPAddress> change_prefix(Prefix prefix) {
         return Result.Ok(this.from(this.host_address, prefix));
     }
     
-    public def Result<IPAddress> change_prefix(int num) {
+    def Result<IPAddress> change_prefix(int num) {
         val prefix =  this.prefix.from(num);
         if (prefix.isErr()) {
             return Result.Err(prefix.unwrapErr());
@@ -772,7 +772,7 @@ class IPAddress {
         return Result.Ok(this.from(this.host_address, prefix.unwrap()));
     }
 
-    public def Result<IPAddress> change_netmask(String my_str) {
+    def Result<IPAddress> change_netmask(String my_str) {
         val nm = IPAddress.parse_netmask_to_prefix(my_str);
         if (nm.isErr()) {
             return Result.Err(nm.unwrapErr());
@@ -790,7 +790,7 @@ class IPAddress {
     ///    ip.to_string
     ///      ///  "172.16.100.4/22"
     ///
-    public def String to_string() {
+    def String to_string() {
         var ret = new StringBuilder()
         ret.append(this.to_s());
         ret.append("/");
@@ -798,11 +798,11 @@ class IPAddress {
         return ret.toString();
     }
 
-    public def String to_s() {
+    def String to_s() {
         return this.ip_bits.as_compressed_string(this.host_address);
     }
 
-    public def String to_string_uncompressed() {
+    def String to_string_uncompressed() {
         var ret = new StringBuilder()
         ret.append(this.to_s_uncompressed());
         ret.append("/");
@@ -810,19 +810,19 @@ class IPAddress {
         return ret.toString();
     }
     
-    public def String to_s_uncompressed() {
+    def String to_s_uncompressed() {
         return this.ip_bits.as_uncompressed_string(this.host_address);
     }
 
     
-    public def String to_s_mapped() {
+    def String to_s_mapped() {
         if (this.is_mapped()) {
             return String.format("%s%s", "::ffff:", this.mapped.to_s());
         }
         return this.to_s();
     }
     
-    public def String to_string_mapped() {
+    def String to_string_mapped() {
         if (this.is_mapped()) {
             val mapped = this.mapped;
             return String.format("%s/%d", this.to_s_mapped(), mapped.prefix.num);
@@ -841,7 +841,7 @@ class IPAddress {
     ///      ///  "01111111000000000000000000000001"
     ///
     
-    public def String bits() {
+    def String bits() {
         val num = this.host_address.toString(2);
         var ret = new StringBuilder()
         for (var i = num.length(); i < this.ip_bits.bits; i++) {
@@ -851,11 +851,11 @@ class IPAddress {
         return ret.toString();
     }
     
-    public def String to_hex() {
+    def String to_hex() {
         return this.host_address.toString(16);
     }
 
-    public def IPAddress netmask() {
+    def IPAddress netmask() {
         this.from(this.prefix.netmask(), this.prefix)
     }
 
@@ -867,7 +867,7 @@ class IPAddress {
     ///      ///  "172.16.10.255"
     ///
     
-    public def IPAddress broadcast() {
+    def IPAddress broadcast() {
       val bcast = this.network().host_address.add(this.size()).subtract(BigInteger.ONE)
       return this.from(bcast, this.prefix);
         // IPv4::parse_u32(this.broadcast_u32, this.prefix)
@@ -886,7 +886,7 @@ class IPAddress {
     ///      ///  true
     ///
     
-    public def boolean is_network() {
+    def boolean is_network() {
         return this.prefix.num != this.ip_bits.bits &&
             this.host_address.equals(this.network().host_address);
     }
@@ -900,34 +900,34 @@ class IPAddress {
     ///      ///  "172.16.10.0"
     ///
     
-    public def IPAddress network() {
+    def IPAddress network() {
         return this.from(IPAddress.to_network(this.host_address, this.prefix.host_prefix()), this.prefix);
     }
     
-    public static def BigInteger to_network(BigInteger adr, int host_prefix) {
+    static def BigInteger to_network(BigInteger adr, int host_prefix) {
         return adr.shiftRight(host_prefix).shiftLeft(host_prefix);
     }
 
-    public def BigInteger sub(IPAddress other) {
+    def BigInteger sub(IPAddress other) {
         if (this.host_address.compareTo(other.host_address) >= 0) {
             return this.host_address.subtract(other.host_address);
         }
         return other.host_address.subtract(this.host_address);
     }
 
-    public def List<IPAddress> add(IPAddress other) {
+    def List<IPAddress> add(IPAddress other) {
         return IPAddress.aggregate(#[this, other]);
     }
 
-    public def List<String> to_s_vec(List<IPAddress> vec) {
+    def List<String> to_s_vec(List<IPAddress> vec) {
         return vec.map[i| return i.to_s()];
     }
 
-    public static def List<String> to_string_vec(List<IPAddress> vec) {
+    static def List<String> to_string_vec(List<IPAddress> vec) {
         return vec.map[i| return i.to_string()];
     }
 
-    public static def Result<List<IPAddress> > to_ipaddress_vec(List<String> vec) {
+    static def Result<List<IPAddress> > to_ipaddress_vec(List<String> vec) {
         var ret = new Vector<IPAddress>()
         for (ipstr : vec) {
             val ipa = IPAddress.parse(ipstr);
@@ -958,7 +958,7 @@ class IPAddress {
     ///    ip.first.to_s
     ///      ///  "192.168.100.1"
     ///
-    public def IPAddress first() {
+    def IPAddress first() {
         return this.from(this.network().host_address.add(this.ip_bits.host_ofs), this.prefix);
     }
 
@@ -983,7 +983,7 @@ class IPAddress {
     ///      ///  "192.168.100.254"
     ///
     
-    public def IPAddress last() {
+    def IPAddress last() {
         return this.from(this.broadcast().host_address.subtract(this.ip_bits.host_ofs), this.prefix);
     }
 
@@ -1007,7 +1007,7 @@ class IPAddress {
         def void Run(IPAddress ipa)
     }
     
-    public def each_host(Each func) {
+    def each_host(Each func) {
         var i = this.first().host_address;
         while (i.compareTo(this.last().host_address) <= 0) {
             func.Run(this.from(i, this.prefix));
@@ -1036,7 +1036,7 @@ class IPAddress {
     ///      ///  "10.0.0.7"
     ///
     
-    public def each(Each func) {
+    def each(Each func) {
         var i = this.network().host_address;
         while (i.compareTo(this.broadcast().host_address) <= 0) {
             func.Run(this.from(i, this.prefix));
@@ -1085,11 +1085,11 @@ class IPAddress {
     ///      ///  8
     ///
     
-    public def BigInteger size() {
+    def BigInteger size() {
         return BigInteger.ONE.shiftLeft(this.prefix.host_prefix());
     }
     
-    public def boolean is_same_kind(IPAddress oth) {
+    def boolean is_same_kind(IPAddress oth) {
         return this.is_ipv4() == oth.is_ipv4() &&
         this.is_ipv6() == oth.is_ipv6();
     }
@@ -1109,7 +1109,7 @@ class IPAddress {
     ///      ///  false
     ///
     
-    public def boolean includes(IPAddress oth) {
+    def boolean includes(IPAddress oth) {
         val ret = this.is_same_kind(oth) &&
             this.prefix.num <= oth.prefix.num &&
             this.network().host_address.equals(IPAddress.to_network(oth.host_address, this.prefix.host_prefix()));
@@ -1129,7 +1129,7 @@ class IPAddress {
     ///      ///  true
     ///
     
-    public def boolean includes_all(List<IPAddress> oths) {
+    def boolean includes_all(List<IPAddress> oths) {
         return oths.findFirst[oth| return !this.includes(oth) ] === null
     }
     
@@ -1143,7 +1143,7 @@ class IPAddress {
     ///      ///  true
     ///
     
-    public def boolean is_private() {
+    def boolean is_private() {
         return this.vt_is_private.run(this);
     }
 
@@ -1179,7 +1179,7 @@ class IPAddress {
     ///  Returns an array of IPv4 objects
     ///
     
-    public static def List<IPAddress> sum_first_found(List<IPAddress> arr)  {
+    static def List<IPAddress> sum_first_found(List<IPAddress> arr)  {
         var dup = new Vector<IPAddress>(arr);
         if (dup.length() < 2) {
             return dup;
@@ -1196,7 +1196,7 @@ class IPAddress {
         return dup;
     }
     
-    public def Result<List<IPAddress>> split(int subnets) {
+    def Result<List<IPAddress>> split(int subnets) {
         if (subnets == 0 || (1 << this.prefix.host_prefix()) <= subnets) {
             return Result.Err('''Value <<subnets>> out of range''');
         }
@@ -1235,7 +1235,7 @@ class IPAddress {
     ///  If +new_prefix+ is less than 1, returns 0.0.0.0/0
     ///
     
-    public def Result<IPAddress> supernet(int new_prefix)  {
+    def Result<IPAddress> supernet(int new_prefix)  {
         if (new_prefix >= this.prefix.num) {
             return Result.Err('''New prefix must be smaller than existing prefix: <<new_prefix>> >= <<this.prefix.num)>>''')
         }
@@ -1269,7 +1269,7 @@ class IPAddress {
     ///
 
     
-    public def Result<List<IPAddress>> subnet(int subprefix) {
+    def Result<List<IPAddress>> subnet(int subprefix) {
         if (subprefix < this.prefix.num || this.ip_bits.bits < subprefix) {
             return Result.Err('''New prefix must be between prefix<<this.prefix.num>> <<subprefix>> and <<this.ip_bits.bits>>''')
         }
@@ -1299,7 +1299,7 @@ class IPAddress {
     ///      ///  "ac10:0a01"
     ///
     
-    public def IPAddress to_ipv6() {
+    def IPAddress to_ipv6() {
         return this.vt_to_ipv6.run(this);
     }
 
@@ -1307,7 +1307,7 @@ class IPAddress {
     //  private methods
     //
     
-    public def Result<Prefix> newprefix(int num) {
+    def Result<Prefix> newprefix(int num) {
         for (var i = num; i < this.ip_bits.bits; i++) {
             var a = Math.floor(Math.log(i)/Math.log(2))
             if (a == Math.log(i)/Math.log(2)) {
@@ -1317,7 +1317,7 @@ class IPAddress {
         return Result.Err('''newprefix not found <<num>>,<<this.ip_bits.bits>>''');
     }
 
-    public static def Integer parseInt(String s, int radix) {
+    static def Integer parseInt(String s, int radix) {
         try {
             return Integer.valueOf(s, radix);
         } catch (NumberFormatException n) {

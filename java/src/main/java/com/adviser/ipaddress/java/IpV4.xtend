@@ -23,7 +23,7 @@ class IpV4 {
                 IpV6.ipv6_is_private, IpV6.ipv6_is_loopback, IpV6.ipv6_to_ipv6)
     ]
 
-    public static def Result<IPAddress> from_u32(long addr, int _prefix) {
+    static def Result<IPAddress> from_u32(long addr, int _prefix) {
         val prefix = Prefix32.create(_prefix);
         if(prefix.isErr()) {
             return Result.Err(prefix.unwrapErr());
@@ -39,7 +39,7 @@ class IpV4 {
         ));
     }
 
-    public static def Result<IPAddress> create(String str)  {
+    static def Result<IPAddress> create(String str)  {
         val splitted = IPAddress.split_at_slash(str);
         if(!IPAddress.is_valid_ipv4(splitted.addr)) {
             return Result.Err('''Invalid IP <<str>>''');
@@ -1070,7 +1070,7 @@ class IpV4 {
     public final static BigInteger xc0000000 = BigInteger.valueOf(3221225472L)
     public final static BigInteger xe0000000 = BigInteger.valueOf(3758096384L)
 
-    public static def boolean is_class_a(IPAddress my) {
+    static def boolean is_class_a(IPAddress my) {
 //      val ret = my.host_address.compareTo(x80000000)
       return my.is_ipv4() && my.host_address.compareTo(x80000000) < 0;
     }
@@ -1089,7 +1089,7 @@ class IpV4 {
     //    ip.b?
     //      // => true
     //
-    public static def boolean is_class_b(IPAddress my) {
+    static def boolean is_class_b(IPAddress my) {
         return my.is_ipv4() && x80000000.compareTo(my.host_address) <= 0
                 && my.host_address.compareTo(xc0000000) < 0;
     }
@@ -1108,7 +1108,7 @@ class IpV4 {
     //      // => true
     //
 
-    public static def boolean is_class_c(IPAddress my) {
+    static def boolean is_class_c(IPAddress my) {
         return my.is_ipv4() && xc0000000.compareTo(my. host_address) <= 0 
           && my.host_address.compareTo(xe0000000) < 0
     }
@@ -1347,7 +1347,7 @@ class IpV4 {
     //  prefix of /24 or 255.255.255.0
 
     //
-    public static def Result<IPAddress> parse_classful(String ip_s) {
+    static def Result<IPAddress> parse_classful(String ip_s) {
         if(!IPAddress.is_valid_ipv4(ip_s)) {
             return Result.Err('''Invalid IP <<ip_si>>''');
         }

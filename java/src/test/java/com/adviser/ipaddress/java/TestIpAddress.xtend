@@ -1,9 +1,10 @@
 package com.adviser.ipaddress.java
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Vector
 
 class TestIpAddress {
@@ -26,7 +27,7 @@ class TestIpAddress {
         }
     }
 
-    public def IPAddressTest setup() {
+    def IPAddressTest setup() {
         return new IPAddressTest(
             "172.16.10.1/24",
             "2001:db8::8:800:200c:417a/64",
@@ -37,7 +38,7 @@ class TestIpAddress {
     }
 
     @Test
-    public def test_method_ipaddress() {
+    def test_method_ipaddress() {
         assertTrue(IPAddress.parse(setup().valid_ipv4).isOk());
         assertTrue(IPAddress.parse(setup().valid_ipv6).isOk());
         assertTrue(IPAddress.parse(setup().valid_mapped).isOk());
@@ -51,7 +52,7 @@ class TestIpAddress {
         assertTrue(IPAddress.parse(setup().invalid_mapped).isErr());
     }
     @Test
-    public def test_module_method_valid() {
+    def test_module_method_valid() {
         assertEquals(true, IPAddress.is_valid("10.0.0.1"));
         assertEquals(true, IPAddress.is_valid("10.0.0.0"));
         assertEquals(true, IPAddress.is_valid("2002::1"));
@@ -64,7 +65,7 @@ class TestIpAddress {
         assertEquals(false, IPAddress.is_valid("2002:::1"));
     }
     @Test
-    public def test_module_method_valid_ipv4_netmark() {
+    def test_module_method_valid_ipv4_netmark() {
         assertEquals(true, IPAddress.is_valid_netmask("255.255.255.0"));
         assertEquals(false, IPAddress.is_valid_netmask("10.0.0.1"));
     }
@@ -76,12 +77,12 @@ class TestIpAddress {
         this.stop = stop
       }
     }
-    public static def Range(int start, int stop) {
+    static def Range(int start, int stop) {
         return new Ranger(start, stop)
     }
 
     @Test
-    public def test_summarize() {
+    def test_summarize() {
         val netstr = new Vector<String>()
         val ranges = #[
                      Range(1,10), Range(11,127), 

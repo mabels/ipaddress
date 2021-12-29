@@ -1,9 +1,10 @@
 package com.adviser.ipaddress.java
 
 import java.math.BigInteger
-import org.junit.Test
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class TestIpv6Unspec {
@@ -24,7 +25,7 @@ class TestIpv6Unspec {
         }
     }
 
-    public def IPv6UnspecifiedTest setup() {
+    def IPv6UnspecifiedTest setup() {
         return new IPv6UnspecifiedTest(
             Ipv6Unspec.create(),
             "::",
@@ -34,7 +35,7 @@ class TestIpv6Unspec {
     }
 
     @Test
-    public def test_attributes() {
+    def test_attributes() {
         assertEquals(setup().ip.host_address, setup().num);
         assertEquals(128, setup().ip.prefix().get_prefix());
         assertEquals(true, setup().ip.is_unspecified());
@@ -45,7 +46,7 @@ class TestIpv6Unspec {
     }
    
     @Test 
-    public def test_method_ipv6() {
+    def test_method_ipv6() {
         assertEquals(true, setup().ip.is_ipv6());
     }
 }

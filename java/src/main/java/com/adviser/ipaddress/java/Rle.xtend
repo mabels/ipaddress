@@ -16,14 +16,14 @@ class Rle {
         this.max = max
     }
 
-    public def Inspect() {
+    def Inspect() {
         return '''<Rle@part:{:x},pos:{},cnt:{},max:{}> self.part, self.pos, self.cnt, self.max)'''
     }
 
-    override def boolean equals(Object other) {
+    override boolean equals(Object other) {
       return eq(other as Rle)
     }
-    public def boolean eq(Rle other) {
+    def boolean eq(Rle other) {
         return this.part == other.part && this.pos == other.pos &&
                 this.cnt == other.cnt && this.max == other.max;
     }
@@ -33,13 +33,13 @@ class Rle {
         public HashMap<Long, Vector<Integer>> max_poses = new HashMap<Long, Vector<Integer>>();
         public Vector<Rle> ret = new Vector<Rle>();
 
-        public def void handle_last() {
+        def void handle_last() {
             if (this.value === null) {
                 return
             }
             var _last = this.value;
             
-            var max_rles = max_poses.get(new Long(_last.part))
+            var max_rles = max_poses.get(Long.valueOf(_last.part))
             if (max_rles === null) {
                 max_rles = new Vector<Integer>()
                 max_poses.put(_last.part, max_rles);
@@ -65,7 +65,7 @@ class Rle {
         }
     }
 
-    public static def Vector<Rle> code(int[] parts) {
+    static def Vector<Rle> code(int[] parts) {
         var last = new Last();
         // println!("code");
         for (var i = 0; i < parts.length(); i++) {

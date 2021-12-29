@@ -12,7 +12,7 @@ class Prefix {
     }
     public final VtFrom vt_from;
 
-    public new(int num, IpBits ip_bits, BigInteger netmask, VtFrom vtfrom) {
+    new(int num, IpBits ip_bits, BigInteger netmask, VtFrom vtfrom) {
        this.num = num
        this.ip_bits = ip_bits
        this.net_mask = netmask
@@ -20,20 +20,20 @@ class Prefix {
     }
 
 
-    override def Prefix clone() {
+    override Prefix clone() {
         return new Prefix(num, ip_bits, net_mask, vt_from);
     }
 
-    public def boolean equal(Prefix other) {
+    def boolean equal(Prefix other) {
         return this.ip_bits.version == other.ip_bits.version &&
           this.num == other.num;
     }
 
-    public def String inspect() {
+    def String inspect() {
         return '''Prefix: «num»'''
     }
 
-    public def int compare(Prefix oth) {
+    def int compare(Prefix oth) {
         if (this.ip_bits.version < oth.ip_bits.version) {
             return -1;
         } else if (this.ip_bits.version > oth.ip_bits.version) {
@@ -49,19 +49,19 @@ class Prefix {
         }
     }
     
-    public def Result<Prefix> from(int num) {
+    def Result<Prefix> from(int num) {
         return this.vt_from.run(this, num)
     }
 
-    public def String to_ip_str() {
+    def String to_ip_str() {
         return this.ip_bits.vt_as_compressed_string.run(this.ip_bits, this.netmask());
     }
 
-    public def BigInteger size() {
+    def BigInteger size() {
       return BigInteger.ONE.shiftLeft(this.ip_bits.bits-this.num)
     }
 
-    public static def BigInteger new_netmask(int prefix, int bits) {
+    static def BigInteger new_netmask(int prefix, int bits) {
         var mask = BigInteger.ZERO;
         val host_prefix = bits-prefix;
         for (var i = 0 ; i < prefix ; i++) {
@@ -70,11 +70,11 @@ class Prefix {
         return mask
     }
 
-    public def BigInteger netmask() {
+    def BigInteger netmask() {
         return BigInteger.ZERO.add(this.net_mask)
     }
 
-    public def int get_prefix() {
+    def int get_prefix() {
         return this.num
     }
 
@@ -87,7 +87,7 @@ class Prefix {
     ///    prefix.hostmask
     ///      ///  "0.0.0.255"
     ///
-    public def BigInteger host_mask() {
+    def BigInteger host_mask() {
         var ret = BigInteger.ZERO;
         for (var i = 0; i  < this.ip_bits.bits-this.num; i++) {
             ret = ret.shiftLeft(1).add(BigInteger.ONE);
@@ -104,7 +104,7 @@ class Prefix {
     ///    prefix.host_prefix
     ///      ///  128
     ///
-    public def int host_prefix() {
+    def int host_prefix() {
         return (this.ip_bits.bits) -this.num;
     }
 
@@ -118,27 +118,27 @@ class Prefix {
     ///      ///  "1111111111111111111111111111111111111111111111111111111111111111"
     ///          "0000000000000000000000000000000000000000000000000000000000000000"
     ///
-    public def String bits() {
+    def String bits() {
         return this.netmask().toString(2)
     }
-    public def String to_s() {
+    def String to_s() {
         return '''«this.get_prefix()»'''
     }
 
-    public def int to_i() {
+    def int to_i() {
         return this.get_prefix();
     }
 
-    public def Result<Prefix> add_prefix(Prefix other) {
+    def Result<Prefix> add_prefix(Prefix other) {
         return this.from(this.get_prefix() + other.get_prefix())
     }
-    public def Result<Prefix> add(int other)  {
+    def Result<Prefix> add(int other)  {
         return this.from(this.get_prefix() + other)
     }
-    public def Result<Prefix> sub_prefix(Prefix other) {
+    def Result<Prefix> sub_prefix(Prefix other) {
         return this.sub(other.get_prefix());
     }
-    public def Result<Prefix> sub(int other) {
+    def Result<Prefix> sub(int other) {
         if (other > this.get_prefix()) {
             return this.from(other-this.get_prefix());
         }

@@ -3,9 +3,10 @@ package com.adviser.ipaddress.java
 import java.math.BigInteger
 import java.util.HashMap
 
-import org.junit.Test
-import static org.junit.Assert.assertEquals
-import static org.junit.Assert.assertTrue
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 
 class TestIpv6Mapped {
@@ -31,7 +32,7 @@ class TestIpv6Mapped {
         }
     }
 
-    public def IPv6MappedTest setup() {
+    def IPv6MappedTest setup() {
         val ret = new IPv6MappedTest(
             Ipv6Mapped.create("::172.16.10.1").unwrap(),
             "::ffff:172.16.10.1",
@@ -57,7 +58,7 @@ class TestIpv6Mapped {
 
 
     @Test
-    public def test_initialize() {
+    def test_initialize() {
         val s = setup();
         assertEquals(true, IPAddress.parse("::172.16.10.1").isOk());
         s.valid_mapped.forEach[ip, u128 |
@@ -75,14 +76,14 @@ class TestIpv6Mapped {
         ]
     }
     @Test
-    public def test_mapped_from_ipv6_conversion() {
+    def test_mapped_from_ipv6_conversion() {
         setup().valid_mapped_ipv6_conversion.forEach[ip6, ip4 |
             //println!("+{}--{}", ip6, ip4);
             assertEquals(ip4, IPAddress.parse(ip6).unwrap().mapped.to_s());
         ]
     }
     @Test
-    public def test_attributes() {
+    def test_attributes() {
         val s = setup();
         assertEquals(s.address, s.ip.to_string());
         assertEquals(128, s.ip.prefix.num);
@@ -92,11 +93,11 @@ class TestIpv6Mapped {
         assertEquals(s.u128, s.ip.host_address);
     }
     @Test
-    public def test_method_ipv6() {
+    def test_method_ipv6() {
         assertTrue(setup().ip.is_ipv6());
     }
     @Test
-    public def test_mapped() {
+    def test_mapped() {
         assertTrue(setup().ip.is_mapped());
     }
 }

@@ -31,7 +31,7 @@ class IpBits {
         this.host_ofs = host_ofs
     }
 
-    public static def IpBits v4() {
+    static def IpBits v4() {
         val ipv4_as_compressed = [IpBits ip_bits, BigInteger host_address |
             val ret = new StringBuilder()
             var sep = "";
@@ -55,7 +55,7 @@ class IpBits {
     }
     public static final IpBits V4 = v4();
 
-    public static def IpBits v6() {
+    static def IpBits v6() {
         val ipv6_as_compressed = [IpBits ip_bits, BigInteger host_address |
             //println!("ipv6_as_compressed:{}", host_address);
             val ret = new StringBuilder();
@@ -101,11 +101,11 @@ class IpBits {
     }
     public static final IpBits V6 = v6();
 
-    public def String Inspect() {
+    def String Inspect() {
         return '''IpBits: «this.version»'''
     }
 
-    public static def int[] reverse(int[] data) {
+    static def int[] reverse(int[] data) {
         var right = data.length - 1;
         for (var left = 0; left < right; left++, right--) {
             // swap the values at the left and right indices
@@ -116,7 +116,7 @@ class IpBits {
         return data
     }
 
-    public def int[] parts(BigInteger bu) {
+    def int[] parts(BigInteger bu) {
         val len = (this.bits / this.part_bits);
         var int[] vec = newIntArrayOfSize(len)
         var my = BigInteger.ZERO.add(bu);
@@ -129,10 +129,10 @@ class IpBits {
         return IpBits.reverse(vec);
     }
 
-    public def String as_compressed_string(BigInteger bu) {
+    def String as_compressed_string(BigInteger bu) {
         return this.vt_as_compressed_string.run(this, bu);
     }
-    public def String as_uncompressed_string(BigInteger bu) {
+    def String as_uncompressed_string(BigInteger bu) {
         return this.vt_as_uncompressed_string.run(this, bu);
     }
 
@@ -162,7 +162,7 @@ class IpBits {
     //     return ret;
     // }
 
-    public def String dns_part_format(int i) {
+    def String dns_part_format(int i) {
         switch this.version {
             case IpVersion.V4 : return String.format("%d", i)
             case IpVersion.V6 : return String.format("%01x", i)

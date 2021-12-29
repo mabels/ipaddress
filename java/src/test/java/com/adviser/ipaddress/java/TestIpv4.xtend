@@ -1,9 +1,10 @@
 package com.adviser.ipaddress.java
 
-import org.junit.Test
-import static org.junit.Assert.assertEquals
-import static org.junit.Assert.assertArrayEquals
-import static org.junit.Assert.assertTrue
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap
 import java.util.List
 import java.util.Vector
@@ -128,7 +129,7 @@ class TestIpv4 {
 
 
    @Test
-    public def test_initialize() {
+    def test_initialize() {
         val setup = setup();
         setup.valid_ipv4.forEach[i, x |
             val ip = IPAddress.parse(i).unwrap();
@@ -139,21 +140,21 @@ class TestIpv4 {
         assertTrue(IPAddress.parse("10.0.0.0/8").isOk());
     }
    @Test
-    public def test_initialize_format_error() {
+    def test_initialize_format_error() {
         setup().invalid_ipv4.forEach[i|
             assertTrue(IPAddress.parse(i).isErr());
         ]
         assertTrue(IPAddress.parse("10.0.0.0/asd").isErr());
     }
    @Test
-    public def test_initialize_without_prefix() {
+    def test_initialize_without_prefix() {
         assertTrue(IPAddress.parse("10.10.0.0").isOk());
         val ip = IPAddress.parse("10.10.0.0").unwrap();
         assertTrue(!ip.is_ipv6() && ip.is_ipv4());
         assertEquals(32, ip.prefix.num);
     }
    @Test
-    public def test_attributes() {
+    def test_attributes() {
         setup().valid_ipv4.forEach[arg, attr |
             val ip = IPAddress.parse(arg).unwrap();
             // println!("test_attributes:{}:{:?}", arg, attr);
@@ -162,19 +163,19 @@ class TestIpv4 {
         ]
     }
    @Test
-    public def test_octets() {
+    def test_octets() {
         val ip = IPAddress.parse("10.1.2.3/8").unwrap();
         assertArrayEquals(ip.parts(), #[10, 1, 2, 3]);
     }
    @Test
-    public def test_method_to_string() {
+    def test_method_to_string() {
         setup().valid_ipv4.forEach[arg, attr |
             val ip = IPAddress.parse(arg).unwrap();
             assertEquals(String.format("%s/%d", attr.ip, attr.prefix), ip.to_string());
         ]
     }
    @Test
-    public def test_method_to_s() {
+    def test_method_to_s() {
         setup().valid_ipv4.forEach[arg, attr |
             val ip = IPAddress.parse(arg).unwrap();
             assertEquals(attr.ip, ip.to_s());
@@ -183,38 +184,38 @@ class TestIpv4 {
         ]
     }
    @Test
-    public def test_netmask() {
+    def test_netmask() {
         setup().netmask_values.forEach[addr, mask|
             val ip = IPAddress.parse(addr).unwrap();
             assertEquals(ip.netmask().to_s(), mask);
         ]
     }
    @Test
-    public def test_method_to_u32() {
+    def test_method_to_u32() {
         setup().decimal_values.forEach[addr, value|
             val ip = IPAddress.parse(addr).unwrap();
             assertEquals(ip.host_address.longValue(), value);
         ]
     }
    @Test
-    public def test_method_is_network() {
+    def test_method_is_network() {
         assertEquals(true, setup().network.is_network());
         assertEquals(false, setup().ip.is_network());
     }
    @Test
-    public def test_one_address_network() {
+    def test_one_address_network() {
         val network = IPAddress.parse("172.16.10.1/32").unwrap();
         assertEquals(false, network.is_network());
     }
    @Test
-    public def test_method_broadcast() {
+    def test_method_broadcast() {
         setup().broadcast.forEach[addr, bcast |
             val ip = IPAddress.parse(addr).unwrap();
             assertEquals(bcast, ip.broadcast().to_string());
         ]
     }
    @Test
-    public def test_method_network() {
+    def test_method_network() {
         setup().networks.forEach[addr, net|
             val ip = IPAddress.parse(addr).unwrap();
             assertEquals(net, ip.network().to_string());
@@ -222,26 +223,26 @@ class TestIpv4 {
     }
 
    @Test
-    public def test_method_bits() {
+    def test_method_bits() {
         val ip = IPAddress.parse("127.0.0.1").unwrap();
         assertEquals("01111111000000000000000000000001", ip.bits());
     }
    @Test
-    public def test_method_first() {
+    def test_method_first() {
         var ip = IPAddress.parse("192.168.100.0/24").unwrap();
         assertEquals("192.168.100.1", ip.first().to_s());
         ip = IPAddress.parse("192.168.100.50/24").unwrap();
         assertEquals("192.168.100.1", ip.first().to_s());
     }
    @Test
-    public def test_method_last() {
+    def test_method_last() {
         var ip = IPAddress.parse("192.168.100.0/24").unwrap();
         assertEquals("192.168.100.254", ip.last().to_s());
         ip = IPAddress.parse("192.168.100.50/24").unwrap();
         assertEquals("192.168.100.254", ip.last().to_s());
     }
    @Test
-    public def test_method_each_host() {
+    def test_method_each_host() {
         val ip = IPAddress.parse("10.0.0.1/29").unwrap();
         val arr = new Vector<String>()
         ip.each_host([i| arr.add(i.to_s()) ]);
@@ -249,7 +250,7 @@ class TestIpv4 {
                    #["10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5", "10.0.0.6"]);
     }
    @Test
-    public def test_method_each() {
+    def test_method_each() {
         val ip = IPAddress.parse("10.0.0.1/29").unwrap();
         val arr = new Vector<String>()
         ip.each([i| arr.add(i.to_s())]);
@@ -258,22 +259,22 @@ class TestIpv4 {
                     "10.0.0.6", "10.0.0.7"]);
     }
    @Test
-    public def test_method_size() {
+    def test_method_size() {
         val ip = IPAddress.parse("10.0.0.1/29").unwrap();
         assertEquals(ip.size(), new BigInteger("8"));
     }
    @Test
-    public def test_method_network_u32() {
+    def test_method_network_u32() {
         assertEquals(2886732288l,
                    setup().ip.network().host_address.longValue())
     }
    @Test
-    public def test_method_broadcast_u32() {
+    def test_method_broadcast_u32() {
         assertEquals(2886732543l,
                    setup().ip.broadcast().host_address.longValue())
     }
    @Test
-    public def test_method_include() {
+    def test_method_include() {
         var ip = IPAddress.parse("192.168.10.100/24").unwrap();
         val addr = IPAddress.parse("192.168.10.102/24").unwrap();
         assertEquals(true, ip.includes(addr));
@@ -293,7 +294,7 @@ class TestIpv4 {
                    ip.includes(IPAddress.parse("13.16.0.0/32").unwrap()));
     }
    @Test
-    public def test_method_include_all() {
+    def test_method_include_all() {
         val ip = IPAddress.parse("192.168.10.100/24").unwrap();
         val addr1 = IPAddress.parse("192.168.10.102/24").unwrap();
         val addr2 = IPAddress.parse("192.168.10.103/24").unwrap();
@@ -302,15 +303,15 @@ class TestIpv4 {
                    ip.includes_all(#[addr1, IPAddress.parse("13.16.0.0/32").unwrap()]));
     }
    @Test
-    public def test_method_ipv4() {
+    def test_method_ipv4() {
         assertEquals(true, setup().ip.is_ipv4());
     }
    @Test
-    public def test_method_ipv6() {
+    def test_method_ipv6() {
         assertEquals(false, setup().ip.is_ipv6());
     }
    @Test
-    public def test_method_private() {
+    def test_method_private() {
         assertEquals(true,
                    IPAddress.parse("169.254.10.50/24").unwrap().is_private());
         assertEquals(true,
@@ -336,40 +337,40 @@ class TestIpv4 {
                    IPAddress.parse("192.0.0.2/24").unwrap().is_private());
     }
    @Test
-    public def test_method_octet() {
+    def test_method_octet() {
         assertEquals(setup().ip.parts().get(0), 172);
         assertEquals(setup().ip.parts().get(1), 16);
         assertEquals(setup().ip.parts().get(2), 10);
         assertEquals(setup().ip.parts().get(3), 1);
     }
    @Test
-    public def test_method_a() {
+    def test_method_a() {
         assertEquals(true, IpV4.is_class_a(setup().class_a));
         assertEquals(false, IpV4.is_class_a(setup().class_b));
         assertEquals(false, IpV4.is_class_a(setup().class_c));
     }
    @Test
-    public def test_method_b() {
+    def test_method_b() {
         assertEquals(true, IpV4.is_class_b(setup().class_b));
         assertEquals(false, IpV4.is_class_b(setup().class_a));
         assertEquals(false, IpV4.is_class_b(setup().class_c));
     }
    @Test
-    public def test_method_c() {
+    def test_method_c() {
         assertEquals(true, IpV4.is_class_c(setup().class_c));
         assertEquals(false, IpV4.is_class_c(setup().class_a));
         assertEquals(false, IpV4.is_class_c(setup().class_b));
     }
    @Test
-    public def test_method_to_ipv6() {
+    def test_method_to_ipv6() {
         assertEquals("::ac10:a01", setup().ip.to_ipv6().to_s());
     }
    @Test
-    public def test_method_reverse() {
+    def test_method_reverse() {
         assertEquals(setup().ip.dns_reverse(), "10.16.172.in-addr.arpa");
     }
    @Test
-    public def test_method_dns_rev_domains() {
+    def test_method_dns_rev_domains() {
         assertArrayEquals(IPAddress.parse("173.17.5.1/23").unwrap().dns_rev_domains(),
                    #["4.17.173.in-addr.arpa", "5.17.173.in-addr.arpa"]);
         assertArrayEquals(IPAddress.parse("173.17.1.1/15").unwrap().dns_rev_domains(),
@@ -399,7 +400,7 @@ class TestIpv4 {
                    #["1.1.17.178.in-addr.arpa"]);
     }
    @Test
-    public def test_method_compare() {
+    def test_method_compare() {
         var ip1 = IPAddress.parse("10.1.1.1/8").unwrap();
         var ip2 = IPAddress.parse("10.1.1.1/16").unwrap();
         var ip3 = IPAddress.parse("172.16.1.1/14").unwrap();
@@ -435,14 +436,14 @@ class TestIpv4 {
         }
     }
    @Test
-    public def test_method_minus() {
+    def test_method_minus() {
         val ip1 = IPAddress.parse("10.1.1.1/8").unwrap();
         val ip2 = IPAddress.parse("10.1.1.10/8").unwrap();
         assertEquals(9, ip2.sub(ip1).intValue());
         assertEquals(9, ip1.sub(ip2).intValue());
     }
    @Test
-    public def test_method_plus() {
+    def test_method_plus() {
         var ip1 = IPAddress.parse("172.16.10.1/24").unwrap();
         var ip2 = IPAddress.parse("172.16.11.2/24").unwrap();
         assertArrayEquals(IPAddress.to_string_vec(ip1.add(ip2)), #["172.16.10.0/23"]);
@@ -472,14 +473,14 @@ class TestIpv4 {
                    #["10.0.0.0/23", "10.1.0.0/24"]);
     }
    @Test
-    public def test_method_netmask_equal() {
+    def test_method_netmask_equal() {
         val ip = IPAddress.parse("10.1.1.1/16").unwrap();
         assertEquals(16, ip.prefix.num);
         val ip2 = ip.change_netmask("255.255.255.0").unwrap();
         assertEquals(24, ip2.prefix.num);
     }
    @Test
-    public def test_method_split() {
+    def test_method_split() {
         assertTrue(setup().ip.split(0).isErr());
         assertTrue(setup().ip.split(257).isErr());
 
@@ -527,7 +528,7 @@ class TestIpv4 {
                    #["172.16.10.0/24"]);
     }
    @Test
-    public def test_method_subnet() {
+    def test_method_subnet() {
         assertTrue(setup().network.subnet(23).isErr());
         assertTrue(setup().network.subnet(33).isErr());
         assertTrue(setup().ip.subnet(30).isOk());
@@ -542,7 +543,7 @@ class TestIpv4 {
                    #["172.16.10.0/24"]);
     }
    @Test
-    public def test_method_supernet() {
+    def test_method_supernet() {
         assertTrue(setup().ip.supernet(24).isErr());
         assertEquals("0.0.0.0/0", setup().ip.supernet(0).unwrap().to_string());
         // assertEquals("0.0.0.0/0", setup().ip.supernet(-2).unwrap().to_string());
@@ -552,7 +553,7 @@ class TestIpv4 {
                    setup().ip.supernet(22).unwrap().to_string());
     }
    @Test
-    public def test_classmethod_parse_u32() {
+    def test_classmethod_parse_u32() {
         setup().decimal_values.forEach[addr,value |
             val ip = IpV4.from_u32(value.longValue(), 32).unwrap();
             val splitted = addr.split("/")
@@ -561,12 +562,12 @@ class TestIpv4 {
         ]
     }
 
-    // public def test_classhmethod_extract() {
+    // def test_classhmethod_extract() {
     //   val str = "foobar172.16.10.1barbaz";
     //   assertEquals("172.16.10.1", IPAddress.extract(str).to_s
     // }
    @Test
-    public def test_classmethod_summarize() {
+    def test_classmethod_summarize() {
 
         // Should return self if only one network given
         assertArrayEquals(IPAddress.summarize(#[setup().ip]),
@@ -654,7 +655,7 @@ class TestIpv4 {
     }
 
    @Test
-    public def test_classmethod_parse_classful() {
+    def test_classmethod_parse_classful() {
         setup().classful.forEach[ip, prefix |
             val res = IpV4.parse_classful(ip).unwrap();
             assertEquals(prefix, res.prefix.num);

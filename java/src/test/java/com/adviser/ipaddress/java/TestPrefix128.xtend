@@ -2,9 +2,11 @@ package com.adviser.ipaddress.java
 
 import java.math.BigInteger
 import java.util.HashMap
-import org.junit.Test
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 class TestPrefix128 {
 
@@ -12,7 +14,7 @@ class TestPrefix128 {
         public HashMap<Integer, BigInteger> u128_hash = new HashMap<Integer, BigInteger>()
     }
 
-    public def Prefix128Test setup() {
+    def Prefix128Test setup() {
         val p128t = new Prefix128Test()
         p128t.u128_hash.put(32, new BigInteger("340282366841710300949110269838224261120", 10))
         p128t.u128_hash.put(64, new BigInteger("340282366920938463444927863358058659840", 10))
@@ -22,13 +24,13 @@ class TestPrefix128 {
     }
 
     @Test
-    public def test_initialize() {
+    def test_initialize() {
         assertTrue(Prefix128.create(129).isErr());
         assertTrue(Prefix128.create(64).isOk());
     }
 
     @Test
-    public def test_method_bits() {
+    def test_method_bits() {
         val prefix = Prefix128.create(64).unwrap();
         var str = new StringBuilder();
         for (var i = 0; i < 64; i++) {
@@ -40,7 +42,7 @@ class TestPrefix128 {
         assertEquals(str.toString(), prefix.bits())
     }
     @Test
-    public def test_method_to_u32() {
+    def test_method_to_u32() {
         setup().u128_hash.forEach[num, u128|
             assertEquals(u128, Prefix128.create(num).unwrap().netmask())
         ]

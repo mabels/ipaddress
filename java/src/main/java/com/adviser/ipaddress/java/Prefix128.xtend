@@ -7,7 +7,7 @@ class Prefix128 {
     ///    prefix = IPAddressPrefix128.new 64
     ///      ///  64
     ///
-    public static def Result<Prefix> create(int num) {
+    static def Result<Prefix> create(int num) {
         if(num <= 128) {
             //static _FROM: &'static (Fn(&Prefix, usize) -> Result<Prefix, String>) = &from;
             //static _TO_IP_STR: &'static (Fn(&Vec<u16>) -> String) = &Prefix128::to_ip_str;
@@ -23,7 +23,7 @@ class Prefix128 {
         return Result.Err('''Prefix must be in range 0..128, got: «num»''')
     }
 
-    public def Result<Prefix> from(int num) {
+    def Result<Prefix> from(int num) {
         return create(num);
     }
 }

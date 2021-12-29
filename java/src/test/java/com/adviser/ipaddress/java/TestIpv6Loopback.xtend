@@ -1,8 +1,9 @@
 package com.adviser.ipaddress.java
 
 import java.math.BigInteger
-import org.junit.Test
-import static org.junit.Assert.assertEquals;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class TestIpv6Loopback {
@@ -34,7 +35,7 @@ class TestIpv6Loopback {
     }
 
     @Test
-    public def test_attributes() {
+    def test_attributes() {
         val s = setup();
         assertEquals(128, s.ip.prefix.num);
         assertEquals(true, s.ip.is_loopback());

@@ -50,7 +50,7 @@ package com.adviser.ipaddress.java
 ///       ///  => "::/128"
 ///
 class Ipv6Unspec {
-    public static def IPAddress create() {
+    static def IPAddress create() {
         return IPAddress.parse("::").unwrap();
     }
 }
