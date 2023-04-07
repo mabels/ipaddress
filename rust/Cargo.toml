@@ -11,9 +11,9 @@ version = "0.1.2"
 authors = ["Meno Abels <meno.abels@adviser.com>"]
 
 [dependencies]
-num = "0.1.32"
-num-traits = "0.1.32"
-num-integer = "0.1.32"
-regex = "0.2.5"
+num = "0.2.1"
+num-traits = "0.2.11"
+num-integer = "0.1.42"
+regex = "1.7.3"
 libc = "0.2.15"
 lazy_static = "1.0.0"
