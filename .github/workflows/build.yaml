@@ -17,7 +17,7 @@ jobs:
         fetch-depth: 1
 
     - name: boost
-      run: sudo apt-get update && sudo apt-get install -yq libboost1.71-dev libboost-system1.71-dev libboost-regex1.71-dev
+      run: sudo apt-get update && sudo apt-get install -yq libboost-all-dev
 
     - name: "build cpp"
       run: |
@@ -117,7 +117,7 @@ jobs:
 
     - uses: actions/setup-ruby@v1
       with:
-        ruby-version: "2.7"
+        ruby-version: "3.2"
 
     - name: "build ruby"
       run: |
