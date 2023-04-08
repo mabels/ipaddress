@@ -7,7 +7,7 @@ class Rle(val part: Int, var pos: Int, var cnt: Int, var max: Boolean) {
         return "<Rle@part:{:x},pos:{},cnt:{},max:{}> self.part, self.pos, self.cnt, self.max)"
     }
 
-    public final override fun equals(other: Any?): Boolean {
+    final override fun equals(other: Any?): Boolean {
         if (other is Rle) {
             return eq(other)
         }
@@ -43,7 +43,7 @@ class Rle(val part: Int, var pos: Int, var cnt: Int, var max: Boolean) {
                     _last.max = false
                 } else if (prev.cnt == _last.cnt) {
                     // nothing
-                } else if (prev.cnt < _last.cnt) {
+                } else /* if (prev.cnt < _last.cnt) */ {
                     // println!("<<<<< last={:?}->{}->prev={:?}", _last, idx, prev)
                     //this.ret[idx].max = false
                     prev.max = false

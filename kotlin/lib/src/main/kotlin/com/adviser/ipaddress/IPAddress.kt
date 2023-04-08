@@ -109,8 +109,8 @@ class IPAddress(
 
     companion object {
         fun sort(ipas: List<IPAddress>): MutableList<IPAddress> {
-            var ret = ipas.toMutableList()
-            ret.sortWith(Comparator { a, b -> a.compare(b); })
+            val ret = ipas.toMutableList()
+            ret.sortWith({ a, b -> a.compare(b); })
             return ret
         }
 
@@ -204,7 +204,7 @@ class IPAddress(
         fun split_to_u32(addr: String): Result<Long> {
             var ip = 0L
             var shift = 24
-            var split_addr = addr.split("."); //.collect::<Vec<&str>>()
+            var split_addr = addr.split(".") //.collect::<Vec<&str>>()
             if (split_addr.size > 4) {
                 return Result.Err("IP has not the right format:${addr}")
             }
@@ -272,7 +272,7 @@ class IPAddress(
         }
 
         fun split_to_num(addr: String): Result<BigInteger> {
-            var pre_post = addr.trim().split("::").toMutableList()
+            val pre_post = addr.trim().split("::").toMutableList()
             if (pre_post.isEmpty() && addr.contains("::")) {
                 //pre_post = Arrays.copyOf(pre_post, pre_post.size + 1)
                 //pre_post.set(pre_post.size - 1, "")
@@ -343,7 +343,7 @@ class IPAddress(
                 if (pos < 0) {
                     pos = 0
                 }
-                val stack_len = stack.size; // borrow checker
+                val stack_len = stack.size // borrow checker
                 // println!("loop:{}:{}", pos, stack_len)
                 // if stack_len == 1 {
                 //     println!("exit 1")
@@ -376,15 +376,15 @@ class IPAddress(
                             stack.get(first).includes(stack.get(second))) {
                         pos = pos - 2
                         val idx = pos_to_idx(pos, stack_len)
-                        stack.set(idx, stack.get(first).clone()); // kaputt
+                        stack.set(idx, stack.get(first).clone()) // kaputt
                         stack.removeAt(pos_to_idx(pos + 1, stack_len))
                         // println!("remove-2:{}:{}", pos + 1, stack_len)
-                        pos = pos - 1; // backtrack
+                        pos = pos - 1 // backtrack
                     } else {
                         val myFirst = stack.get(first)
-                        stack.set(first, myFirst.change_prefix(myFirst.prefix.add(1).unwrap()).unwrap()); //reset prefix
+                        stack.set(first, myFirst.change_prefix(myFirst.prefix.add(1).unwrap()).unwrap()) //reset prefix
                         // println!("easy:{}:{}=>{}", pos, stack_len, stack[first].to_string())
-                        pos = pos - 1; // do it with second as first
+                        pos = pos - 1 // do it with second as first
                     }
                 }
             }
@@ -410,7 +410,7 @@ class IPAddress(
         }
 
         fun sum_first_found(arr: List<IPAddress>): List<IPAddress> {
-            var dup = arr.toMutableList()
+            val dup = arr.toMutableList()
             if (dup.size < 2) {
                 return dup
             }
@@ -431,7 +431,7 @@ class IPAddress(
         }
 
         fun to_ipaddress_vec(vec: List<String>): Result<List<IPAddress>> {
-            var ret = mutableListOf<IPAddress>()
+            val ret = mutableListOf<IPAddress>()
             for (ipstr in vec) {
                 val ipa = parse(ipstr)
                 if (ipa.isErr()) {
@@ -691,11 +691,11 @@ class IPAddress(
 
     fun dns_parts(): IntArray {
         val len = this.ip_bits.bits / this.ip_bits.dns_bits
-        var ret = IntArray(len)
+        val ret = IntArray(len)
         var num = BigInteger.ZERO.add(this.host_address)
         val mask = BigInteger.ONE.shiftLeft(this.ip_bits.dns_bits)
         for (i in 0 until len) {
-            var part = num.mod(mask)
+            val part = num.mod(mask)
             num = num.shiftRight(this.ip_bits.dns_bits)
             ret.set(i, part.intValueExact())
         }
@@ -824,7 +824,7 @@ class IPAddress(
     ///      ///  "172.16.100.4/22"
     ///
     fun to_string(): String {
-        var ret = StringBuilder()
+        val ret = StringBuilder()
         ret.append(this.to_s())
         ret.append("/")
         ret.append(this.prefix.to_s())
@@ -875,7 +875,7 @@ class IPAddress(
 
     fun bits(): String {
         val num = this.host_address.toString(2)
-        var ret = StringBuilder()
+        val ret = StringBuilder()
         for (i in num.length until this.ip_bits.bits) {
             ret.append("0")
         }
@@ -1303,7 +1303,7 @@ class IPAddress(
 
     fun newprefix(num: Int): Result<Prefix> {
         for (i in num until this.ip_bits.bits) {
-            var a = Math.floor(Math.log(i.toDouble()) / Math.log(2.0))
+            val a = Math.floor(Math.log(i.toDouble()) / Math.log(2.0))
             if (a == Math.log(i.toDouble()) / Math.log(2.0)) {
                 return this.prefix.add(a.toInt())
             }

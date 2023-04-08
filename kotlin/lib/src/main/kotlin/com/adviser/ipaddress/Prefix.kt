@@ -8,7 +8,7 @@ interface VtFrom {
 }
 */
 
-public class Prefix(val num: Int,
+class Prefix(val num: Int,
                     val ip_bits: IpBits,
                     val net_mask: BigInteger,
                     val vt_from: (p: Prefix, n: Int) -> Result<Prefix>) {

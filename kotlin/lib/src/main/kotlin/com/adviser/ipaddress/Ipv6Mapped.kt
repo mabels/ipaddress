@@ -86,7 +86,7 @@ class Ipv6Mapped {
             val split_colon = ret.addr.split(":")
             if (split_colon.size <= 1) {
                 // println!("---1")
-                return Result.Err("not mapped format-1: ${str}")
+                return Result.Err("not mapped format-1: $str")
             }
             var netmask = ""
             if (ret.netmask != null) {

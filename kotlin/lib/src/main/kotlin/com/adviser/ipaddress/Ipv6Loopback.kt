@@ -48,7 +48,7 @@ import java.math.BigInteger
 class Ipv6Loopback {
     companion object {
         fun create(): IPAddress {
-            return IpV6.from_int(BigInteger.ONE, 128).unwrap();
+            return IpV6.from_int(BigInteger.ONE, 128).unwrap()
         }
     }
 }

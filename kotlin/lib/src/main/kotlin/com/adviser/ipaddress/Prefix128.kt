@@ -1,7 +1,7 @@
 package com.adviser.ipaddress.kotlin
 
 
-public class Prefix128 {
+class Prefix128 {
 
     companion object {
 

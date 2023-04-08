@@ -2,9 +2,9 @@ package com.adviser.ipaddress.kotlin
 
 import java.math.BigInteger
 
-val x80000000 = BigInteger.valueOf(2147483648L)
-val xc0000000 = BigInteger.valueOf(3221225472L)
-val xe0000000 = BigInteger.valueOf(3758096384L)
+val x80000000: BigInteger = BigInteger.valueOf(2147483648L)
+val xc0000000: BigInteger = BigInteger.valueOf(3221225472L)
+val xe0000000: BigInteger = BigInteger.valueOf(3758096384L)
 
 val is_private = arrayOf(
         IPAddress.parse("10.0.0.0/8").unwrap(),
@@ -49,7 +49,7 @@ class IpV4 {
         fun create(str: String): Result<IPAddress> {
             val splitted = IPAddress.split_at_slash(str)
             if (!IPAddress.is_valid_ipv4(splitted.addr)) {
-                return Result.Err("Invalid IP ${str}")
+                return Result.Err("Invalid IP $str")
             }
             var ip_prefix_num = Result.Ok(32)
             if (splitted.netmask !== null) {
