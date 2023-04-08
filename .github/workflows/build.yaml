@@ -12,7 +12,7 @@ jobs:
   cpp:
     runs-on: ['ubuntu-latest']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
 
@@ -28,7 +28,7 @@ jobs:
   cs:
     runs-on: ['ubuntu-latest']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
 
@@ -43,7 +43,7 @@ jobs:
   dart:
     runs-on: ['ubuntu-latest']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
 
@@ -58,7 +58,7 @@ jobs:
   go:
     runs-on: ['ubuntu-latest']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
 
@@ -71,7 +71,7 @@ jobs:
   java:
     runs-on: ['ubuntu-latest']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
 
@@ -83,7 +83,7 @@ jobs:
   js:
     runs-on: ['ubuntu-latest']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
 
@@ -96,7 +96,7 @@ jobs:
   kotlin:
     runs-on: ['ubuntu-latest']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
 
@@ -105,17 +105,17 @@ jobs:
     - name: "build kotlin"
       run: |
         cd kotlin && echo "build kotlin"
-        gradle build
-        gradle test
+        ./gradlew build
+        ./gradlew test
 
   ruby:
     runs-on: ['ubuntu-latest']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
 
-    - uses: actions/setup-ruby@v1
+    - uses: ruby/setup-ruby@v1
       with:
         ruby-version: "3.2"
 
@@ -129,7 +129,7 @@ jobs:
   rust:
     runs-on: ['ubuntu-latest']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
 
@@ -141,7 +141,7 @@ jobs:
   swift:
     runs-on: ['ubuntu-latest']
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 1
 
