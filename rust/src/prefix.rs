@@ -126,8 +126,9 @@ impl Prefix {
     #[allow(dead_code)]
     pub fn host_mask(&self) -> BigUint {
         let mut ret = BigUint::zero();
+        let one : i32 = 1;
         for _ in 0..(self.ip_bits.bits-self.num) {
-            ret = ret.shl(1).add(BigUint::one());
+            ret = ret.shl(one).add(BigUint::one());
         }
         return ret;
     }

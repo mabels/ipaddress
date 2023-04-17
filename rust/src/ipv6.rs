@@ -87,7 +87,7 @@ pub fn enhance_if_mapped(mut ip: IPAddress) -> Result<IPAddress, String> {
     let ipv6_top_96bit = ip.host_address.clone().shr(32);
     if ipv6_top_96bit == BigUint::from_u32(0xffff).unwrap() {
         // println!("enhance_if_mapped-1:{}", );
-        let num = ip.host_address.clone().rem(BigUint::one().shl(32));
+        let num: BigUint = ip.host_address.clone().rem(BigUint::one().shl(32));
         if num == BigUint::zero() {
             return Ok(ip);
         }
@@ -173,7 +173,7 @@ pub fn new<S: Into<String>>(_str: S) -> Result<IPAddress, String> {
     } else {
         return Err(format!("Invalid IP {}", str));
     }
-} 
+}
 
 pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
     return ia.clone();
