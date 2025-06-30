@@ -24,7 +24,10 @@ jobs:
         cd cpp && echo "build cpp"
         cmake -DCMAKE_BUILD_TYPE=Release .
         make
-        ./test/Release/*/test_*
+        for i in ./test/Release/*/test_*
+        do
+           $i
+        done
   cs:
     runs-on: ['ubuntu-latest']
     steps:
