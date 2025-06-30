@@ -91,7 +91,7 @@ jobs:
       run: |
         cd js && echo "build js"
         npm install
-        npm run format --check
+        npx prettier . --check
         npm run test
 
   kotlin:

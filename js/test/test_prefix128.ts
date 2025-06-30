@@ -8,22 +8,10 @@ class Prefix128Test {
 describe("prefix128", () => {
   function setup(): Prefix128Test {
     const p128t = new Prefix128Test();
-    p128t.u128_hash.push([
-      32,
-      Crunchy.parse("340282366841710300949110269838224261120"),
-    ]);
-    p128t.u128_hash.push([
-      64,
-      Crunchy.parse("340282366920938463444927863358058659840"),
-    ]);
-    p128t.u128_hash.push([
-      96,
-      Crunchy.parse("340282366920938463463374607427473244160"),
-    ]);
-    p128t.u128_hash.push([
-      126,
-      Crunchy.parse("340282366920938463463374607431768211452"),
-    ]);
+    p128t.u128_hash.push([32, Crunchy.parse("340282366841710300949110269838224261120")]);
+    p128t.u128_hash.push([64, Crunchy.parse("340282366920938463444927863358058659840")]);
+    p128t.u128_hash.push([96, Crunchy.parse("340282366920938463463374607427473244160")]);
+    p128t.u128_hash.push([126, Crunchy.parse("340282366920938463463374607431768211452")]);
     return p128t;
   }
 

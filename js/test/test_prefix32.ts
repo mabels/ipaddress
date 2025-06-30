@@ -125,9 +125,6 @@ describe("prefix32", () => {
   it("test_method_hostmask", () => {
     const prefix = Prefix32.create(8);
     // console.log(">>>>", prefix.host_mask());
-    assert.equal(
-      "0.255.255.255",
-      Ipv4.from_number(prefix.host_mask(), 0).to_s(),
-    );
+    assert.equal("0.255.255.255", Ipv4.from_number(prefix.host_mask(), 0).to_s());
   });
 });

@@ -100,10 +100,7 @@ export class IpBits {
     return my;
   }
 
-  public static ipv4_as_compressed(
-    ip_bits: IpBits,
-    host_address: Crunchy,
-  ): string {
+  public static ipv4_as_compressed(ip_bits: IpBits, host_address: Crunchy): string {
     let ret = "";
     let sep = "";
     for (const part of ip_bits.parts(host_address)) {
@@ -114,10 +111,7 @@ export class IpBits {
     return ret;
   }
 
-  public static ipv6_as_compressed(
-    ip_bits: IpBits,
-    host_address: Crunchy,
-  ): string {
+  public static ipv6_as_compressed(ip_bits: IpBits, host_address: Crunchy): string {
     // println!("ipv6_as_compressed:{}", host_address);
     let ret = "";
     let colon = "";
@@ -139,10 +133,7 @@ export class IpBits {
     return ret;
   }
 
-  public static ipv6_as_uncompressed(
-    ip_bits: IpBits,
-    host_address: Crunchy,
-  ): string {
+  public static ipv6_as_uncompressed(ip_bits: IpBits, host_address: Crunchy): string {
     let ret = "";
     let sep = "";
     for (const part of ip_bits.parts(host_address)) {

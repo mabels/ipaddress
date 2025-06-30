@@ -57,10 +57,7 @@ export class Crunchy {
     for (let i = 0; i < x.length; i += 7) {
       z.num.push(
         x[i] * 1048576 + x[i + 1] * 4096 + x[i + 2] * 16 + (x[i + 3] >> 4),
-        (x[i + 3] & 15) * 16777216 +
-          x[i + 4] * 65536 +
-          x[i + 5] * 256 +
-          x[i + 6],
+        (x[i + 3] & 15) * 16777216 + x[i + 4] * 65536 + x[i + 5] * 256 + x[i + 6],
       );
     }
     z.num = Crunchy.removeLeadingZeros(z.num);
@@ -112,15 +109,7 @@ export class Crunchy {
       const u = x[i++];
       const v = x[i++];
 
-      z.push(
-        u >> 20,
-        (u >> 12) & 255,
-        (u >> 4) & 255,
-        ((u << 4) | (v >> 24)) & 255,
-        (v >> 16) & 255,
-        (v >> 8) & 255,
-        v & 255,
-      );
+      z.push(u >> 20, (u >> 12) & 255, (u >> 4) & 255, ((u << 4) | (v >> 24)) & 255, (v >> 16) & 255, (v >> 8) & 255, v & 255);
     }
     // console.log("co:", a, z);
     z = Crunchy.removeLeadingZeros(z);
@@ -356,11 +345,7 @@ export class Crunchy {
       yl = y.num[i] & 16383;
       yh = y.num[i] >> 14;
 
-      for (
-        let j = n - 1, xl: number, xh: number, t1: number, t2: number;
-        j >= 0;
-        j--
-      ) {
+      for (let j = n - 1, xl: number, xh: number, t1: number, t2: number; j >= 0; j--) {
         xl = this.num[j] & 16383;
         xh = this.num[j] >> 14;
 
@@ -456,22 +441,15 @@ export class Crunchy {
     const yt = v.num[0] * 268435456 + v.num[1];
 
     // only cmp as last resort
-    while (
-      u.num[0] > k.num[0] ||
-      (u.num[0] === k.num[0] && u.compare(k) > -1)
-    ) {
+    while (u.num[0] > k.num[0] || (u.num[0] === k.num[0] && u.compare(k) > -1)) {
       q[0]++;
       u = u.unsigned_sub(k, false);
     }
 
     for (let i = 1; i <= d; i++) {
-      q[i] =
-        u.num[i - 1] === v.num[0]
-          ? 268435455
-          : ~~((u.num[i - 1] * 268435456 + u.num[i]) / v.num[0]);
+      q[i] = u.num[i - 1] === v.num[0] ? 268435455 : ~~((u.num[i - 1] * 268435456 + u.num[i]) / v.num[0]);
 
-      const xt =
-        u.num[i - 1] * 72057594037927936 + u.num[i] * 268435456 + u.num[i + 1];
+      const xt = u.num[i - 1] * 72057594037927936 + u.num[i] * 268435456 + u.num[i + 1];
       while (q[i] * yt > xt) {
         // condition check can fail due to precision problem at 28-bit
         q[i]--;
@@ -482,9 +460,7 @@ export class Crunchy {
       u = u.unsigned_sub(k, false);
 
       if (u.negative) {
-        u = Crunchy.from_14bit(
-          v.num.concat(Crunchy.zeroes.slice(0, d - i)),
-        ).unsigned_sub(u, false);
+        u = Crunchy.from_14bit(v.num.concat(Crunchy.zeroes.slice(0, d - i))).unsigned_sub(u, false);
         q[i]--;
       }
     }

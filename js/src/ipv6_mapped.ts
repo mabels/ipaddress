@@ -120,10 +120,7 @@ export const Ipv6Mapped = {
         colon = ":";
       }
       rebuild_ipv6 += colon;
-      const high_part = up_addr
-        .shr(IpBits.v6().part_bits)
-        .mod(part_mod)
-        .toString(16);
+      const high_part = up_addr.shr(IpBits.v6().part_bits).mod(part_mod).toString(16);
       const low_part = down_addr.mod(part_mod).toString(16);
       const bits = ipv6_bits.bits - addr.prefix.host_prefix();
       const rebuild_ipv4 = `${high_part}:${low_part}/${bits}`;

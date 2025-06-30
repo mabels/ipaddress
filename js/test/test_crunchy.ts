@@ -323,10 +323,7 @@ describe("#mul", function () {
     const x = Crunchy.from_8bit([255, 65, 34, 51, 95]);
     const y = Crunchy.from_8bit([42, 18, 204]);
 
-    assert.deepEqual(
-      x.mul(y).to_8bit(),
-      [41, 243, 109, 152, 188, 115, 157, 180],
-    );
+    assert.deepEqual(x.mul(y).to_8bit(), [41, 243, 109, 152, 188, 115, 157, 180]);
   });
 
   it("Should multiply numbers", function () {
@@ -340,10 +337,7 @@ describe("#mul", function () {
     const x = Crunchy.from_8bit([77, 242, 62]);
     const y = Crunchy.from_8bit([-42, 2, 113, 43, 57, 65]);
 
-    assert.deepEqual(
-      x.mul(y).to_8bit(),
-      [-12, 202, 124, 133, 146, 125, 36, 79, 190],
-    );
+    assert.deepEqual(x.mul(y).to_8bit(), [-12, 202, 124, 133, 146, 125, 36, 79, 190]);
   });
 
   it("Should multiply negative with positive number", function () {

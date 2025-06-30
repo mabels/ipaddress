@@ -6,12 +6,7 @@ import Crunchy from "../src/crunchy.js";
 class IPv6Test {
   compress_addr: [string, string][] = [];
   valid_ipv6: [string, Crunchy][] = [];
-  invalid_ipv6: string[] = [
-    ":1:2:3:4:5:6:7",
-    ":1:2:3:4:5:6:7",
-    "2002:516:2:200",
-    "dd",
-  ];
+  invalid_ipv6: string[] = [":1:2:3:4:5:6:7", ":1:2:3:4:5:6:7", "2002:516:2:200", "dd"];
   networks: [string, string][] = [];
   ip: IPAddress = IPAddress.parse("2001:db8::8:800:200c:417a/64");
   network: IPAddress = IPAddress.parse("2001:db8:8:800::/64");
@@ -29,50 +24,20 @@ describe("ipv6", () => {
 
   function setup(): IPv6Test {
     const ip6t = new IPv6Test();
-    ip6t.compress_addr.push([
-      "2001:db8:0000:0000:0008:0800:200c:417a",
-      "2001:db8::8:800:200c:417a",
-    ]);
-    ip6t.compress_addr.push([
-      "2001:db8:0:0:8:800:200c:417a",
-      "2001:db8.8:800:200c:417a",
-    ]);
+    ip6t.compress_addr.push(["2001:db8:0000:0000:0008:0800:200c:417a", "2001:db8::8:800:200c:417a"]);
+    ip6t.compress_addr.push(["2001:db8:0:0:8:800:200c:417a", "2001:db8.8:800:200c:417a"]);
     ip6t.compress_addr.push(["ff01:0:0:0:0:0:0:101", "ff01::101"]);
     ip6t.compress_addr.push(["0:0:0:0:0:0:0:1", ".1"]);
     ip6t.compress_addr.push(["0:0:0:0:0:0:0:0", "."]);
 
-    ip6t.valid_ipv6.push([
-      "FEDC:BA98:7654:3210:FEDC:BA98:7654:3210",
-      Crunchy.parse("338770000845734292534325025077361652240"),
-    ]);
-    ip6t.valid_ipv6.push([
-      "1080:0000:0000:0000:0008:0800:200C:417A",
-      Crunchy.parse("21932261930451111902915077091070067066"),
-    ]);
-    ip6t.valid_ipv6.push([
-      "1080:0:0:0:8:800:200C:417A",
-      Crunchy.parse("21932261930451111902915077091070067066"),
-    ]);
-    ip6t.valid_ipv6.push([
-      "1080:0::8:800:200C:417A",
-      Crunchy.parse("21932261930451111902915077091070067066"),
-    ]);
-    ip6t.valid_ipv6.push([
-      "1080::8:800:200C:417A",
-      Crunchy.parse("21932261930451111902915077091070067066"),
-    ]);
-    ip6t.valid_ipv6.push([
-      "FF01:0:0:0:0:0:0:43",
-      Crunchy.parse("338958331222012082418099330867817087043"),
-    ]);
-    ip6t.valid_ipv6.push([
-      "FF01:0::0:0:43",
-      Crunchy.parse("338958331222012082418099330867817087043"),
-    ]);
-    ip6t.valid_ipv6.push([
-      "FF01::43",
-      Crunchy.parse("338958331222012082418099330867817087043"),
-    ]);
+    ip6t.valid_ipv6.push(["FEDC:BA98:7654:3210:FEDC:BA98:7654:3210", Crunchy.parse("338770000845734292534325025077361652240")]);
+    ip6t.valid_ipv6.push(["1080:0000:0000:0000:0008:0800:200C:417A", Crunchy.parse("21932261930451111902915077091070067066")]);
+    ip6t.valid_ipv6.push(["1080:0:0:0:8:800:200C:417A", Crunchy.parse("21932261930451111902915077091070067066")]);
+    ip6t.valid_ipv6.push(["1080:0::8:800:200C:417A", Crunchy.parse("21932261930451111902915077091070067066")]);
+    ip6t.valid_ipv6.push(["1080::8:800:200C:417A", Crunchy.parse("21932261930451111902915077091070067066")]);
+    ip6t.valid_ipv6.push(["FF01:0:0:0:0:0:0:43", Crunchy.parse("338958331222012082418099330867817087043")]);
+    ip6t.valid_ipv6.push(["FF01:0::0:0:43", Crunchy.parse("338958331222012082418099330867817087043")]);
+    ip6t.valid_ipv6.push(["FF01::43", Crunchy.parse("338958331222012082418099330867817087043")]);
     ip6t.valid_ipv6.push(["0:0:0:0:0:0:0:1", Crunchy.parse("1")]);
     ip6t.valid_ipv6.push(["0:0:0::0:0:1", Crunchy.parse("1")]);
     ip6t.valid_ipv6.push(["::1", Crunchy.parse("1")]);
@@ -80,14 +45,8 @@ describe("ipv6", () => {
     ip6t.valid_ipv6.push(["0:0:0::0:0:0", Crunchy.parse("0")]);
     ip6t.valid_ipv6.push(["::", Crunchy.parse("0")]);
     ip6t.valid_ipv6.push(["::/0", Crunchy.parse("0")]);
-    ip6t.valid_ipv6.push([
-      "1080:0:0:0:8:800:200C:417A",
-      Crunchy.parse("21932261930451111902915077091070067066"),
-    ]);
-    ip6t.valid_ipv6.push([
-      "1080::8:800:200C:417A",
-      Crunchy.parse("21932261930451111902915077091070067066"),
-    ]);
+    ip6t.valid_ipv6.push(["1080:0:0:0:8:800:200C:417A", Crunchy.parse("21932261930451111902915077091070067066")]);
+    ip6t.valid_ipv6.push(["1080::8:800:200C:417A", Crunchy.parse("21932261930451111902915077091070067066")]);
 
     ip6t.networks.push(["2001:db8:1:1:1:1:1:1/32", "2001:db8::/32"]);
     ip6t.networks.push(["2001:db8:1:1:1:1:1::/32", "2001:db8::/32"]);
@@ -116,16 +75,7 @@ describe("ipv6", () => {
     assertArrayEqual(setup().arr, setup().ip.parts());
   });
   it("test_method_hexs", () => {
-    assertArrayEqual(setup().ip.parts_hex_str(), [
-      "2001",
-      "0db8",
-      "0000",
-      "0000",
-      "0008",
-      "0800",
-      "200c",
-      "417a",
-    ]);
+    assertArrayEqual(setup().ip.parts_hex_str(), ["2001", "0db8", "0000", "0000", "0008", "0800", "200c", "417a"]);
   });
 
   it("test_method_to_i", () => {
@@ -163,20 +113,10 @@ describe("ipv6", () => {
     assert.equal(false, setup().ip.is_network());
   });
   it("test_method_network_u128", () => {
-    assert.isOk(
-      Ipv6.from_int(
-        Crunchy.parse("42540766411282592856903984951653826560"),
-        64,
-      ).eq(setup().ip.network()),
-    );
+    assert.isOk(Ipv6.from_int(Crunchy.parse("42540766411282592856903984951653826560"), 64).eq(setup().ip.network()));
   });
   it("test_method_broadcast_u128", () => {
-    assert.isOk(
-      Ipv6.from_int(
-        Crunchy.parse("42540766411282592875350729025363378175"),
-        64,
-      ).eq(setup().ip.broadcast()),
-    );
+    assert.isOk(Ipv6.from_int(Crunchy.parse("42540766411282592875350729025363378175"), 64).eq(setup().ip.broadcast()));
   });
   it("test_method_size", () => {
     let ip = IPAddress.parse("2001:db8::8:800:200c:417a/64");
@@ -221,22 +161,13 @@ describe("ipv6", () => {
     assert.equal(str, setup().ip.to_string_uncompressed());
   });
   it("test_method_reverse", () => {
-    const str =
-      "f.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.0.0.0.5.0.5.0.e.f.f.3.ip6.arpa";
+    const str = "f.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.0.0.0.5.0.5.0.e.f.f.3.ip6.arpa";
     assert.equal(str, IPAddress.parse("3ffe:505:2::f").dns_reverse());
   });
   it("test_method_dns_rev_domains", () => {
-    assertArrayEqual(IPAddress.parse("f000:f100::/3").dns_rev_domains(), [
-      "e.ip6.arpa",
-      "f.ip6.arpa",
-    ]);
-    assertArrayEqual(IPAddress.parse("fea3:f120::/15").dns_rev_domains(), [
-      "2.a.e.f.ip6.arpa",
-      "3.a.e.f.ip6.arpa",
-    ]);
-    assertArrayEqual(IPAddress.parse("3a03:2f80:f::/48").dns_rev_domains(), [
-      "f.0.0.0.0.8.f.2.3.0.a.3.ip6.arpa",
-    ]);
+    assertArrayEqual(IPAddress.parse("f000:f100::/3").dns_rev_domains(), ["e.ip6.arpa", "f.ip6.arpa"]);
+    assertArrayEqual(IPAddress.parse("fea3:f120::/15").dns_rev_domains(), ["2.a.e.f.ip6.arpa", "3.a.e.f.ip6.arpa"]);
+    assertArrayEqual(IPAddress.parse("3a03:2f80:f::/48").dns_rev_domains(), ["f.0.0.0.0.8.f.2.3.0.a.3.ip6.arpa"]);
 
     assertArrayEqual(IPAddress.parse("f000:f100::1234/125").dns_rev_domains(), [
       "0.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
@@ -318,10 +249,7 @@ describe("ipv6", () => {
         assert.equal(ret[0].prefix.num % 4, 0);
         assert.equal(ret.length, nr_networks);
         assert.equal(net_adr.network().to_s(), ret[0].network().to_s());
-        assert.equal(
-          net_adr.broadcast().to_s(),
-          ret[ret.length - 1].broadcast().to_s(),
-        );
+        assert.equal(net_adr.broadcast().to_s(), ret[ret.length - 1].broadcast().to_s());
         //        puts "//{adr}///{prefix} //{nr_networks} //{ret}"
       }
     }
@@ -364,12 +292,7 @@ describe("ipv6", () => {
     for (const i of r) {
       ret.push(i.to_string());
     }
-    assertArrayEqual(ret, [
-      "2001:db8:1::1/64",
-      "2001:db8:1::1/65",
-      "2001:db8:1::2/64",
-      "2001:db8:2::1/64",
-    ]);
+    assertArrayEqual(ret, ["2001:db8:1::1/64", "2001:db8:1::1/65", "2001:db8:1::2/64", "2001:db8:2::1/64"]);
   });
 
   // it("test_classmethod_expand", () => {
@@ -397,9 +320,6 @@ describe("ipv6", () => {
     }
   });
   it("test_classmethod_parse_hex", () => {
-    assert.equal(
-      setup().ip.to_string(),
-      Ipv6.from_str(setup().hex, 16, 64).to_string(),
-    );
+    assert.equal(setup().ip.to_string(), Ipv6.from_str(setup().hex, 16, 64).to_string());
   });
 });

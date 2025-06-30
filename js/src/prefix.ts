@@ -33,9 +33,7 @@ export class Prefix {
   }
 
   public eq(other: Prefix): boolean {
-    return (
-      this.ip_bits.version == other.ip_bits.version && this.num == other.num
-    );
+    return this.ip_bits.version == other.ip_bits.version && this.num == other.num;
   }
 
   public ne(other: Prefix): boolean {

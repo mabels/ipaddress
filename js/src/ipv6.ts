@@ -94,10 +94,7 @@ export const Ipv6 = {
         return null;
       }
       // console.log("------G");
-      const mapped = Ipv4.from_number(
-        num,
-        ipv4_bits.bits - ip.prefix.host_prefix(),
-      );
+      const mapped = Ipv4.from_number(num, ipv4_bits.bits - ip.prefix.host_prefix());
       // console.log("------H");
       if (!mapped) {
         // println!("enhance_if_mapped-3");

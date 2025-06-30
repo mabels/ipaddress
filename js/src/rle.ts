@@ -57,12 +57,7 @@ class Rle {
   }
 
   public eq(other: Rle): boolean {
-    return (
-      this.part == other.part &&
-      this.pos == other.pos &&
-      this.cnt == other.cnt &&
-      this.max == other.max
-    );
+    return this.part == other.part && this.pos == other.pos && this.cnt == other.cnt && this.max == other.max;
   }
 
   public ne(other: Rle): boolean {

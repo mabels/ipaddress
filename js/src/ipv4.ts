@@ -104,9 +104,7 @@ export const Ipv4 = {
   //
   is_class_a(my: IPAddress): boolean {
     // console.log("is_class_a:", my.to_string(), Crunchy.from_string("80000000", 16), my.is_ipv4());
-    return (
-      my.is_ipv4() && my.host_address.lt(Crunchy.from_string("80000000", 16))
-    );
+    return my.is_ipv4() && my.host_address.lt(Crunchy.from_string("80000000", 16));
   },
 
   //  Checks whether the ip address belongs to a

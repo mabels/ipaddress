@@ -44,35 +44,14 @@ describe("ipv6_mapped", () => {
       address: "::ffff:ac10:a01/128",
     });
     ipv6.valid_mapped.push(["::13.1.68.3", Crunchy.parse("281470899930115")]);
-    ipv6.valid_mapped.push([
-      "0:0:0:0:0:ffff:129.144.52.38",
-      Crunchy.parse("281472855454758"),
-    ]);
-    ipv6.valid_mapped.push([
-      "::ffff:129.144.52.38",
-      Crunchy.parse("281472855454758"),
-    ]);
-    ipv6.valid_mapped_ipv6.push([
-      "::ffff:13.1.68.3",
-      Crunchy.parse("281470899930115"),
-    ]);
-    ipv6.valid_mapped_ipv6.push([
-      "0:0:0:0:0:ffff:8190:3426",
-      Crunchy.parse("281472855454758"),
-    ]);
-    ipv6.valid_mapped_ipv6.push([
-      "::ffff:8190:3426",
-      Crunchy.parse("281472855454758"),
-    ]);
+    ipv6.valid_mapped.push(["0:0:0:0:0:ffff:129.144.52.38", Crunchy.parse("281472855454758")]);
+    ipv6.valid_mapped.push(["::ffff:129.144.52.38", Crunchy.parse("281472855454758")]);
+    ipv6.valid_mapped_ipv6.push(["::ffff:13.1.68.3", Crunchy.parse("281470899930115")]);
+    ipv6.valid_mapped_ipv6.push(["0:0:0:0:0:ffff:8190:3426", Crunchy.parse("281472855454758")]);
+    ipv6.valid_mapped_ipv6.push(["::ffff:8190:3426", Crunchy.parse("281472855454758")]);
     ipv6.valid_mapped_ipv6_conversion.push(["::ffff:13.1.68.3", "13.1.68.3"]);
-    ipv6.valid_mapped_ipv6_conversion.push([
-      "0:0:0:0:0:ffff:8190:3426",
-      "129.144.52.38",
-    ]);
-    ipv6.valid_mapped_ipv6_conversion.push([
-      "::ffff:8190:3426",
-      "129.144.52.38",
-    ]);
+    ipv6.valid_mapped_ipv6_conversion.push(["0:0:0:0:0:ffff:8190:3426", "129.144.52.38"]);
+    ipv6.valid_mapped_ipv6_conversion.push(["::ffff:8190:3426", "129.144.52.38"]);
     return ipv6;
   }
 
@@ -87,20 +66,14 @@ describe("ipv6_mapped", () => {
         // console.log(IPAddress.parse(ip));
       }
       assert.isOk(IPAddress.parse(ip));
-      assert.equal(
-        u128.toString(),
-        IPAddress.parse(ip).host_address.toString(),
-      );
+      assert.equal(u128.toString(), IPAddress.parse(ip).host_address.toString());
     }
     for (const i of s.valid_mapped_ipv6) {
       const ip = i[0];
       const u128 = i[1];
       // println("===={}=={:x}", ip, u128);
       assert.isOk(IPAddress.parse(ip));
-      assert.equal(
-        u128.toString(),
-        IPAddress.parse(ip).host_address.toString(),
-      );
+      assert.equal(u128.toString(), IPAddress.parse(ip).host_address.toString());
     }
   });
   it("test_mapped_from_ipv6_conversion", () => {

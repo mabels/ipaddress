@@ -103,10 +103,7 @@ describe("Ipv4Test", () => {
     ipv4t.decimal_values.push(["10.0.0.0/8", Crunchy.parse("167772160")]);
     ipv4t.decimal_values.push(["172.16.0.0/16", Crunchy.parse("2886729728")]);
     ipv4t.decimal_values.push(["192.168.0.0/24", Crunchy.parse("3232235520")]);
-    ipv4t.decimal_values.push([
-      "192.168.100.4/30",
-      Crunchy.parse("3232261124"),
-    ]);
+    ipv4t.decimal_values.push(["192.168.100.4/30", Crunchy.parse("3232261124")]);
 
     ipv4t.broadcast.push(["10.0.0.0/8", "10.255.255.255/8"]);
     ipv4t.broadcast.push(["172.16.0.0/16", "172.16.255.255/16"]);
@@ -238,29 +235,13 @@ describe("Ipv4Test", () => {
     const ip = IPAddress.parse("10.0.0.1/29");
     const arr: string[] = [];
     ip.each_host((i) => arr.push(i.to_s()));
-    assertArrayEqual(arr, [
-      "10.0.0.1",
-      "10.0.0.2",
-      "10.0.0.3",
-      "10.0.0.4",
-      "10.0.0.5",
-      "10.0.0.6",
-    ]);
+    assertArrayEqual(arr, ["10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5", "10.0.0.6"]);
   });
   it("test_method_each", () => {
     const ip = IPAddress.parse("10.0.0.1/29");
     const arr: string[] = [];
     ip.each((i) => arr.push(i.to_s()));
-    assertArrayEqual(arr, [
-      "10.0.0.0",
-      "10.0.0.1",
-      "10.0.0.2",
-      "10.0.0.3",
-      "10.0.0.4",
-      "10.0.0.5",
-      "10.0.0.6",
-      "10.0.0.7",
-    ]);
+    assertArrayEqual(arr, ["10.0.0.0", "10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5", "10.0.0.6", "10.0.0.7"]);
   });
   it("test_method_size", () => {
     const ip = IPAddress.parse("10.0.0.1/29");
@@ -293,10 +274,7 @@ describe("Ipv4Test", () => {
     const addr1 = IPAddress.parse("192.168.10.102/24");
     const addr2 = IPAddress.parse("192.168.10.103/24");
     assert.equal(true, ip.includes_all([addr1, addr2]));
-    assert.equal(
-      false,
-      ip.includes_all([addr1, IPAddress.parse("13.16.0.0/32")]),
-    );
+    assert.equal(false, ip.includes_all([addr1, IPAddress.parse("13.16.0.0/32")]));
   });
   it("test_method_ipv4", () => {
     assert.equal(true, setup().ip.is_ipv4());
@@ -347,18 +325,9 @@ describe("Ipv4Test", () => {
     assert.equal(setup().ip.dns_reverse(), "10.16.172.in-addr.arpa");
   });
   it("test_method_dns_rev_domains", () => {
-    assertArrayEqual(IPAddress.parse("173.17.5.1/23").dns_rev_domains(), [
-      "4.17.173.in-addr.arpa",
-      "5.17.173.in-addr.arpa",
-    ]);
-    assertArrayEqual(IPAddress.parse("173.17.1.1/15").dns_rev_domains(), [
-      "16.173.in-addr.arpa",
-      "17.173.in-addr.arpa",
-    ]);
-    assertArrayEqual(IPAddress.parse("173.17.1.1/7").dns_rev_domains(), [
-      "172.in-addr.arpa",
-      "173.in-addr.arpa",
-    ]);
+    assertArrayEqual(IPAddress.parse("173.17.5.1/23").dns_rev_domains(), ["4.17.173.in-addr.arpa", "5.17.173.in-addr.arpa"]);
+    assertArrayEqual(IPAddress.parse("173.17.1.1/15").dns_rev_domains(), ["16.173.in-addr.arpa", "17.173.in-addr.arpa"]);
+    assertArrayEqual(IPAddress.parse("173.17.1.1/7").dns_rev_domains(), ["172.in-addr.arpa", "173.in-addr.arpa"]);
     assertArrayEqual(IPAddress.parse("173.17.1.1/29").dns_rev_domains(), [
       "0.1.17.173.in-addr.arpa",
       "1.1.17.173.in-addr.arpa",
@@ -369,21 +338,11 @@ describe("Ipv4Test", () => {
       "6.1.17.173.in-addr.arpa",
       "7.1.17.173.in-addr.arpa",
     ]);
-    assertArrayEqual(IPAddress.parse("174.17.1.1/24").dns_rev_domains(), [
-      "1.17.174.in-addr.arpa",
-    ]);
-    assertArrayEqual(IPAddress.parse("175.17.1.1/16").dns_rev_domains(), [
-      "17.175.in-addr.arpa",
-    ]);
-    assertArrayEqual(IPAddress.parse("176.17.1.1/8").dns_rev_domains(), [
-      "176.in-addr.arpa",
-    ]);
-    assertArrayEqual(IPAddress.parse("177.17.1.1/0").dns_rev_domains(), [
-      "in-addr.arpa",
-    ]);
-    assertArrayEqual(IPAddress.parse("178.17.1.1/32").dns_rev_domains(), [
-      "1.1.17.178.in-addr.arpa",
-    ]);
+    assertArrayEqual(IPAddress.parse("174.17.1.1/24").dns_rev_domains(), ["1.17.174.in-addr.arpa"]);
+    assertArrayEqual(IPAddress.parse("175.17.1.1/16").dns_rev_domains(), ["17.175.in-addr.arpa"]);
+    assertArrayEqual(IPAddress.parse("176.17.1.1/8").dns_rev_domains(), ["176.in-addr.arpa"]);
+    assertArrayEqual(IPAddress.parse("177.17.1.1/0").dns_rev_domains(), ["in-addr.arpa"]);
+    assertArrayEqual(IPAddress.parse("178.17.1.1/32").dns_rev_domains(), ["1.1.17.178.in-addr.arpa"]);
   });
   it("test_method_compare", () => {
     let ip1 = IPAddress.parse("10.1.1.1/8");
@@ -408,22 +367,14 @@ describe("Ipv4Test", () => {
     assert.equal(true, ip1.eq(ip4));
     // test sorting
     const res = [ip1, ip2, ip3].sort((a, b) => a.cmp(b));
-    assertArrayEqual(IPAddress.to_string_vec(res), [
-      "10.1.1.1/8",
-      "10.1.1.1/16",
-      "172.16.1.1/14",
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(res), ["10.1.1.1/8", "10.1.1.1/16", "172.16.1.1/14"]);
     // test same prefix
     ip1 = IPAddress.parse("10.0.0.0/24");
     ip2 = IPAddress.parse("10.0.0.0/16");
     ip3 = IPAddress.parse("10.0.0.0/8");
     {
       const res = [ip1, ip2, ip3].sort((a, b) => a.cmp(b));
-      assertArrayEqual(IPAddress.to_string_vec(res), [
-        "10.0.0.0/8",
-        "10.0.0.0/16",
-        "10.0.0.0/24",
-      ]);
+      assertArrayEqual(IPAddress.to_string_vec(res), ["10.0.0.0/8", "10.0.0.0/16", "10.0.0.0/24"]);
     }
   });
   it("test_method_minus", () => {
@@ -438,24 +389,15 @@ describe("Ipv4Test", () => {
     assertArrayEqual(IPAddress.to_string_vec(ip1.add(ip2)), ["172.16.10.0/23"]);
 
     ip2 = IPAddress.parse("172.16.12.2/24");
-    assertArrayEqual(IPAddress.to_string_vec(ip1.add(ip2)), [
-      ip1.network().to_string(),
-      ip2.network().to_string(),
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(ip1.add(ip2)), [ip1.network().to_string(), ip2.network().to_string()]);
 
     ip1 = IPAddress.parse("10.0.0.0/23");
     ip2 = IPAddress.parse("10.0.2.0/24");
-    assertArrayEqual(IPAddress.to_string_vec(ip1.add(ip2)), [
-      "10.0.0.0/23",
-      "10.0.2.0/24",
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(ip1.add(ip2)), ["10.0.0.0/23", "10.0.2.0/24"]);
 
     ip1 = IPAddress.parse("10.0.0.0/23");
     ip2 = IPAddress.parse("10.0.2.0/24");
-    assertArrayEqual(IPAddress.to_string_vec(ip1.add(ip2)), [
-      "10.0.0.0/23",
-      "10.0.2.0/24",
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(ip1.add(ip2)), ["10.0.0.0/23", "10.0.2.0/24"]);
 
     ip1 = IPAddress.parse("10.0.0.0/16");
     ip2 = IPAddress.parse("10.0.2.0/24");
@@ -463,10 +405,7 @@ describe("Ipv4Test", () => {
 
     ip1 = IPAddress.parse("10.0.0.0/23");
     ip2 = IPAddress.parse("10.1.0.0/24");
-    assertArrayEqual(IPAddress.to_string_vec(ip1.add(ip2)), [
-      "10.0.0.0/23",
-      "10.1.0.0/24",
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(ip1.add(ip2)), ["10.0.0.0/23", "10.1.0.0/24"]);
   });
   it("test_method_netmask_equal", () => {
     const ip = IPAddress.parse("10.1.1.1/16");
@@ -478,9 +417,7 @@ describe("Ipv4Test", () => {
     assert.isNull(setup().ip.split(0));
     assert.isNull(setup().ip.split(257));
 
-    assertArrayEqual(IPAddress.to_string_vec(setup().ip.split(1)), [
-      setup().ip.network().to_string(),
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(setup().ip.split(1)), [setup().ip.network().to_string()]);
 
     assertArrayEqual(IPAddress.to_string_vec(setup().network.split(8)), [
       "172.16.10.0/27",
@@ -524,18 +461,9 @@ describe("Ipv4Test", () => {
       "172.16.10.128/26",
       "172.16.10.192/26",
     ]);
-    assertArrayEqual(IPAddress.to_string_vec(setup().network.split(3)), [
-      "172.16.10.0/26",
-      "172.16.10.64/26",
-      "172.16.10.128/25",
-    ]);
-    assertArrayEqual(IPAddress.to_string_vec(setup().network.split(2)), [
-      "172.16.10.0/25",
-      "172.16.10.128/25",
-    ]);
-    assertArrayEqual(IPAddress.to_string_vec(setup().network.split(1)), [
-      "172.16.10.0/24",
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(setup().network.split(3)), ["172.16.10.0/26", "172.16.10.64/26", "172.16.10.128/25"]);
+    assertArrayEqual(IPAddress.to_string_vec(setup().network.split(2)), ["172.16.10.0/25", "172.16.10.128/25"]);
+    assertArrayEqual(IPAddress.to_string_vec(setup().network.split(1)), ["172.16.10.0/24"]);
   });
   it("test_method_subnet", () => {
     assert.isNull(setup().network.subnet(23));
@@ -547,13 +475,8 @@ describe("Ipv4Test", () => {
       "172.16.10.128/26",
       "172.16.10.192/26",
     ]);
-    assertArrayEqual(IPAddress.to_string_vec(setup().network.subnet(25)), [
-      "172.16.10.0/25",
-      "172.16.10.128/25",
-    ]);
-    assertArrayEqual(IPAddress.to_string_vec(setup().network.subnet(24)), [
-      "172.16.10.0/24",
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(setup().network.subnet(25)), ["172.16.10.0/25", "172.16.10.128/25"]);
+    assertArrayEqual(IPAddress.to_string_vec(setup().network.subnet(24)), ["172.16.10.0/24"]);
   });
   it("test_method_supernet", () => {
     assert.isNull(setup().ip.supernet(24));
@@ -574,118 +497,91 @@ describe("Ipv4Test", () => {
   });
   it("test_classmethod_summarize", () => {
     // Should return self if only one network given
-    assertArrayEqual(
-      IPAddress.to_string_vec(IPAddress.summarize([setup().ip])),
-      [setup().ip.network().to_string()],
-    );
+    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([setup().ip])), [setup().ip.network().to_string()]);
 
     // Summarize homogeneous networks
     let ip1 = IPAddress.parse("172.16.10.1/24");
     let ip2 = IPAddress.parse("172.16.11.2/24");
-    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), [
-      "172.16.10.0/23",
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), ["172.16.10.0/23"]);
 
     {
       const ip1 = IPAddress.parse("10.0.0.1/24");
       const ip2 = IPAddress.parse("10.0.1.1/24");
       const ip3 = IPAddress.parse("10.0.2.1/24");
       const ip4 = IPAddress.parse("10.0.3.1/24");
-      assertArrayEqual(
-        IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2, ip3, ip4])),
-        ["10.0.0.0/22"],
-      );
+      assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2, ip3, ip4])), ["10.0.0.0/22"]);
     }
     {
       const ip1 = IPAddress.parse("10.0.0.1/24");
       const ip2 = IPAddress.parse("10.0.1.1/24");
       const ip3 = IPAddress.parse("10.0.2.1/24");
       const ip4 = IPAddress.parse("10.0.3.1/24");
-      assertArrayEqual(
-        IPAddress.to_string_vec(IPAddress.summarize([ip4, ip3, ip2, ip1])),
-        ["10.0.0.0/22"],
-      );
+      assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip4, ip3, ip2, ip1])), ["10.0.0.0/22"]);
     }
 
     // Summarize non homogeneous networks
     ip1 = IPAddress.parse("10.0.0.0/23");
     ip2 = IPAddress.parse("10.0.2.0/24");
-    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), [
-      "10.0.0.0/23",
-      "10.0.2.0/24",
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), ["10.0.0.0/23", "10.0.2.0/24"]);
 
     ip1 = IPAddress.parse("10.0.0.0/16");
     ip2 = IPAddress.parse("10.0.2.0/24");
-    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), [
-      "10.0.0.0/16",
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), ["10.0.0.0/16"]);
 
     ip1 = IPAddress.parse("10.0.0.0/23");
     ip2 = IPAddress.parse("10.1.0.0/24");
-    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), [
-      "10.0.0.0/23",
-      "10.1.0.0/24",
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), ["10.0.0.0/23", "10.1.0.0/24"]);
 
     ip1 = IPAddress.parse("10.0.0.0/23");
     ip2 = IPAddress.parse("10.0.2.0/23");
     let ip3 = IPAddress.parse("10.0.4.0/24");
     let ip4 = IPAddress.parse("10.0.6.0/24");
-    assertArrayEqual(
-      IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2, ip3, ip4])),
-      ["10.0.0.0/22", "10.0.4.0/24", "10.0.6.0/24"],
-    );
+    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2, ip3, ip4])), [
+      "10.0.0.0/22",
+      "10.0.4.0/24",
+      "10.0.6.0/24",
+    ]);
     {
       const ip1 = IPAddress.parse("10.0.1.1/24");
       const ip2 = IPAddress.parse("10.0.2.1/24");
       const ip3 = IPAddress.parse("10.0.3.1/24");
       const ip4 = IPAddress.parse("10.0.4.1/24");
-      assertArrayEqual(
-        IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2, ip3, ip4])),
-        ["10.0.1.0/24", "10.0.2.0/23", "10.0.4.0/24"],
-      );
+      assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2, ip3, ip4])), [
+        "10.0.1.0/24",
+        "10.0.2.0/23",
+        "10.0.4.0/24",
+      ]);
     }
     {
       const ip1 = IPAddress.parse("10.0.1.1/24");
       const ip2 = IPAddress.parse("10.0.2.1/24");
       const ip3 = IPAddress.parse("10.0.3.1/24");
       const ip4 = IPAddress.parse("10.0.4.1/24");
-      assertArrayEqual(
-        IPAddress.to_string_vec(IPAddress.summarize([ip4, ip3, ip2, ip1])),
-        ["10.0.1.0/24", "10.0.2.0/23", "10.0.4.0/24"],
-      );
+      assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip4, ip3, ip2, ip1])), [
+        "10.0.1.0/24",
+        "10.0.2.0/23",
+        "10.0.4.0/24",
+      ]);
     }
 
     ip1 = IPAddress.parse("10.0.1.1/24");
     ip2 = IPAddress.parse("10.10.2.1/24");
     ip3 = IPAddress.parse("172.16.0.1/24");
     ip4 = IPAddress.parse("172.16.1.1/24");
-    assertArrayEqual(
-      IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2, ip3, ip4])),
-      ["10.0.1.0/24", "10.10.2.0/24", "172.16.0.0/23"],
-    );
-
-    let ips = [
-      IPAddress.parse("10.0.0.12/30"),
-      IPAddress.parse("10.0.100.0/24"),
-    ];
-    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize(ips)), [
-      "10.0.0.12/30",
-      "10.0.100.0/24",
+    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2, ip3, ip4])), [
+      "10.0.1.0/24",
+      "10.10.2.0/24",
+      "172.16.0.0/23",
     ]);
+
+    let ips = [IPAddress.parse("10.0.0.12/30"), IPAddress.parse("10.0.100.0/24")];
+    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize(ips)), ["10.0.0.12/30", "10.0.100.0/24"]);
 
     ips = [IPAddress.parse("172.16.0.0/31"), IPAddress.parse("10.10.2.1/32")];
-    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize(ips)), [
-      "10.10.2.1/32",
-      "172.16.0.0/31",
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize(ips)), ["10.10.2.1/32", "172.16.0.0/31"]);
 
     ips = [IPAddress.parse("172.16.0.0/32"), IPAddress.parse("10.10.2.1/32")];
-    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize(ips)), [
-      "10.10.2.1/32",
-      "172.16.0.0/32",
-    ]);
+    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize(ips)), ["10.10.2.1/32", "172.16.0.0/32"]);
   });
   it("test_classmethod_parse_classful", () => {
     for (const i of setup().classful) {

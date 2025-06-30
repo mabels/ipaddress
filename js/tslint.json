@@ -8,11 +8,7 @@
     "indent": [true, "spaces"],
     "jsdoc-format": true,
     "member-access": true,
-    "member-ordering": [
-      true,
-      "static-before-instance",
-      "variables-before-functions"
-    ],
+    "member-ordering": [true, "static-before-instance", "variables-before-functions"],
     "no-any": false,
     "no-arg": true,
     "no-conditional-assignment": true,
@@ -34,22 +30,11 @@
     "no-use-before-declare": true,
     "no-var-keyword": true,
     "no-var-requires": false,
-    "one-line": [
-      true,
-      "check-catch",
-      "check-else",
-      "check-open-brace",
-      "check-whitespace"
-    ],
+    "one-line": [true, "check-catch", "check-else", "check-open-brace", "check-whitespace"],
     "quotemark": [true, "single", "jsx-double", "avoid-escape"],
     "radix": true,
     "semicolon": [true, "always"],
-    "typedef": [
-      true,
-      "call-signature",
-      "property-declaration",
-      "member-variable-declaration"
-    ],
+    "typedef": [true, "call-signature", "property-declaration", "member-variable-declaration"],
     "typedef-whitespace": [
       true,
       {
@@ -60,14 +45,6 @@
         "variable-declaration": "nospace"
       }
     ],
-    "whitespace": [
-      true,
-      "check-branch",
-      "check-decl",
-      "check-operator",
-      "check-module",
-      "check-separator",
-      "check-type"
-    ]
+    "whitespace": [true, "check-branch", "check-decl", "check-operator", "check-module", "check-separator", "check-type"]
   }
 }

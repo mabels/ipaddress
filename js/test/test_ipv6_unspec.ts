@@ -43,10 +43,7 @@ describe("ipv6_unspec", () => {
     assert.equal(true, setup().ip.is_unspecified());
     assert.equal(setup().to_s, setup().ip.to_s());
     assert.equal(setup().to_string, setup().ip.to_string());
-    assert.equal(
-      setup().to_string_uncompressed,
-      setup().ip.to_string_uncompressed(),
-    );
+    assert.equal(setup().to_string_uncompressed, setup().ip.to_string_uncompressed());
   });
   it("test_method_ipv6", () => {
     assert.equal(true, setup().ip.is_ipv6());

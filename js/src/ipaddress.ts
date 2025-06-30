@@ -111,9 +111,7 @@ export class IPAddress {
     // }
     // console.log("************", this);
     return (
-      this.ip_bits.version == other.ip_bits.version &&
-      this.prefix.eq(other.prefix) &&
-      this.host_address.eq(other.host_address)
+      this.ip_bits.version == other.ip_bits.version && this.prefix.eq(other.prefix) && this.host_address.eq(other.host_address)
     );
   }
 
@@ -349,10 +347,7 @@ export class IPAddress {
         return post;
       }
       // println!("pre:{} post:{}", pre_parts, post_parts);
-      return new ResultCrunchyParts(
-        pre.crunchy.shl(128 - pre.parts * 16).add(post.crunchy),
-        128 / 16,
-      );
+      return new ResultCrunchyParts(pre.crunchy.shl(128 - pre.parts * 16).add(post.crunchy), 128 / 16);
     }
     // println!("split_to_num:no double:{}", addr);
     const ret = IPAddress.split_on_colon(addr);
@@ -427,10 +422,7 @@ export class IPAddress {
         // println!("complex:{}:{}:{}:{}:P1:{}:P2:{}", pos, stack_len,
         // first, second,
         // stack[first].to_string(), stack[second].to_string());
-        if (
-          stack[first].prefix.num + 1 == stack[second].prefix.num &&
-          stack[first].includes(stack[second])
-        ) {
+        if (stack[first].prefix.num + 1 == stack[second].prefix.num && stack[first].includes(stack[second])) {
           pos = pos - 2;
           const idx = IPAddress.pos_to_idx(pos, stack_len);
           stack[idx] = stack[first].clone(); // kaputt
@@ -484,10 +476,7 @@ export class IPAddress {
     let dot = "";
     const dns_parts = this.dns_parts();
     for (
-      let i = ~~(
-        (this.prefix.host_prefix() + (this.ip_bits.dns_bits - 1)) /
-        this.ip_bits.dns_bits
-      );
+      let i = ~~((this.prefix.host_prefix() + (this.ip_bits.dns_bits - 1)) / this.ip_bits.dns_bits);
       i < this.dns_parts().length;
       ++i
     ) {
@@ -515,10 +504,7 @@ export class IPAddress {
 
   public dns_networks(): IPAddress[] {
     // +this.ip_bits.dns_bits-1
-    const next_bit_mask =
-      this.ip_bits.bits -
-      ~~(this.prefix.host_prefix() / this.ip_bits.dns_bits) *
-        this.ip_bits.dns_bits;
+    const next_bit_mask = this.ip_bits.bits - ~~(this.prefix.host_prefix() / this.ip_bits.dns_bits) * this.ip_bits.dns_bits;
     // console.log("dns_networks-1", this.to_string(), this.prefix.host_prefix();j
     // this.ip_bits.dns_bits, next_bit_mask);
     if (next_bit_mask <= 0) {
@@ -703,9 +689,7 @@ export class IPAddress {
   //  See IPAddress.IPv6.Mapped for more information
   //
   public is_mapped(): boolean {
-    const ret =
-      this.mapped !== null &&
-      this.host_address.shr(32).eq(Crunchy.one().shl(16).sub(Crunchy.one()));
+    const ret = this.mapped !== null && this.host_address.shr(32).eq(Crunchy.one().shl(16).sub(Crunchy.one()));
     // console.log("+++++++++++", this.mapped, ret);
     return ret;
   }
@@ -887,10 +871,7 @@ export class IPAddress {
   //      // => "172.16.10.255"
   //
   public broadcast(): IPAddress {
-    return this.from(
-      this.network().host_address.add(this.size().sub(Crunchy.one())),
-      this.prefix,
-    );
+    return this.from(this.network().host_address.add(this.size().sub(Crunchy.one())), this.prefix);
     // IPv4.parse_u32(this.broadcast_u32, this.prefix)
   }
 
@@ -907,10 +888,7 @@ export class IPAddress {
   //      // => true
   //
   public is_network(): boolean {
-    return (
-      this.prefix.num != this.ip_bits.bits &&
-      this.host_address.eq(this.network().host_address)
-    );
+    return this.prefix.num != this.ip_bits.bits && this.host_address.eq(this.network().host_address);
   }
 
   //  Returns a new IPv4 object with the network number
@@ -922,10 +900,7 @@ export class IPAddress {
   //      // => "172.16.10.0"
   //
   public network(): IPAddress {
-    return this.from(
-      IPAddress.to_network(this.host_address, this.prefix.host_prefix()),
-      this.prefix,
-    );
+    return this.from(IPAddress.to_network(this.host_address, this.prefix.host_prefix()), this.prefix);
   }
 
   public static to_network(adr: Crunchy, host_prefix: number): Crunchy {
@@ -991,10 +966,7 @@ export class IPAddress {
   //      // => "192.168.100.1"
   //
   public first(): IPAddress {
-    return this.from(
-      this.network().host_address.add(this.ip_bits.host_ofs),
-      this.prefix,
-    );
+    return this.from(this.network().host_address.add(this.ip_bits.host_ofs), this.prefix);
   }
 
   //  Like its sibling method IPv4// first, this method
@@ -1018,10 +990,7 @@ export class IPAddress {
   //      // => "192.168.100.254"
   //
   public last(): IPAddress {
-    return this.from(
-      this.broadcast().host_address.sub(this.ip_bits.host_ofs),
-      this.prefix,
-    );
+    return this.from(this.broadcast().host_address.sub(this.ip_bits.host_ofs), this.prefix);
   }
 
   //  Iterates over all the hosts IP addresses for the given
@@ -1160,9 +1129,7 @@ export class IPAddress {
     const ret =
       this.is_same_kind(oth) &&
       this.prefix.num <= oth.prefix.num &&
-      this.network().host_address.eq(
-        IPAddress.to_network(oth.host_address, this.prefix.host_prefix()),
-      );
+      this.network().host_address.eq(IPAddress.to_network(oth.host_address, this.prefix.host_prefix()));
     // println!("includes:{}=={}=>{}", this.to_string(), oth.to_string(), ret);
     return ret;
   }
