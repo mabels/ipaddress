@@ -24,7 +24,7 @@ jobs:
         cd cpp && echo "build cpp"
         cmake -DCMAKE_BUILD_TYPE=Release .
         make
-        ./test/Release/*/test_crunchy
+        ./test/Release/*/test_*
   cs:
     runs-on: ['ubuntu-latest']
     steps:

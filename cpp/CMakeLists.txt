@@ -1,10 +1,14 @@
-cmake_minimum_required (VERSION 2.8.7)
+cmake_minimum_required (VERSION 3.11.0)
 #include(CTest)
 project (ipaddress)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ipaddress_SOURCE_DIR}/${CMAKE_BUILD_TYPE}/${CMAKE_SYSTEM_NAME})
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${ipaddress_SOURCE_DIR}/${CMAKE_BUILD_TYPE}/${CMAKE_SYSTEM_NAME})
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${ipaddress_SOURCE_DIR}/${CMAKE_BUILD_TYPE}/${CMAKE_SYSTEM_NAME})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra")
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF) 
 
 if (${CMAKE_COMPILER_IS_GNUCXX})
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
@@ -18,8 +22,10 @@ if(NOT GITBASE)
 endif()
 
 
+cmake_policy(SET CMP0167 NEW)
+
 #Only tested with versions 1.55 and 1.56
-find_package(Boost 1.65.1 COMPONENTS system regex REQUIRED)
+find_package(Boost 1.88 COMPONENTS system regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
 if(APPLE)

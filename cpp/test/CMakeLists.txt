@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 3.12.0)
 project (ipaddressTest)
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ipaddressTest_SOURCE_DIR}/${CMAKE_BUILD_TYPE}/${CMAKE_SYSTEM_NAME})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra -DTEST")
@@ -14,6 +14,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -g")
 
 
 enable_testing()
+
+cmake_policy(SET CMP0167 NEW)
 
 find_package(Boost 1.54.0 COMPONENTS system regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
