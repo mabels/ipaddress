@@ -40,7 +40,7 @@ namespace address_test
       void test_attributes() {
         Assert.Equal(setup().ip.host_address, setup().num);
         Assert.Equal(128u, setup().ip.prefix.get_prefix());
-        Assert.Equal(true, setup().ip.is_unspecified());
+        Assert.True(setup().ip.is_unspecified());
         Assert.Equal(setup().to_s, setup().ip.to_s());
         Assert.Equal(setup().to_string, setup().ip.to_string());
         Assert.Equal(setup().to_string_uncompressed,
@@ -49,7 +49,7 @@ namespace address_test
 
     [Fact]
         void test_method_ipv6() {
-          Assert.Equal(true, setup().ip.is_ipv6());
+          Assert.True(setup().ip.is_ipv6());
         }
   }
 }

@@ -41,7 +41,7 @@ namespace address_test
       void test_attributes() {
         var s = setup();
         Assert.Equal(128u, s.ip.prefix.num);
-        Assert.Equal(true, s.ip.is_loopback());
+        Assert.True(s.ip.is_loopback());
         Assert.Equal(s.s, s.ip.to_s());
         Assert.Equal(s.n, s.ip.to_string());
         Assert.Equal(s._str, s.ip.to_string_uncompressed());
@@ -50,7 +50,7 @@ namespace address_test
 
     [Fact]
       void test_method_ipv6() {
-        Assert.Equal(true, setup().ip.is_ipv6());
+        Assert.True(setup().ip.is_ipv6());
       }
   }
 }

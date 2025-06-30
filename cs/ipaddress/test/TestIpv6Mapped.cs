@@ -62,7 +62,7 @@ namespace address_test
     [Fact]
       void test_initialize() {
         var s = setup();
-        Assert.Equal(true, IPAddress.parse("::172.16.10.1").isOk());
+        Assert.True(IPAddress.parse("::172.16.10.1").isOk());
         foreach (var kp in s.valid_mapped)
         {
           var ip = kp.Key;
@@ -71,7 +71,7 @@ namespace address_test
           //if IPAddress.parse(ip).is_err() {
           //    println!("{}", IPAddress.parse(ip).unwrapErr());
           //}
-          Assert.Equal(true, IPAddress.parse(ip).isOk());
+          Assert.True(IPAddress.parse(ip).isOk());
           Assert.Equal(u128, IPAddress.parse(ip).unwrap().host_address);
         }
 
@@ -79,7 +79,7 @@ namespace address_test
           var ip = kp.Key;
           var u128 = kp.Value;
           //println!("===={}=={:x}", ip, u128);
-          Assert.Equal(true, IPAddress.parse(ip).isOk());
+          Assert.True(IPAddress.parse(ip).isOk());
           Assert.Equal(u128, IPAddress.parse(ip).unwrap().host_address);
         }
       }

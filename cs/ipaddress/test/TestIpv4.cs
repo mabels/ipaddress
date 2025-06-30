@@ -242,14 +242,14 @@ namespace address_test
     [Fact]
       void test_method_is_network()
       {
-        Assert.Equal(true, setup().network.is_network());
-        Assert.Equal(false, setup().ip.is_network());
+        Assert.True(setup().network.is_network());
+        Assert.False(setup().ip.is_network());
       }
     [Fact]
       void test_one_address_network()
       {
         var network = IPAddress.parse("172.16.10.1/32").unwrap();
-        Assert.Equal(false, network.is_network());
+        Assert.False(network.is_network());
       }
     [Fact]
       void test_method_broadcast()
@@ -338,20 +338,20 @@ namespace address_test
       {
         var ip = IPAddress.parse("192.168.10.100/24").unwrap();
         var addr = IPAddress.parse("192.168.10.102/24").unwrap();
-        Assert.Equal(true, ip.includes(addr));
-        Assert.Equal(false,
+        Assert.True(ip.includes(addr));
+        Assert.False(
             ip.includes(IPAddress.parse("172.16.0.48").unwrap()));
         ip = IPAddress.parse("10.0.0.0/8").unwrap();
-        Assert.Equal(true, ip.includes(IPAddress.parse("10.0.0.0/9").unwrap()));
-        Assert.Equal(true, ip.includes(IPAddress.parse("10.1.1.1/32").unwrap()));
-        Assert.Equal(true, ip.includes(IPAddress.parse("10.1.1.1/9").unwrap()));
-        Assert.Equal(false,
+        Assert.True(ip.includes(IPAddress.parse("10.0.0.0/9").unwrap()));
+        Assert.True(ip.includes(IPAddress.parse("10.1.1.1/32").unwrap()));
+        Assert.True(ip.includes(IPAddress.parse("10.1.1.1/9").unwrap()));
+        Assert.False(
             ip.includes(IPAddress.parse("172.16.0.0/16").unwrap()));
-        Assert.Equal(false, ip.includes(IPAddress.parse("10.0.0.0/7").unwrap()));
-        Assert.Equal(false, ip.includes(IPAddress.parse("5.5.5.5/32").unwrap()));
-        Assert.Equal(false, ip.includes(IPAddress.parse("11.0.0.0/8").unwrap()));
+        Assert.False(ip.includes(IPAddress.parse("10.0.0.0/7").unwrap()));
+        Assert.False(ip.includes(IPAddress.parse("5.5.5.5/32").unwrap()));
+        Assert.False(ip.includes(IPAddress.parse("11.0.0.0/8").unwrap()));
         ip = IPAddress.parse("13.13.0.0/13").unwrap();
-        Assert.Equal(false,
+        Assert.False(
             ip.includes(IPAddress.parse("13.16.0.0/32").unwrap()));
       }
     [Fact]
@@ -360,76 +360,76 @@ namespace address_test
         var ip = IPAddress.parse("192.168.10.100/24").unwrap();
         var addr1 = IPAddress.parse("192.168.10.102/24").unwrap();
         var addr2 = IPAddress.parse("192.168.10.103/24").unwrap();
-        Assert.Equal(true, ip.includes_all(new List<IPAddress> { addr1, addr2 }));
-        Assert.Equal(false,
+        Assert.True(ip.includes_all(new List<IPAddress> { addr1, addr2 }));
+        Assert.False(
             ip.includes_all(new List<IPAddress> { addr1, IPAddress.parse("13.16.0.0/32").unwrap() }));
       }
 
     [Fact]
       void test_method_ipv4()
       {
-        Assert.Equal(true, setup().ip.is_ipv4());
+        Assert.True(setup().ip.is_ipv4());
       }
     [Fact]
       void test_method_ipv6()
       {
-        Assert.Equal(false, setup().ip.is_ipv6());
+        Assert.False(setup().ip.is_ipv6());
       }
     [Fact]
       void test_method_private()
       {
-        Assert.Equal(true,
+        Assert.True(
             IPAddress.parse("169.254.10.50/24").unwrap().is_private());
-        Assert.Equal(true,
+        Assert.True(
             IPAddress.parse("192.168.10.50/24").unwrap().is_private());
-        Assert.Equal(true,
+        Assert.True(
             IPAddress.parse("192.168.10.50/16").unwrap().is_private());
-        Assert.Equal(true,
+        Assert.True(
             IPAddress.parse("172.16.77.40/24").unwrap().is_private());
-        Assert.Equal(true,
+        Assert.True(
             IPAddress.parse("172.16.10.50/14").unwrap().is_private());
-        Assert.Equal(true,
+        Assert.True(
             IPAddress.parse("10.10.10.10/10").unwrap().is_private());
-        Assert.Equal(true, IPAddress.parse("10.0.0.0/8").unwrap().is_private());
-        Assert.Equal(false,
+        Assert.True(IPAddress.parse("10.0.0.0/8").unwrap().is_private());
+        Assert.False(
             IPAddress.parse("192.168.10.50/12").unwrap().is_private());
-        Assert.Equal(false, IPAddress.parse("3.3.3.3").unwrap().is_private());
-        Assert.Equal(false, IPAddress.parse("10.0.0.0/7").unwrap().is_private());
-        Assert.Equal(false,
+        Assert.False( IPAddress.parse("3.3.3.3").unwrap().is_private());
+        Assert.False( IPAddress.parse("10.0.0.0/7").unwrap().is_private());
+        Assert.False(
             IPAddress.parse("172.32.0.0/12").unwrap().is_private());
-        Assert.Equal(false,
+        Assert.False(
             IPAddress.parse("172.16.0.0/11").unwrap().is_private());
-        Assert.Equal(false,
+        Assert.False(
             IPAddress.parse("192.0.0.2/24").unwrap().is_private());
       }
     [Fact]
       void test_method_octet()
       {
-        Assert.Equal(setup().ip.parts()[0], 172u);
-        Assert.Equal(setup().ip.parts()[1], 16u);
-        Assert.Equal(setup().ip.parts()[2], 10u);
-        Assert.Equal(setup().ip.parts()[3], 1u);
+        Assert.Equal(172u, setup().ip.parts()[0]);
+        Assert.Equal(16u, setup().ip.parts()[1]);
+        Assert.Equal(10u, setup().ip.parts()[2]);
+        Assert.Equal(1u, setup().ip.parts()[3]);
       }
     [Fact]
       void test_method_a()
       {
-        Assert.Equal(true, IpV4.is_class_a(setup().class_a));
-        Assert.Equal(false, IpV4.is_class_a(setup().class_b));
-        Assert.Equal(false, IpV4.is_class_a(setup().class_c));
+        Assert.True(IpV4.is_class_a(setup().class_a));
+        Assert.False(IpV4.is_class_a(setup().class_b));
+        Assert.False(IpV4.is_class_a(setup().class_c));
       }
     [Fact]
       void test_method_b()
       {
-        Assert.Equal(true, IpV4.is_class_b(setup().class_b));
-        Assert.Equal(false, IpV4.is_class_b(setup().class_a));
-        Assert.Equal(false, IpV4.is_class_b(setup().class_c));
+        Assert.True(IpV4.is_class_b(setup().class_b));
+        Assert.False(IpV4.is_class_b(setup().class_a));
+        Assert.False(IpV4.is_class_b(setup().class_c));
       }
     [Fact]
       void test_method_c()
       {
-        Assert.Equal(true, IpV4.is_class_c(setup().class_c));
-        Assert.Equal(false, IpV4.is_class_c(setup().class_a));
-        Assert.Equal(false, IpV4.is_class_c(setup().class_b));
+        Assert.True(IpV4.is_class_c(setup().class_c));
+        Assert.False(IpV4.is_class_c(setup().class_a));
+        Assert.False(IpV4.is_class_c(setup().class_b));
       }
     [Fact]
       void test_method_to_ipv6()
@@ -439,7 +439,7 @@ namespace address_test
     [Fact]
       void test_method_reverse()
       {
-        Assert.Equal(setup().ip.dns_reverse(), "10.16.172.in-addr.arpa");
+        Assert.Equal("10.16.172.in-addr.arpa", setup().ip.dns_reverse());
       }
     [Fact]
       void test_method_dns_rev_domains()
@@ -480,20 +480,20 @@ namespace address_test
         var ip4 = IPAddress.parse("10.1.1.1/8").unwrap();
 
         // ip2 should be greater than ip1
-        Assert.Equal(true, ip1.lt(ip2));
-        Assert.Equal(false, ip1.gt(ip2));
-        Assert.Equal(false, ip2.lt(ip1));
+        Assert.True(ip1.lt(ip2));
+        Assert.False(ip1.gt(ip2));
+        Assert.False(ip2.lt(ip1));
         // ip2 should be less than ip3
-        Assert.Equal(true, ip2.lt(ip3));
-        Assert.Equal(false, ip2.gt(ip3));
+        Assert.True(ip2.lt(ip3));
+        Assert.False(ip2.gt(ip3));
         // ip1 should be less than ip3
-        Assert.Equal(true, ip1.lt(ip3));
-        Assert.Equal(false, ip1.gt(ip3));
-        Assert.Equal(false, ip3.lt(ip1));
+        Assert.True(ip1.lt(ip3));
+        Assert.False(ip1.gt(ip3));
+        Assert.False(ip3.lt(ip1));
         // ip1 should be equal to itself
-        Assert.Equal(true, ip1.equal(ip1));
+        Assert.True(ip1.equal(ip1));
         // ip1 should be equal to ip4
-        Assert.Equal(true, ip1.equal(ip4));
+        Assert.True(ip1.equal(ip4));
         // test sorting
         var res = IPAddress.sort(new List<IPAddress> { ip1, ip2, ip3 });
         Assert.Equal(IPAddress.to_string_vec(res),
