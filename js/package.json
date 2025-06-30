@@ -4,6 +4,12 @@
   "description": "ipaddress handles ipv4 and ipv6",
   "main": "./dist/src/index.js",
   "type": "module",
+   "files":  [
+     "dist/",
+     "src/",
+     "test/",
+     "package.json"
+  ],
   "scripts": {
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",

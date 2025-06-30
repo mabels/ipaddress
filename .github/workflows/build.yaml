@@ -95,7 +95,14 @@ jobs:
         cd js && echo "build js"
         npm install
         npx prettier . --check
+        npm run build
         npm run test
+    - name: publish
+      if: startsWith(github.ref, 'refs/tags/js@v')
+      run: |
+        npm version $(echo $GITHUB_REF | sed 's/^refs/tags/js@v//')
+        grep version package.json
+        npm publish
 
   kotlin:
     runs-on: ['ubuntu-latest']
