@@ -16,39 +16,36 @@
 
 export class Crunchy {
   num: number[] = [];
-  negative: boolean = false;
+  negative = false;
 
   static zeroes: number[] = ((n: number): number[] => {
-    let z: number[] = [];
-    for (; z.push(0) < n;) { }
-    return z;
+    return new Array(n).fill(0);
   })(60);
 
-
   public clone(): Crunchy {
-    let ret = new Crunchy();
+    const ret = new Crunchy();
     ret.num = this.num.slice();
     ret.negative = this.negative;
     return ret;
   }
 
   public static removeLeadingZeros(inn: number[]): number[] {
-    let out = inn.slice();
+    const out = inn.slice();
     while (out[0] === 0 && out.length > 1) {
       out.shift();
     }
-    return out;//.transformOut();
+    return out; // .transformOut();
   }
 
   public static from_14bit(a: number[]): Crunchy {
-    let ret = new Crunchy();
+    const ret = new Crunchy();
     ret.num = a;
     return ret;
   }
 
   public static from_8bit(a: number[]): Crunchy {
     let x = [0, 0, 0, 0, 0, 0].slice((a.length - 1) % 7);
-    let z = new Crunchy();
+    const z = new Crunchy();
 
     if (a[0] < 0) {
       a[0] *= -1;
@@ -58,7 +55,13 @@ export class Crunchy {
     }
     x = x.concat(a);
     for (let i = 0; i < x.length; i += 7) {
-      z.num.push((x[i] * 1048576 + x[i + 1] * 4096 + x[i + 2] * 16 + (x[i + 3] >> 4)), ((x[i + 3] & 15) * 16777216 + x[i + 4] * 65536 + x[i + 5] * 256 + x[i + 6]));
+      z.num.push(
+        x[i] * 1048576 + x[i + 1] * 4096 + x[i + 2] * 16 + (x[i + 3] >> 4),
+        (x[i + 3] & 15) * 16777216 +
+          x[i + 4] * 65536 +
+          x[i + 5] * 256 +
+          x[i + 6],
+      );
     }
     z.num = Crunchy.removeLeadingZeros(z.num);
     return z;
@@ -71,11 +74,12 @@ export class Crunchy {
   public static from_number(val: number): Crunchy {
     return Crunchy.parse("" + val);
   }
-  public static from_string(val: string, radix: number = 10): Crunchy {
-    let x = val.split("");
+
+  public static from_string(val: string, radix = 10): Crunchy {
+    const x = val.split("");
     let p = Crunchy.one();
     let a = Crunchy.zero();
-    let b = Crunchy.from_8bit([radix]);
+    const b = Crunchy.from_8bit([radix]);
     // console.log("fromstring:one:", p);
     // console.log("fromstring:zero:", a);
     // console.log("fromstring:radix:", b);
@@ -85,8 +89,8 @@ export class Crunchy {
       n = true;
       x.shift();
     }
-    while (x.length) {
-      let c = parseInt(x.pop(), radix);
+    while (x.length > 0) {
+      const c = parseInt(x.pop(), radix);
       if (isNaN(c)) {
         console.error("from_string:", val);
         return null;
@@ -100,22 +104,22 @@ export class Crunchy {
   }
 
   public to_8bit(): number[] {
-    let x = [0].slice((this.num.length - 1) % 2).concat(this.num);
+    const x = [0].slice((this.num.length - 1) % 2).concat(this.num);
     let z: number[] = [];
     // z.num = [];
 
-    for (let i = 0; i < x.length;) {
-      let u = x[i++];
-      let v = x[i++];
+    for (let i = 0; i < x.length; ) {
+      const u = x[i++];
+      const v = x[i++];
 
       z.push(
-        (u >> 20),
-        (u >> 12 & 255),
-        (u >> 4 & 255),
-        ((u << 4 | v >> 24) & 255),
-        (v >> 16 & 255),
-        (v >> 8 & 255),
-        (v & 255)
+        u >> 20,
+        (u >> 12) & 255,
+        (u >> 4) & 255,
+        ((u << 4) | (v >> 24)) & 255,
+        (v >> 16) & 255,
+        (v >> 8) & 255,
+        v & 255,
       );
     }
     // console.log("co:", a, z);
@@ -128,8 +132,8 @@ export class Crunchy {
   }
 
   public compare(y: Crunchy): number {
-    let xl = this.num.length,
-      yl = y.num.length; //zero front pad problem
+    const xl = this.num.length;
+    const yl = y.num.length; // zero front pad problem
 
     if (xl < yl) {
       return -1;
@@ -138,7 +142,7 @@ export class Crunchy {
     }
 
     for (let i = 0; i < xl; i++) {
-      //console.log("x=y:", i, x, y);
+      // console.log("x=y:", i, x, y);
       if (this.num[i] < y.num[i]) return -1;
       if (this.num[i] > y.num[i]) return 1;
     }
@@ -153,6 +157,7 @@ export class Crunchy {
   public lte(oth: Crunchy): boolean {
     return this.compare(oth) <= 0;
   }
+
   public lt(oth: Crunchy): boolean {
     return this.compare(oth) < 0;
   }
@@ -160,6 +165,7 @@ export class Crunchy {
   public gt(oth: Crunchy): boolean {
     return this.compare(oth) > 0;
   }
+
   public gte(oth: Crunchy): boolean {
     return this.compare(oth) >= 0;
   }
@@ -180,11 +186,11 @@ export class Crunchy {
   }
 
   public unsigned_add(_y: Crunchy): Crunchy {
-    let n = this.num.length,
-      t = _y.num.length,
-      i = Math.max(n, t),
-      c = 0,
-      z = Crunchy.zeroes.slice(0, i);
+    const n = this.num.length;
+    const t = _y.num.length;
+    let i = Math.max(n, t);
+    let c = 0;
+    const z = Crunchy.zeroes.slice(0, i);
     // console.log("add:1:", new Date());
     let x = this.num;
     let y = _y.num;
@@ -209,7 +215,7 @@ export class Crunchy {
     if (c === 1) {
       z.unshift(c);
     }
-    let ret = new Crunchy();
+    const ret = new Crunchy();
     ret.num = z;
     // console.log("add:4:", new Date());
     return ret;
@@ -233,12 +239,12 @@ export class Crunchy {
     return z;
   }
 
-  public unsigned_sub(_y: Crunchy, internal: boolean = false): Crunchy {
-    let n = this.num.length,
-      t = _y.num.length,
-      i = Math.max(n, t),
-      c = 0,
-      z = Crunchy.zeroes.slice(0, i);
+  public unsigned_sub(_y: Crunchy, internal = false): Crunchy {
+    const n = this.num.length;
+    const t = _y.num.length;
+    let i = Math.max(n, t);
+    let c = 0;
+    const z = Crunchy.zeroes.slice(0, i);
     let x = this.num;
     let y = _y.num;
     if (n < t) {
@@ -263,19 +269,20 @@ export class Crunchy {
     let cry = new Crunchy();
     cry.num = z;
     if (c === 1 && !internal) {
-      let zero = new Crunchy();
+      const zero = new Crunchy();
       zero.num = Crunchy.zeroes.slice(0, z.length);
       cry = zero.unsigned_sub(cry, true);
       cry.negative = true;
     }
     return cry;
   }
+
   public lsh(s: number): Crunchy {
-    var ss = s % 28,
-      ls = Math.floor(s / 28),
-      l = this.num.length,
-      z: Crunchy = this.clone(),
-      t = 0;
+    const ss = s % 28;
+    const ls = Math.floor(s / 28);
+    let l = this.num.length;
+    const z: Crunchy = this.clone();
+    let t = 0;
 
     if (ss) {
       z.num = [];
@@ -289,7 +296,6 @@ export class Crunchy {
       }
 
       z.negative = this.negative;
-
     }
     if (ls) {
       z.num = z.num.concat(Crunchy.zeroes.slice(0, ls));
@@ -298,7 +304,6 @@ export class Crunchy {
     // console.log(this, s, z);
     return z;
   }
-
 
   // public leftShift(s: number): Crunchy {
   //   return this.transformIn()
@@ -310,12 +315,11 @@ export class Crunchy {
   //   return Crunchy.from_8bit(Crunch.leftShift(this.num, num));
   // }
 
-
   public rsh(s: number): Crunchy {
-    let ss = s % 28,
-      ls = Math.floor(s / 28),
-      l = this.num.length - ls,
-      z = this.clone();
+    const ss = s % 28;
+    const ls = Math.floor(s / 28);
+    let l = this.num.length - ls;
+    const z = this.clone();
     z.num = this.num.slice(0, l);
     if (ss) {
       while (--l >= 0) {
@@ -338,14 +342,13 @@ export class Crunchy {
   //   return Crunchy.from_8bit(res);
   // }
 
-
-
-
   public mul(y: Crunchy): Crunchy {
-    let yl: number, yh: number, c: number,
-      n = this.num.length,
-      i = y.num.length,
-      z = Crunchy.zeroes.slice(0, n + i);
+    let yl: number;
+    let yh: number;
+    let c: number;
+    const n = this.num.length;
+    let i = y.num.length;
+    const z = Crunchy.zeroes.slice(0, n + i);
 
     while (i--) {
       c = 0;
@@ -353,7 +356,11 @@ export class Crunchy {
       yl = y.num[i] & 16383;
       yh = y.num[i] >> 14;
 
-      for (let j = n - 1, xl: number, xh: number, t1: number, t2: number; j >= 0; j--) {
+      for (
+        let j = n - 1, xl: number, xh: number, t1: number, t2: number;
+        j >= 0;
+        j--
+      ) {
         xl = this.num[j] & 16383;
         xh = this.num[j] >> 14;
 
@@ -370,7 +377,7 @@ export class Crunchy {
     if (z[0] === 0) {
       z.shift();
     }
-    let ret = new Crunchy();
+    const ret = new Crunchy();
     ret.negative = this.negative !== y.negative;
     ret.num = z;
     return ret;
@@ -401,7 +408,7 @@ export class Crunchy {
   // }
 
   public shr(s: number): Crunchy {
-    let my = this.rsh(s);
+    const my = this.rsh(s);
     return my.cut();
   }
 
@@ -410,8 +417,9 @@ export class Crunchy {
 
     // Crunch.transformOut(Crunch.lsh(Crunch.transformIn([x]).pop(), s));
   }
+
   public cut(): Crunchy {
-    let out = this.clone();
+    const out = this.clone();
     // beasty hack
     if (out.num.length == 0) {
       out.num = [0];
@@ -420,22 +428,21 @@ export class Crunchy {
     while (out.num[0] === 0 && out.num.length > 1) {
       out.num.shift();
     }
-    return out;//.transformOut();
+    return out; // .transformOut();
   }
   //   return Crunchy.transformOut(this.num
   //     cut.apply(null, transformIn(arguments))
   //   );
   // }
 
-
-  public div(y: Crunchy, internal: boolean = false): Crunchy {
+  public div(y: Crunchy, internal = false): Crunchy {
     if (y.num.length === 1 && y.num[0] === 0) {
       return null;
     }
     // var u, v, xt, yt, d, q, k, i, z;
     let u: Crunchy;
     let v: Crunchy;
-    let s = Crunchy.msb(y.num[0]) - 1;
+    const s = Crunchy.msb(y.num[0]) - 1;
     if (s > 0) {
       u = this.lsh(s);
       v = y.lsh(s);
@@ -443,40 +450,50 @@ export class Crunchy {
       u = this.clone();
       v = y.clone();
     }
-    let d = u.num.length - v.num.length;
-    let q = [0];
+    const d = u.num.length - v.num.length;
+    const q = [0];
     let k = Crunchy.from_14bit(v.num.concat(Crunchy.zeroes.slice(0, d)));
-    let yt = v.num[0] * 268435456 + v.num[1];
+    const yt = v.num[0] * 268435456 + v.num[1];
 
     // only cmp as last resort
-    while (u.num[0] > k.num[0] || (u.num[0] === k.num[0] && u.compare(k) > -1)) {
+    while (
+      u.num[0] > k.num[0] ||
+      (u.num[0] === k.num[0] && u.compare(k) > -1)
+    ) {
       q[0]++;
       u = u.unsigned_sub(k, false);
     }
 
     for (let i = 1; i <= d; i++) {
-      q[i] = u.num[i - 1] === v.num[0] ? 268435455 : ~~((u.num[i - 1] * 268435456 + u.num[i]) / v.num[0]);
+      q[i] =
+        u.num[i - 1] === v.num[0]
+          ? 268435455
+          : ~~((u.num[i - 1] * 268435456 + u.num[i]) / v.num[0]);
 
-      let xt = u.num[i - 1] * 72057594037927936 + u.num[i] * 268435456 + u.num[i + 1];
-      while (q[i] * yt > xt) { //condition check can fail due to precision problem at 28-bit
+      const xt =
+        u.num[i - 1] * 72057594037927936 + u.num[i] * 268435456 + u.num[i + 1];
+      while (q[i] * yt > xt) {
+        // condition check can fail due to precision problem at 28-bit
         q[i]--;
       }
 
       k = v.mul(Crunchy.from_14bit([q[i]]));
-      k.num = k.num.concat(Crunchy.zeroes.slice(0, d - i)); //concat after multiply, save cycles
+      k.num = k.num.concat(Crunchy.zeroes.slice(0, d - i)); // concat after multiply, save cycles
       u = u.unsigned_sub(k, false);
 
       if (u.negative) {
-        u = Crunchy.from_14bit(v.num.concat(Crunchy.zeroes.slice(0, d - i))).unsigned_sub(u, false);
+        u = Crunchy.from_14bit(
+          v.num.concat(Crunchy.zeroes.slice(0, d - i)),
+        ).unsigned_sub(u, false);
         q[i]--;
       }
     }
     let z: Crunchy;
     if (internal) {
-      z = (s > 0) ? u.cut().rsh(s) : u.cut();
+      z = s > 0 ? u.cut().rsh(s) : u.cut();
     } else {
       z = Crunchy.from_14bit(Crunchy.removeLeadingZeros(q));
-      z.negative = (this.negative !== y.negative) ? true : false;
+      z.negative = this.negative !== y.negative;
     }
 
     return z;
@@ -486,9 +503,8 @@ export class Crunchy {
   // }
 
   public mod(y: Crunchy): Crunchy {
-
-    //For negative x, cmp doesn't work and result of div is negative
-    //so take result away from the modulus to get the correct result
+    // For negative x, cmp doesn't work and result of div is negative
+    // so take result away from the modulus to get the correct result
     if (this.negative) {
       return y.sub(this.div(y, true));
     }
@@ -511,22 +527,22 @@ export class Crunchy {
     return z;
   }
 
-
-  public toString(radix: number = 10): string {
-    let a: string[] = [], i = 0;
+  public toString(radix = 10): string {
+    const a: string[] = [];
+    let i = 0;
     let x = this.clone();
     // console.log("toString:", new Date());
-    let cradix = Crunchy.from_8bit([radix]);
-    let zero = Crunchy.zero();
+    const cradix = Crunchy.from_8bit([radix]);
+    const zero = Crunchy.zero();
     do {
-      let digit = x.mds(radix);
+      const digit = x.mds(radix);
       x = x.div(cradix);
       a[i++] = "0123456789abcdef"[digit];
       // console.log("1-toString:", x, radix, digit, a.join(""));
       // console.log("2-toString:", x, radix, digit, a, Crunch.compare(x, Crunchy._zero.num));
     } while (!x.eq(zero));
     // console.log("Crunchy.tostring-1:", a);
-    let ret = a.reverse().join("");
+    const ret = a.reverse().join("");
     // console.log("Crunchy.tostring-2:", ret, new Date());
     return ret;
   }
@@ -535,11 +551,11 @@ export class Crunchy {
   //   return null;
   // }
 
-
   static _zero = Crunchy.from_8bit([0]);
   public static zero(): Crunchy {
     return Crunchy._zero;
   }
+
   static _one = Crunchy.from_8bit([1]);
   public static one(): Crunchy {
     return Crunchy._one;
@@ -549,7 +565,6 @@ export class Crunchy {
   public static two(): Crunchy {
     return Crunchy._two;
   }
-
 }
 
 export default Crunchy;

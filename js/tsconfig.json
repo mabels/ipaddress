@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "module": "commonjs",
+    "target": "es2022",
+    "module": "nodenext",
     "outDir": "dist",
     "noImplicitAny": true,
-    "pretty": true
+    "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
+    "declarationMap": true /* Create sourcemaps for d.ts files. */,
+    "pretty": true,
+    "types": ["vitest/globals"]
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

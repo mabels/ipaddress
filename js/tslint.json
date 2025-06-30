@@ -2,16 +2,10 @@
   "rules": {
     "max-line-length": [true, 120],
     "class-name": true,
-    "comment-format": [
-      true,
-      "check-space"
-    ],
+    "comment-format": [true, "check-space"],
     "curly": true,
     "eofline": true,
-    "indent": [
-      true,
-      "spaces"
-    ],
+    "indent": [true, "spaces"],
     "jsdoc-format": true,
     "member-access": true,
     "member-ordering": [
@@ -36,10 +30,7 @@
     "no-trailing-whitespace": true,
     "no-unreachable": true,
     "no-unused-expression": true,
-    "no-unused-variable": [
-      true,
-      "react"
-    ],
+    "no-unused-variable": [true, "react"],
     "no-use-before-declare": true,
     "no-var-keyword": true,
     "no-var-requires": false,
@@ -50,12 +41,7 @@
       "check-open-brace",
       "check-whitespace"
     ],
-    "quotemark": [
-      true,
-      "single",
-      "jsx-double",
-      "avoid-escape"
-    ],
+    "quotemark": [true, "single", "jsx-double", "avoid-escape"],
     "radix": true,
     "semicolon": [true, "always"],
     "typedef": [
