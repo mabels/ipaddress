@@ -1,18 +1,18 @@
 import 'dart:core';
 
 class Last {
-  Rle value = null;
+  Rle? value;
   final max_poses = Map<int, List<int>>();
-  final ret = List<Rle>();
+  final List<Rle> ret = [];
 
   void handle_last() {
     if (this.value == null) {
       return;
     }
-    var _last = this.value;
+    var _last = this.value!;
     var max_rles = max_poses[_last.part];
     if (max_rles == null) {
-      max_rles = List<int>();
+      max_rles = []; // List<int>.empty();
       max_poses[_last.part] = max_rles;
     }
     for (int idx in max_rles) {
@@ -60,8 +60,8 @@ class Rle {
     for (var i = 0; i < parts.length; i++) {
       final part = parts[i];
       // println!("part:{}", part);
-      if (last.value != null && last.value.part == part) {
-        last.value.cnt += 1;
+      if (last.value != null && last.value?.part == part) {
+        last.value?.cnt += 1;
       } else {
         last.handle_last();
         last.value = Rle(part, 0, 1, true);

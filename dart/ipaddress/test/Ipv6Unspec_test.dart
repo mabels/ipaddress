@@ -9,14 +9,8 @@ class IPv6UnspecifiedTest {
   String to_string;
   String to_string_uncompressed;
   BigInt num;
-  IPv6UnspecifiedTest(IPAddress ip, String to_s, String to_string,
-      String to_string_uncompressed, BigInt num) {
-    this.ip = ip;
-    this.to_s = to_s;
-    this.to_string = to_string;
-    this.to_string_uncompressed = to_string_uncompressed;
-    this.num = num;
-  }
+  IPv6UnspecifiedTest(this.ip, this.to_s, this.to_string,
+      this.to_string_uncompressed, this.num);
 }
 
 IPv6UnspecifiedTest setup() {

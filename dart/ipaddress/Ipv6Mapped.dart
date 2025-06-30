@@ -1,9 +1,10 @@
 //  Ac
 import 'dart:core';
 
+import 'package:result_monad/result_monad.dart';
+
 import 'IPAddress.dart';
 import 'IpBits.dart';
-import 'Result.dart';
 
 ///  It is usually identified as a IPv4 mapped IPv6 address, a particular
 ///  IPv6 address which aids the transition from IPv4 to IPv6. The
@@ -81,12 +82,12 @@ import 'Result.dart';
 ///      ///  "::ffff:13.1.68.3"
 ///
 class Ipv6Mapped {
-  static Result<IPAddress> create(String str) {
+  static Result<IPAddress, String> create(String str) {
     final ret = IPAddress.split_at_slash(str);
     final split_colon = ret.addr.split(":");
     if (split_colon.length <= 1) {
       // println!("---1");
-      return Result.Err("not mapped format-1: ${str}");
+      return Result.error("not mapped format-1: ${str}");
     }
     var netmask = "";
     if (ret.netmask != null) {
@@ -95,12 +96,12 @@ class Ipv6Mapped {
     final ipv4_str = split_colon[split_colon.length - 1];
     if (IPAddress.is_valid_ipv4(ipv4_str)) {
       final ipv4 = IPAddress.parse("${ipv4_str}${netmask}");
-      if (ipv4.isErr()) {
+      if (ipv4.isFailure) {
         // println!("---2");
         return ipv4;
       }
-      //mapped = Some(ipv4.unwrap());
-      final addr = ipv4.unwrap();
+      //mapped = Some(ipv4.value);
+      final addr = ipv4.value;
       final ipv6_bits = IpBits.V6;
       final part_mod = ipv6_bits.part_mod;
       var up_addr = addr.host_address;
@@ -118,28 +119,28 @@ class Ipv6Mapped {
 ${(up_addr >> (IpBits.V6.part_bits % part_mod.toInt())).toRadixString(16)}:${(down_addr % part_mod).toRadixString(16)}/${ipv6_bits.bits - addr.prefix.host_prefix()}""";
       rebuild_ipv6 += rebuild_ipv4;
       final r_ipv6 = IPAddress.parse(rebuild_ipv6.toString());
-      if (r_ipv6.isErr()) {
+      if (r_ipv6.isFailure) {
         // println!("---3|{}", &rebuild_ipv6);
         return r_ipv6;
       }
-      if (r_ipv6.unwrap().is_mapped()) {
+      if (r_ipv6.value.is_mapped()) {
         return r_ipv6;
       }
-      final ipv6 = r_ipv6.unwrap();
+      final ipv6 = r_ipv6.value;
       final p96bit = ipv6.host_address >> 32;
       if (p96bit != BigInt.zero) {
         // println!("---4|{}", &rebuild_ipv6);
-        return Result.Err("is not a mapped address:${rebuild_ipv6}");
+        return Result.error("is not a mapped address:${rebuild_ipv6}");
       }
       {
         final rr_ipv6 = IPAddress.parse("::ffff:${rebuild_ipv4}");
-        if (rr_ipv6.isErr()) {
+        if (rr_ipv6.isFailure) {
           //println!("---3|{}", &rebuild_ipv6);
           return rr_ipv6;
         }
         return rr_ipv6;
       }
     }
-    return Result.Err("unknown mapped format:${str}");
+    return Result.error("unknown mapped format:${str}");
   }
 }

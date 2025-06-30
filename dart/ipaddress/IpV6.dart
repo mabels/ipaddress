@@ -1,8 +1,9 @@
+import 'package:result_monad/result_monad.dart';
+
 import 'IPAddress.dart';
 import 'IpBits.dart';
 import 'IpV4.dart';
 import 'Prefix128.dart';
-import 'Result.dart';
 
 class IpV6 {
   ///  =Name
@@ -110,54 +111,54 @@ class IpV6 {
   static final VtBool ipv6_is_loopback =
       (IPAddress my) => my.host_address == BigInt.one;
   static final VtBool ipv6_is_private =
-      (IPAddress my) => IPAddress.parse("fd00::/8").unwrap().includes(my);
+      (IPAddress my) => IPAddress.parse("fd00::/8").value.includes(my);
 
-  static Result<IPAddress> from_str(String str, int radix, int prefix) {
+  static Result<IPAddress, String> from_str(String str, int radix, int prefix) {
     try {
       final num = BigInt.parse(str, radix: radix);
       return from_int(num, prefix);
     } catch (e) {
-      return Result.Err("unparsable ${str}");
+      return Result.error("unparsable ${str}");
     }
   }
 
-  static Result<IPAddress> enhance_if_mapped(IPAddress ip) {
+  static Result<IPAddress, String> enhance_if_mapped(IPAddress ip) {
     // println!("real mapped {:x} {:x}", &ip.host_address, ip.host_address.clone().shr(32));
     if (ip.is_mapped()) {
-      return Result.Ok(ip);
+      return Result.ok(ip);
     }
     final ipv6_top_96bit = ip.host_address >> 32;
     if (ipv6_top_96bit == BigInt.from(0xffff)) {
       // println!("enhance_if_mapped-1:{}", );
       final num = ip.host_address % (BigInt.one << 32);
       if (num == BigInt.zero) {
-        return Result.Ok(ip);
+        return Result.ok(ip);
       }
       //println!("ip:{},{:x}", ip.to_string(), num);
       final ipv4_bits = IpBits.V4;
       if (ipv4_bits.bits < ip.prefix.host_prefix()) {
         //println!("enhance_if_mapped-2:{}:{}", ip.to_string(), ip.prefix.host_prefix());
-        return Result.Err(
+        return Result.error(
             "enhance_if_mapped prefix not ipv4 compatible ${ip.prefix.host_prefix()}");
       }
       final mapped =
           IpV4.from_u32(num.toInt(), ipv4_bits.bits - ip.prefix.host_prefix());
-      if (mapped.isErr()) {
+      if (mapped.isFailure) {
         //println!("enhance_if_mapped-3");
         return mapped;
       }
-      // println!("real mapped!!!!!={}", mapped.clone().unwrap().to_string());
-      return Result.Ok(ip.setMappedIpaddress(mapped.unwrap()));
+      // println!("real mapped!!!!!={}", mapped.clone().value.to_string());
+      return Result.ok(ip.setMappedIpaddress(mapped.value));
     }
-    return Result.Ok(ip);
+    return Result.ok(ip);
   }
 
-  static Result<IPAddress> from_int(BigInt bi, int prefixNum) {
+  static Result<IPAddress, String> from_int(BigInt bi, int prefixNum) {
     final prefix = Prefix128.create(prefixNum);
-    if (prefix.isErr()) {
-      return Result.Err(prefix.unwrapErr());
+    if (prefix.isFailure) {
+      return Result.error(prefix.error);
     }
-    return enhance_if_mapped(IPAddress(IpBits.V6, bi, prefix.unwrap(), null,
+    return enhance_if_mapped(IPAddress(IpBits.V6, bi, prefix.value, null,
         ipv6_is_private, ipv6_is_loopback, ipv6_to_ipv6));
   }
 
@@ -186,36 +187,30 @@ class IpV6 {
 
   ///    ip6 = IPAddress "2001:db8::8:800:200c:417a/64"
   ///
-  static Result<IPAddress> create(String str) {
+  static Result<IPAddress, String> create(String str) {
     final splitted = IPAddress.split_at_slash(str);
     if (IPAddress.is_valid_ipv6(splitted.addr)) {
       final o_num = IPAddress.split_to_num(splitted.addr);
-      if (o_num.isErr()) {
-        return Result.Err(o_num.unwrapErr());
+      if (o_num.isFailure) {
+        return Result.error(o_num.error);
       }
       var netmask = 128;
       if (splitted.netmask != null) {
         final network = splitted.netmask;
-        final num_mask = IPAddress.parseInt(network, 10);
+        final num_mask = IPAddress.parseInt(network!, 10);
         if (num_mask == null) {
-          return Result.Err("Invalid Netmask ${str}");
+          return Result.error("Invalid Netmask ${str}");
         }
         netmask = num_mask.toInt();
       }
       final prefix = Prefix128.create(netmask);
-      if (prefix.isErr()) {
-        return Result.Err(prefix.unwrapErr());
+      if (prefix.isFailure) {
+        return Result.error(prefix.error);
       }
-      return enhance_if_mapped(IPAddress(
-          IpBits.V6,
-          o_num.unwrap(),
-          prefix.unwrap(),
-          null,
-          ipv6_is_private,
-          ipv6_is_loopback,
-          ipv6_to_ipv6));
+      return enhance_if_mapped(IPAddress(IpBits.V6, o_num.value, prefix.value,
+          null, ipv6_is_private, ipv6_is_loopback, ipv6_to_ipv6));
     } else {
-      return Result.Err("Invalid IP ${str}");
+      return Result.error("Invalid IP ${str}");
     }
   }
 }

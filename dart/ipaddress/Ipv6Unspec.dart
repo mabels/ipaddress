@@ -51,6 +51,6 @@ import 'IPAddress.dart';
 ///
 class Ipv6Unspec {
   static IPAddress create() {
-    return IPAddress.parse("::").unwrap();
+    return IPAddress.parse("::").value;
   }
 }

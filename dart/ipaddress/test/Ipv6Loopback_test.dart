@@ -9,14 +9,7 @@ class IPv6LoopbackTest {
   String n;
   String string;
   BigInt one;
-  IPv6LoopbackTest(
-      IPAddress ip, String s, String n, String string, BigInt one) {
-    this.ip = ip;
-    this.s = s;
-    this.n = n;
-    this.string = string;
-    this.one = one;
-  }
+  IPv6LoopbackTest(this.ip, this.s, this.n, this.string, this.one);
 }
 
 IPv6LoopbackTest setup() {

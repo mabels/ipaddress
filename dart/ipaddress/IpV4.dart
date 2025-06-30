@@ -1,69 +1,70 @@
+import 'package:result_monad/result_monad.dart';
+
 import 'IPAddress.dart';
 import 'IpBits.dart';
 import 'IpV6.dart';
 import 'Prefix128.dart';
 import 'Prefix32.dart';
-import 'Result.dart';
 
 class IpV4 {
   static bool ipv4_is_private(IPAddress my) {
     return [
-          IPAddress.parse("10.0.0.0/8").unwrap(),
-          IPAddress.parse("169.254.0.0/16").unwrap(),
-          IPAddress.parse("172.16.0.0/12").unwrap(),
-          IPAddress.parse("192.168.0.0/16").unwrap()
+          IPAddress.parse("10.0.0.0/8").value,
+          IPAddress.parse("169.254.0.0/16").value,
+          IPAddress.parse("172.16.0.0/12").value,
+          IPAddress.parse("192.168.0.0/16").value
         ].indexWhere((i) => i.includes(my)) >=
         0;
   }
 
   static bool ipv4_is_loopback(IPAddress my) {
-    return IPAddress.parse("127.0.0.0/8").unwrap().includes(my);
+    return IPAddress.parse("127.0.0.0/8").value.includes(my);
   }
 
   static IPAddress to_ipv6(IPAddress ia) {
     return IPAddress(
         IpBits.V6,
         ia.host_address,
-        Prefix128.create(ia.prefix.num).unwrap(),
+        Prefix128.create(ia.prefix.num).value,
         null,
         IpV6.ipv6_is_private,
         IpV6.ipv6_is_loopback,
         IpV6.ipv6_to_ipv6);
   }
 
-  static Result<IPAddress> from_u32(int addr, int _prefix) {
+  static Result<IPAddress, String> from_u32(int addr, int _prefix) {
     final prefix = Prefix32.create(_prefix);
-    if (prefix.isErr()) {
-      return Result.Err(prefix.unwrapErr());
+    if (prefix.isFailure) {
+      return Result.error(prefix.error);
     }
-    return Result.Ok(IPAddress(IpBits.v4(), BigInt.from(addr), prefix.unwrap(),
+    return Result.ok(IPAddress(IpBits.v4(), BigInt.from(addr), prefix.value,
         null, ipv4_is_private, ipv4_is_loopback, to_ipv6));
   }
 
-  static Result<IPAddress> create(String str) {
+  static Result<IPAddress, String> create(String str) {
     final splitted = IPAddress.split_at_slash(str);
     if (!IPAddress.is_valid_ipv4(splitted.addr)) {
-      return Result.Err("IpV4-create: Invalid IP ${str}");
+      return Result.error("IpV4-create: Invalid IP ${str}");
     }
-    var ip_prefix_num = Result.Ok(32);
+    var ip_prefix_num = Result.ok(32);
     if (splitted.netmask != null) {
       //  netmask is defined
-      ip_prefix_num = IPAddress.parse_netmask_to_prefix(splitted.netmask);
-      if (ip_prefix_num.isErr()) {
-        return Result.Err(ip_prefix_num.unwrapErr());
+      ip_prefix_num = IPAddress.parse_netmask_to_prefix(splitted.netmask!);
+      if (ip_prefix_num.isFailure) {
+        return Result.error(ip_prefix_num.error);
       }
       //if ip_prefix.ip_bits.version
     }
-    final ip_prefix = Prefix32.create(ip_prefix_num.unwrap());
-    if (ip_prefix.isErr()) {
-      return Result.Err(ip_prefix.unwrapErr());
+    final ip_prefix = Prefix32.create(ip_prefix_num.value);
+    if (ip_prefix.isFailure) {
+      return Result.error(ip_prefix.error);
     }
     final split_u32 = IPAddress.split_to_u32(splitted.addr);
-    if (split_u32.isErr()) {
-      return Result.Err(split_u32.unwrapErr());
+    if (split_u32.isFailure) {
+      return Result.error(split_u32.error);
     }
-    return Result.Ok(IPAddress(IpBits.V4, BigInt.from(split_u32.unwrap()),
-        ip_prefix.unwrap(), null, ipv4_is_private, ipv4_is_loopback, to_ipv6));
+    return Result.ok(IPAddress(IpBits.V4, BigInt.from(split_u32.value),
+        ip_prefix.value, null, ipv4_is_private, ipv4_is_loopback, to_ipv6));
   }
 
   // pub fn is_private(my: &IPAddress) -> bool {
@@ -1097,9 +1098,9 @@ class IpV4 {
 
   //     return String.format("{:04x}:{:04x}",
 
-  //                    (my.host_address >> 16).mod_floor(&part_mod).to_u16().unwrap(),
+  //                    (my.host_address >> 16).mod_floor(&part_mod).to_u16().value,
 
-  //                    my.host_address.mod_floor(&part_mod).to_u16().unwrap());
+  //                    my.host_address.mod_floor(&part_mod).to_u16().value);
   // }
 
   //  Creates a IPv4 object from an
@@ -1310,15 +1311,15 @@ class IpV4 {
   //  prefix of /24 or 255.255.255.0
 
   //
-  static Result<IPAddress> parse_classful(String ip_s) {
+  static Result<IPAddress, String> parse_classful(String ip_s) {
     if (!IPAddress.is_valid_ipv4(ip_s)) {
-      return Result.Err("parse_classful: Invalid IP ${ip_s}");
+      return Result.error("parse_classful: Invalid IP ${ip_s}");
     }
     final o_ip = IPAddress.parse(ip_s);
-    if (o_ip.isErr()) {
+    if (o_ip.isFailure) {
       return o_ip;
     }
-    final ip = o_ip.unwrap();
+    final ip = o_ip.value;
     if (IpV4.is_class_a(ip)) {
       return IPAddress.parse("${ip.to_s()}/8");
     } else if (IpV4.is_class_b(ip)) {
@@ -1326,6 +1327,6 @@ class IpV4 {
     } else if (IpV4.is_class_c(ip)) {
       return IPAddress.parse("${ip.to_s()}/24");
     }
-    return Result.Ok(ip);
+    return Result.ok(ip);
   }
 }

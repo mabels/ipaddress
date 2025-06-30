@@ -13,20 +13,13 @@ class IPv6MappedTest {
   Map<String, BigInt> valid_mapped = Map<String, BigInt>();
   Map<String, BigInt> valid_mapped_ipv6 = Map<String, BigInt>();
   Map<String, String> valid_mapped_ipv6_conversion = Map<String, String>();
-  IPv6MappedTest(IPAddress ip, String s, String sstr, String string,
-      BigInt u128, String address) {
-    this.ip = ip;
-    this.s = s;
-    this.sstr = sstr;
-    this.string = string;
-    this.u128 = u128;
-    this.address = address;
-  }
+  IPv6MappedTest(
+      this.ip, this.s, this.sstr, this.string, this.u128, this.address);
 }
 
 IPv6MappedTest setup() {
   final ret = IPv6MappedTest(
-      Ipv6Mapped.create("::172.16.10.1").unwrap(),
+      Ipv6Mapped.create("::172.16.10.1").value,
       "::ffff:172.16.10.1",
       "::ffff:172.16.10.1/32",
       "0000:0000:0000:0000:0000:ffff:ac10:0a01/128",
@@ -50,26 +43,26 @@ IPv6MappedTest setup() {
 void main() {
   test("test_initialize", () {
     final s = setup();
-    expect(true, IPAddress.parse("::172.16.10.1").isOk());
+    expect(true, IPAddress.parse("::172.16.10.1").isSuccess);
     s.valid_mapped.forEach((ip, u128) {
       //println!("-{}--{}", ip, u128);
       //if IPAddress.parse(ip).is_err() {
       //    println!("{}", IPAddress.parse(ip).unwrapErr());
       //}
-      expect(true, IPAddress.parse(ip).isOk());
-      expect(u128, IPAddress.parse(ip).unwrap().host_address);
+      expect(true, IPAddress.parse(ip).isSuccess);
+      expect(u128, IPAddress.parse(ip).value.host_address);
     });
     s.valid_mapped_ipv6.forEach((ip, u128) {
       //println!("===={}=={:x}", ip, u128);
-      expect(true, IPAddress.parse(ip).isOk());
-      expect(u128, IPAddress.parse(ip).unwrap().host_address);
+      expect(true, IPAddress.parse(ip).isSuccess);
+      expect(u128, IPAddress.parse(ip).value.host_address);
     });
   });
 
   test("test_mapped_from_ipv6_conversion", () {
     setup().valid_mapped_ipv6_conversion.forEach((ip6, ip4) {
       //println!("+{}--{}", ip6, ip4);
-      expect(ip4, IPAddress.parse(ip6).unwrap().mapped.to_s());
+      expect(ip4, IPAddress.parse(ip6).value.mapped?.to_s());
     });
   });
 

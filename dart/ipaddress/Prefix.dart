@@ -1,8 +1,9 @@
+import 'package:result_monad/result_monad.dart';
+
 import 'IpBits.dart';
 import 'IpVersion.dart';
-import 'Result.dart';
 
-typedef Result<Prefix> VtFrom(Prefix p, int n);
+typedef Result<Prefix, String> VtFrom(Prefix p, int n);
 
 class Prefix {
   final int num;
@@ -43,7 +44,7 @@ class Prefix {
     }
   }
 
-  Result<Prefix> from(int num) {
+  Result<Prefix, String> from(int num) {
     return this.vt_from(this, num);
   }
 
@@ -124,19 +125,19 @@ class Prefix {
     return this.get_prefix();
   }
 
-  Result<Prefix> add_prefix(Prefix other) {
+  Result<Prefix, String> add_prefix(Prefix other) {
     return this.from(this.get_prefix() + other.get_prefix());
   }
 
-  Result<Prefix> add(int other) {
+  Result<Prefix, String> add(int other) {
     return this.from(this.get_prefix() + other);
   }
 
-  Result<Prefix> sub_prefix(Prefix other) {
+  Result<Prefix, String> sub_prefix(Prefix other) {
     return this.sub(other.get_prefix());
   }
 
-  Result<Prefix> sub(int other) {
+  Result<Prefix, String> sub(int other) {
     if (other > this.get_prefix()) {
       return this.from(other - this.get_prefix());
     }
