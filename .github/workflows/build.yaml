@@ -107,6 +107,16 @@ jobs:
         grep version package.json
         npm publish --no-git-checks --access public
 
+    - name: dry-publish
+      if: ${{ ! startsWith(github.ref, 'refs/tags/js@v') }}
+      working-directory: js
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      run: |
+        npm version 0.0.0-snap
+        grep version package.json
+        npm publish --no-git-checks --access public --dry-run
+
   kotlin:
     runs-on: ['ubuntu-latest']
     steps:
