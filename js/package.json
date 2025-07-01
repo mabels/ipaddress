@@ -28,7 +28,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "mabels/ipaddress"
+    "url": "git+https://github.com/mabels/ipaddress.git"
   },
   "license": "AFL-2.0",
   "bugs": {

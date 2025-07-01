@@ -103,7 +103,7 @@ jobs:
       env:
         NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
       run: |
-        npm version $(echo $GITHUB_REF | sed -e 's/^refs/tags/js@v//')
+        npm version $(echo $GITHUB_REF | sed -e 's|^refs/tags/js@v||')
         grep version package.json
         npm publish --no-git-checks --access public
 
