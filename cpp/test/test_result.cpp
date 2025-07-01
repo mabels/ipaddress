@@ -23,8 +23,8 @@ int main(int, char **) {
           assert.equal(err.text(), "testcase");
           try {
             err.unwrap();
-            assert.isTrue(true, "unwrap should not work");
-          } catch (OptionError e) {
+            assert.isTrue(false, "unwrap should not work");
+          } catch (std::exception e) {
           }
       });
 

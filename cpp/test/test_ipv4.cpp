@@ -609,14 +609,14 @@ int main() {
           assert.deepEqual(IPAddress::to_string_vec(IPAddress::summarize(ips)),
               {"10.0.0.12/30", "10.0.100.0/24"});
 
-          ips = {IPAddress::parse("172.16.0.0/31").unwrap(),
+          auto ips2 = {IPAddress::parse("172.16.0.0/31").unwrap(),
               IPAddress::parse("10.10.2.1/32").unwrap()};
-          assert.deepEqual(IPAddress::to_string_vec(IPAddress::summarize(ips)),
+          assert.deepEqual(IPAddress::to_string_vec(IPAddress::summarize(ips2)),
               {"10.10.2.1/32", "172.16.0.0/31"});
 
-          ips = {IPAddress::parse("172.16.0.0/32").unwrap(),
+          auto ips1 = {IPAddress::parse("172.16.0.0/32").unwrap(),
               IPAddress::parse("10.10.2.1/32").unwrap()};
-          assert.deepEqual(IPAddress::to_string_vec(IPAddress::summarize(ips)),
+          assert.deepEqual(IPAddress::to_string_vec(IPAddress::summarize(ips1)),
               {"10.10.2.1/32", "172.16.0.0/32"});
       });
 
