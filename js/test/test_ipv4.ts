@@ -245,7 +245,7 @@ describe("Ipv4Test", () => {
   });
   it("test_method_size", () => {
     const ip = IPAddress.parse("10.0.0.1/29");
-    assertArrayEqual(ip!.size().num, Crunchy.parse("8").num);
+    assert.isOk(ip!.size().eq(Crunchy.parse("8")));
   });
   it("test_method_network_u32", () => {
     assert.equal("2886732288", setup().ip.network().host_address.toString());

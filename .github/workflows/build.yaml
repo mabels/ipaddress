@@ -226,7 +226,7 @@ jobs:
 
     - name: publish
       # PyPI Trusted Publishing (OIDC) - no token needed. Requires the
-      # ip_address project on pypi.org to have this repo+workflow+job
+      # mabels-ipaddress project on pypi.org to have this repo+workflow+job
       # registered as a "trusted publisher" beforehand.
       if: startsWith(github.ref, 'refs/tags/python@v')
       uses: pypa/gh-action-pypi-publish@release/v1

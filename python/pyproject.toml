@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ip_address"
+name = "mabels-ipaddress"
 version = "0.0.0-dev"
 description = "ipaddress handles ipv4 and ipv6"
 license = { text = "MIT" }

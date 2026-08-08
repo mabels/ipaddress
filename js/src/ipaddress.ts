@@ -401,7 +401,7 @@ export class IPAddress {
     //         &stack[i].to_string_uncompressed());
     // }
     // eslint-disable-next-line no-constant-condition
-    for (let pos = 0; true; ) {
+    for (let pos = 0; true;) {
       if (pos < 0) {
         pos = 0;
       }
@@ -735,9 +735,9 @@ export class IPAddress {
     let prefix = 0;
     let addr = nm.clone();
     let in_host_part = true;
-    // let two = Crunchy.two();
+    const two = Crunchy.two();
     for (let _ = 0; _ < bits; _++) {
-      const bit = addr.mds(2);
+      const bit = addr.mod(two).eq(Crunchy.one()) ? 1 : 0;
       // console.log(">>>", bits, bit, addr, nm);
       if (in_host_part && bit == 0) {
         prefix = prefix + 1;
