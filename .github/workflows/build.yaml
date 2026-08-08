@@ -220,7 +220,7 @@ jobs:
         npm --version
         npm version "${{ steps.version.outputs.version }}"
         grep version package.json
-        npm publish --no-git-checks --access public --provenance
+        npm publish --access public --provenance
 
     - name: dry-publish
       if: steps.version.outputs.should_publish != 'true'
@@ -228,7 +228,7 @@ jobs:
       run: |
         npm version 0.0.0-snap
         grep version package.json
-        npm publish --no-git-checks --access public --dry-run
+        npm publish --access public --dry-run --tag snapshot
 
   jsr:
     needs: js

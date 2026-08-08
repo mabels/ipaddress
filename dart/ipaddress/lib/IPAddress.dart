@@ -1278,7 +1278,7 @@ class IPAddress {
     for (var i = num; i < this.ip_bits.bits; i++) {
       var a = log(i) ~/ log(2);
       if (a == log(i) / log(2)) {
-        return this.prefix.add(a as int);
+        return this.prefix.add(a);
       }
     }
     return Result.error("newprefix not found ${num},${this.ip_bits.bits}");

@@ -157,6 +157,5 @@ class IpBits {
       case IpVersion.V6:
         return i.toRadixString(16);
     }
-    throw UnimplementedError('unknown ip version');
   }
 }
