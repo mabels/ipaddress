@@ -47,7 +47,7 @@ namespace ipaddress
     ///    ip.to_string
     ///      ///  "::1/128"
     ///
-    class Ipv6Loopback
+    public class Ipv6Loopback
     {
         public static IPAddress create()
         {

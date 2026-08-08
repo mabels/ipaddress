@@ -1,6 +1,6 @@
 import "package:test/test.dart";
 
-import '../Rle.dart';
+import 'package:ipaddress/Rle.dart';
 
 rleArrayExpect(List<Rle> a, List<Rle> b) {
   expect(a.length, b.length);

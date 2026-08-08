@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ipaddress
 {
-    class Prefix32
+    public class Prefix32
     {
         public Result<Prefix> from(Prefix my, uint num)
         {

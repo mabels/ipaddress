@@ -1,6 +1,6 @@
 import "package:test/test.dart";
 
-import '../IPAddress.dart';
+import 'package:ipaddress/IPAddress.dart';
 
 class IPAddressTest {
   String valid_ipv4;

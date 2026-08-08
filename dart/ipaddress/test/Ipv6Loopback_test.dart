@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
 
-import '../IPAddress.dart';
-import '../Ipv6Loopback.dart';
+import 'package:ipaddress/IPAddress.dart';
+import 'package:ipaddress/Ipv6Loopback.dart';
 
 class IPv6LoopbackTest {
   IPAddress ip;

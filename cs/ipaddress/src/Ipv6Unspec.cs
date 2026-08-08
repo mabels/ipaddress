@@ -53,7 +53,7 @@ namespace ipaddress
     ///    ip.to_s
     ///       ///  => "::/128"
     ///
-    class Ipv6Unspec
+    public class Ipv6Unspec
     {
         public static IPAddress create()
         {

@@ -1,8 +1,8 @@
 import 'package:test/test.dart';
 
-import '../IPAddress.dart';
-import '../IpV4.dart';
-import '../Prefix32.dart';
+import 'package:ipaddress/IPAddress.dart';
+import 'package:ipaddress/IpV4.dart';
+import 'package:ipaddress/Prefix32.dart';
 
 class Prefix32Test {
   String netmask0;

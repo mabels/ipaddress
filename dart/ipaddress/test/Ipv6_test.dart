@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
 
-import '../IPAddress.dart';
-import '../IpV6.dart';
+import 'package:ipaddress/IPAddress.dart';
+import 'package:ipaddress/IpV6.dart';
 
 class IPv6Test {
   Map<String, String> compress_addr = Map<String, String>();

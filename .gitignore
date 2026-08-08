@@ -29,6 +29,7 @@ cpp/test/Release/
 cs/**/bin/
 cs/**/obj/
 cs/**/*.sln
+cs/**/nupkg/
 
 # dart
 dart/**/.dart_tool/

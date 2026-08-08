@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ipaddress
 {
-    class Last
+    internal class Last
     {
         public Rle value;
         public Dictionary<long, List<int>> max_poses = new Dictionary<long, List<int>>();
@@ -55,7 +55,7 @@ namespace ipaddress
     }
 
 
-    class Rle : IEquatable<Rle>
+    public class Rle : IEquatable<Rle>
     {
         public uint part;
         public int pos;

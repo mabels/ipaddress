@@ -6,7 +6,7 @@ using System.Text;
 namespace ipaddress
 {
 
-    class IpBits
+    public class IpBits
     {
         public IpVersion version;
         public uint bits;

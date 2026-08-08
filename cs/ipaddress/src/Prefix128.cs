@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ipaddress
 {
-    class Prefix128
+    public class Prefix128
     {
         ///
         ///  Creates a new prefix object for 128 bits IPv6 addresses

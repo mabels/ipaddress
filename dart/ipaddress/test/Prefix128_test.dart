@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 
-import '../Prefix128.dart';
+import 'package:ipaddress/Prefix128.dart';
 
 class Prefix128Test {
   Map<int, BigInt> u128_hash = {};

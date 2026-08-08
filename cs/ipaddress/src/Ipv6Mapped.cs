@@ -82,7 +82,7 @@ namespace ipaddress
     ///    ip6.to_string
     ///      ///  "::ffff:13.1.68.3"
     ///
-    class Ipv6Mapped
+    public class Ipv6Mapped
     {
         public static Result<IPAddress> create(String str)
         {

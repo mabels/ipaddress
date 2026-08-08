@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace ipaddress
 {
 
-    class Result<T>
+    public class Result<T>
     {
         T value;
         String msg;

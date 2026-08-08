@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
 
-import '../IPAddress.dart';
-import '../Ipv6Unspec.dart';
+import 'package:ipaddress/IPAddress.dart';
+import 'package:ipaddress/Ipv6Unspec.dart';
 
 class IPv6UnspecifiedTest {
   IPAddress ip;

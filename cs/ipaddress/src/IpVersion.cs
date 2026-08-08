@@ -2,7 +2,7 @@ using System;
 namespace ipaddress
 {
 
-    enum IpVersion
+    public enum IpVersion
     {
         V4,
         V6

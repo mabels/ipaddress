@@ -7,7 +7,7 @@ using System.Text;
 namespace ipaddress
 {
 
-    class SplitOnColon
+    internal class SplitOnColon
     {
         public BigInteger ip;
         public int size;
@@ -18,7 +18,7 @@ namespace ipaddress
         }
     }
 
-    class IPAddress : IEquatable<IPAddress>
+    public class IPAddress : IEquatable<IPAddress>
     {
         public IpBits ip_bits;
         public BigInteger host_address;
@@ -337,7 +337,7 @@ namespace ipaddress
         ///     // => false
         ///
 
-        public static Result<SplitOnColon> Split_on_colon(String addr)
+        internal static Result<SplitOnColon> Split_on_colon(String addr)
         {
             var parts = addr.Trim().Split(new string[] { ":" }, StringSplitOptions.None);
             var ip = new BigInteger(0);

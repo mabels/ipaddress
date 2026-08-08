@@ -4,10 +4,25 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>com.adviser.ipaddress</PackageId>
+    <Version>0.0.0-dev</Version>
+    <Title>ipaddress</Title>
+    <Authors>Meno Abels</Authors>
+    <Description>ipaddress handles ipv4 and ipv6</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/mabels/ipaddress</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mabels/ipaddress.git</RepositoryUrl>
+    <PackageTags>network;ip;ipv4;ipv6</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1" />
+    <!-- test/ has its own project (test/ipaddress.Tests.csproj) - keep
+         it out of this library's default compile glob explicitly,
+         since referencing Microsoft.NET.Test.Sdk here would make the
+         SDK auto-detect this as a test project and silently disable
+         packing. -->
+    <Compile Remove="test/**/*.cs" />
   </ItemGroup>
 
 </Project>

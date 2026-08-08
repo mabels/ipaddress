@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
 
-import '../IPAddress.dart';
-import '../IpV4.dart';
+import 'package:ipaddress/IPAddress.dart';
+import 'package:ipaddress/IpV4.dart';
 
 void expectListIpAddress(List<IPAddress> ips1, List<IPAddress> ips2) {
   expect(ips1.length, ips2.length);

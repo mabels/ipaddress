@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace ipaddress
 {
 
-    class IpV6
+    public class IpV6
     {
 
         ///  =Name

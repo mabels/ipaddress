@@ -6,7 +6,7 @@ using System.Text;
 namespace ipaddress
 {
 
-    class Prefix
+    public class Prefix
     {
         public uint num;
         public IpBits ip_bits;

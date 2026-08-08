@@ -37,6 +37,9 @@ jobs:
         done
   cs:
     runs-on: ['ubuntu-latest']
+    permissions:
+      contents: read
+      id-token: write
     steps:
     - uses: actions/checkout@v3
       with:
@@ -47,9 +50,55 @@ jobs:
         cd cs/ipaddress && echo "build cs"
         dotnet restore
         dotnet format ipaddress.csproj --verify-no-changes
+        dotnet format test/ipaddress.Tests.csproj --verify-no-changes
         dotnet build
-        dotnet test
+        dotnet test test/ipaddress.Tests.csproj
         dotnet build -c Release
+
+    - name: resolve publish version
+      # A cs@vX.Y.Z tag publishes just this package; a plain vX.Y.Z tag
+      # (no "@") publishes every language at once with the same version.
+      id: version
+      run: |
+        REF="${GITHUB_REF}"
+        if [[ "$REF" == refs/tags/cs@v* ]]; then
+          echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          echo "version=${REF#refs/tags/cs@v}" >> "$GITHUB_OUTPUT"
+        elif [[ "$REF" == refs/tags/v* && "$REF" != *@* ]]; then
+          echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          echo "version=${REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+        else
+          echo "should_publish=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: set version from tag
+      if: steps.version.outputs.should_publish == 'true'
+      working-directory: cs/ipaddress
+      run: |
+        version="${{ steps.version.outputs.version }}"
+        echo "publishing version $version"
+        sed -i "s|<Version>.*</Version>|<Version>$version</Version>|" ipaddress.csproj
+        grep '<Version>' ipaddress.csproj
+
+    - name: pack
+      working-directory: cs/ipaddress
+      run: dotnet pack ipaddress.csproj -c Release -o nupkg
+
+    - name: NuGet login (OIDC -> temp API key)
+      # Trusted Publishing - no long-lived secret needed, just the
+      # nuget.org username for this OIDC exchange. Requires the
+      # com.adviser.ipaddress package on nuget.org to have this
+      # repo+workflow registered as a trusted publisher beforehand.
+      if: steps.version.outputs.should_publish == 'true'
+      id: nuget-login
+      uses: NuGet/login@v1
+      with:
+        user: ${{ secrets.NUGET_USER }}
+
+    - name: publish
+      if: steps.version.outputs.should_publish == 'true'
+      working-directory: cs/ipaddress
+      run: dotnet nuget push "nupkg/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
 
   dart:
     runs-on: ['ubuntu-latest']
@@ -66,6 +115,24 @@ jobs:
         dart pub get
         dart format --output=none --set-exit-if-changed .
         dart test
+
+  dart-publish:
+    needs: dart
+    # pub.dev's automated-publishing tag pattern is a single fixed
+    # pattern (configured on pub.dev as "v{{version}}") with no OR
+    # logic, so - unlike the other languages - there's no separate
+    # dart@vX.Y.Z single-package tag: this only fires from the plain
+    # vX.Y.Z "publish everything" tag. Also unlike the other
+    # languages, pub.dev requires pubspec.yaml's version to already
+    # match the tag before it's pushed (no version injection at
+    # publish time), so bump dart/ipaddress/pubspec.yaml yourself
+    # before tagging a release.
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '@')
+    permissions:
+      id-token: write
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+    with:
+      working-directory: dart/ipaddress
 
   go:
     runs-on: ['ubuntu-latest']
@@ -126,22 +193,37 @@ jobs:
         deno check --unstable-sloppy-imports src/index.ts test/*.ts
         deno run -A npm:vitest run
 
+    - name: resolve publish version
+      # A js@vX.Y.Z tag publishes just this package; a plain vX.Y.Z tag
+      # (no "@") publishes every language at once with the same version.
+      id: version
+      run: |
+        REF="${GITHUB_REF}"
+        if [[ "$REF" == refs/tags/js@v* ]]; then
+          echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          echo "version=${REF#refs/tags/js@v}" >> "$GITHUB_OUTPUT"
+        elif [[ "$REF" == refs/tags/v* && "$REF" != *@* ]]; then
+          echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          echo "version=${REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+        else
+          echo "should_publish=false" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: publish
       # npm Trusted Publishing (OIDC) - no NPM_TOKEN secret needed.
       # Requires the npm package to have this repo+workflow registered
       # as a "Trusted Publisher" on npmjs.com beforehand.
-      if: startsWith(github.ref, 'refs/tags/js@v')
+      if: steps.version.outputs.should_publish == 'true'
       working-directory: js
       run: |
         npm install -g npm@latest
         npm --version
-        echo $GITHUB_REF
-        npm version $(echo $GITHUB_REF | sed -e 's|^refs/tags/js@v||')
+        npm version "${{ steps.version.outputs.version }}"
         grep version package.json
         npm publish --no-git-checks --access public --provenance
 
     - name: dry-publish
-      if: ${{ ! startsWith(github.ref, 'refs/tags/js@v') }}
+      if: steps.version.outputs.should_publish != 'true'
       working-directory: js
       run: |
         npm version 0.0.0-snap
@@ -159,21 +241,37 @@ jobs:
       with:
         fetch-depth: 1
 
+    - name: resolve publish version
+      # A js@vX.Y.Z tag publishes just this package; a plain vX.Y.Z tag
+      # (no "@") publishes every language at once with the same version.
+      id: version
+      run: |
+        REF="${GITHUB_REF}"
+        if [[ "$REF" == refs/tags/js@v* ]]; then
+          echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          echo "version=${REF#refs/tags/js@v}" >> "$GITHUB_OUTPUT"
+        elif [[ "$REF" == refs/tags/v* && "$REF" != *@* ]]; then
+          echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          echo "version=${REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+        else
+          echo "should_publish=false" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: publish
       # JSR OIDC publishing - no token needed. Requires @mabels/ipaddress
       # on jsr.io to have "Publishing from GitHub Actions" linked to this
       # repo+workflow beforehand.
-      if: startsWith(github.ref, 'refs/tags/js@v')
+      if: steps.version.outputs.should_publish == 'true'
       working-directory: js
       run: |
-        version=$(echo $GITHUB_REF | sed -e 's|^refs/tags/js@v||')
+        version="${{ steps.version.outputs.version }}"
         echo "publishing jsr version $version"
         sed -i "s/\"version\": \".*\"/\"version\": \"$version\"/" jsr.json
         cat jsr.json
         npx -y jsr publish --allow-slow-types
 
     - name: dry-publish
-      if: ${{ ! startsWith(github.ref, 'refs/tags/js@v') }}
+      if: steps.version.outputs.should_publish != 'true'
       working-directory: js
       run: |
         npx -y jsr publish --allow-slow-types --dry-run
@@ -216,11 +314,28 @@ jobs:
         black --check --diff src tests
         pytest -q
 
+    - name: resolve publish version
+      # A python@vX.Y.Z tag publishes just this package; a plain
+      # vX.Y.Z tag (no "@") publishes every language at once with the
+      # same version.
+      id: version
+      run: |
+        REF="${GITHUB_REF}"
+        if [[ "$REF" == refs/tags/python@v* ]]; then
+          echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          echo "version=${REF#refs/tags/python@v}" >> "$GITHUB_OUTPUT"
+        elif [[ "$REF" == refs/tags/v* && "$REF" != *@* ]]; then
+          echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          echo "version=${REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+        else
+          echo "should_publish=false" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: set version from tag
-      if: startsWith(github.ref, 'refs/tags/python@v')
+      if: steps.version.outputs.should_publish == 'true'
       working-directory: python
       run: |
-        version=$(echo $GITHUB_REF | sed -e 's|^refs/tags/python@v||')
+        version="${{ steps.version.outputs.version }}"
         echo "publishing version $version"
         sed -i "s/^version = .*/version = \"$version\"/" pyproject.toml
         grep '^version' pyproject.toml
@@ -233,13 +348,13 @@ jobs:
       # PyPI Trusted Publishing (OIDC) - no token needed. Requires the
       # mabels-ipaddress project on pypi.org to have this repo+workflow+job
       # registered as a "trusted publisher" beforehand.
-      if: startsWith(github.ref, 'refs/tags/python@v')
+      if: steps.version.outputs.should_publish == 'true'
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         packages-dir: python/dist
 
     - name: dry-publish check
-      if: ${{ ! startsWith(github.ref, 'refs/tags/python@v') }}
+      if: steps.version.outputs.should_publish != 'true'
       working-directory: python
       run: |
         python -m pip install --upgrade twine
@@ -267,6 +382,9 @@ jobs:
 
   rust:
     runs-on: ['ubuntu-latest']
+    permissions:
+      contents: read
+      id-token: write
     steps:
     - uses: actions/checkout@v3
       with:
@@ -276,7 +394,53 @@ jobs:
       run: |
         cd rust && echo "build rust"
         cargo fmt --check
-        cargo test --release 
+        cargo test --release
+
+    - name: resolve publish version
+      # A rust@vX.Y.Z tag publishes just this package; a plain vX.Y.Z
+      # tag (no "@") publishes every language at once with the same
+      # version.
+      id: version
+      run: |
+        REF="${GITHUB_REF}"
+        if [[ "$REF" == refs/tags/rust@v* ]]; then
+          echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          echo "version=${REF#refs/tags/rust@v}" >> "$GITHUB_OUTPUT"
+        elif [[ "$REF" == refs/tags/v* && "$REF" != *@* ]]; then
+          echo "should_publish=true" >> "$GITHUB_OUTPUT"
+          echo "version=${REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+        else
+          echo "should_publish=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: set version from tag
+      if: steps.version.outputs.should_publish == 'true'
+      working-directory: rust
+      run: |
+        version="${{ steps.version.outputs.version }}"
+        echo "publishing version $version"
+        sed -i "s/^version = .*/version = \"$version\"/" Cargo.toml
+        grep '^version' Cargo.toml
+
+    - name: crates.io auth
+      # Trusted Publishing (OIDC) - no token secret needed. Requires
+      # the ipaddress crate on crates.io to have this repo+workflow
+      # registered as a trusted publisher beforehand.
+      if: steps.version.outputs.should_publish == 'true'
+      id: crates-io-auth
+      uses: rust-lang/crates-io-auth-action@v1
+
+    - name: publish
+      if: steps.version.outputs.should_publish == 'true'
+      working-directory: rust
+      env:
+        CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
+      run: cargo publish
+
+    - name: dry-publish
+      if: steps.version.outputs.should_publish != 'true'
+      working-directory: rust
+      run: cargo publish --dry-run
 
   swift:
     runs-on: ['ubuntu-latest']

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace ipaddress
 {
 
-    class IpV4
+    public class IpV4
     {
         public static bool ipv4_is_private(IPAddress my)
         {
