@@ -3,10 +3,10 @@ extern crate num;
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashMap;
-    use num::bigint::BigUint;
-    use std::str::FromStr;
     use ipaddress::ipv6_mapped;
+    use num::bigint::BigUint;
+    use std::collections::HashMap;
+    use std::str::FromStr;
     // use ipaddress::ipv6;
     use ipaddress::IPAddress;
 
@@ -25,16 +25,27 @@ mod tests {
     pub fn setup() -> IPv6MappedTest {
         let mut valid_mapped = HashMap::new();
         valid_mapped.insert("::13.1.68.3", BigUint::from_str("281470899930115").unwrap());
-        valid_mapped.insert("0:0:0:0:0:ffff:129.144.52.38",
-                            BigUint::from_str("281472855454758").unwrap());
-        valid_mapped.insert("::ffff:129.144.52.38",
-                            BigUint::from_str("281472855454758").unwrap());
+        valid_mapped.insert(
+            "0:0:0:0:0:ffff:129.144.52.38",
+            BigUint::from_str("281472855454758").unwrap(),
+        );
+        valid_mapped.insert(
+            "::ffff:129.144.52.38",
+            BigUint::from_str("281472855454758").unwrap(),
+        );
         let mut valid_mapped_ipv6 = HashMap::new();
-        valid_mapped_ipv6.insert("::ffff:13.1.68.3", BigUint::from_str("281470899930115").unwrap());
-        valid_mapped_ipv6.insert("0:0:0:0:0:ffff:8190:3426",
-                                 BigUint::from_str("281472855454758").unwrap());
-        valid_mapped_ipv6.insert("::ffff:8190:3426",
-                                 BigUint::from_str("281472855454758").unwrap());
+        valid_mapped_ipv6.insert(
+            "::ffff:13.1.68.3",
+            BigUint::from_str("281470899930115").unwrap(),
+        );
+        valid_mapped_ipv6.insert(
+            "0:0:0:0:0:ffff:8190:3426",
+            BigUint::from_str("281472855454758").unwrap(),
+        );
+        valid_mapped_ipv6.insert(
+            "::ffff:8190:3426",
+            BigUint::from_str("281472855454758").unwrap(),
+        );
         let mut valid_mapped_ipv6_conversion = HashMap::new();
         valid_mapped_ipv6_conversion.insert("::ffff:13.1.68.3", "13.1.68.3");
         valid_mapped_ipv6_conversion.insert("0:0:0:0:0:ffff:8190:3426", "129.144.52.38");
@@ -51,7 +62,6 @@ mod tests {
             valid_mapped_ipv6_conversion: valid_mapped_ipv6_conversion,
         };
     }
-
 
     #[test]
     pub fn test_initialize() {

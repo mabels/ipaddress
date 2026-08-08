@@ -22,6 +22,7 @@ jobs:
     - name: "build cpp"
       run: |
         cd cpp && echo "build cpp"
+        find src test -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) -print0 | xargs -0 clang-format --dry-run --Werror
         cmake -DCMAKE_BUILD_TYPE=Release .
         make
         for i in ./test/Release/*/test_*
@@ -40,7 +41,8 @@ jobs:
       run: |
         cd cs/ipaddress && echo "build cs"
         dotnet restore
-        dotnet build 
+        dotnet format ipaddress.csproj --verify-no-changes
+        dotnet build
         dotnet test
         dotnet build -c Release
 
@@ -57,6 +59,7 @@ jobs:
       run: |
         cd dart/ipaddress && echo "build dart"
         dart pub get
+        dart format --output=none --set-exit-if-changed .
         dart test
 
   go:
@@ -70,6 +73,12 @@ jobs:
       run: |
         cd go/ipaddress && echo "build go"
         go version
+        unformatted=$(gofmt -l .)
+        if [ -n "$unformatted" ]; then
+          echo "gofmt found unformatted files:"
+          echo "$unformatted"
+          exit 1
+        fi
         go test -v
 
   java:
@@ -101,6 +110,17 @@ jobs:
         npx prettier . --check
         npm run build
         npm run test
+
+    - uses: denoland/setup-deno@v2
+      with:
+        deno-version: v2.x
+
+    - name: "verify js on deno"
+      working-directory: js
+      run: |
+        deno check --unstable-sloppy-imports src/index.ts test/*.ts
+        deno run -A npm:vitest run
+
     - name: publish
       # npm Trusted Publishing (OIDC) - no NPM_TOKEN secret needed.
       # Requires the npm package to have this repo+workflow registered
@@ -165,6 +185,7 @@ jobs:
     - name: "build kotlin"
       run: |
         cd kotlin && echo "build kotlin"
+        ./gradlew ktlintCheck
         ./gradlew build
         ./gradlew test
 
@@ -187,6 +208,7 @@ jobs:
         cd python && echo "build python"
         python -m pip install --upgrade pip build
         pip install -e ".[dev]"
+        black --check --diff src tests
         pytest -q
 
     - name: set version from tag
@@ -234,6 +256,8 @@ jobs:
         cd ruby && echo "build ruby"
         gem install jeweler
         gem install test-unit
+        gem install standard
+        standardrb --no-fix lib test
         rake test
 
   rust:
@@ -246,6 +270,7 @@ jobs:
     - name: "build rust"
       run: |
         cd rust && echo "build rust"
+        cargo fmt --check
         cargo test --release 
 
   swift:
@@ -258,5 +283,11 @@ jobs:
     - name: "build swift"
       run: |
         cd swift && echo "build swift"
+        # swift-format's "lint" rules also enforce lowerCamelCase naming,
+        # which conflicts with this project's intentionally identical
+        # (non-camelCase) method names across every language port. Only
+        # check that format(-i) is a no-op, i.e. whitespace/style only.
+        swift format format -i -r Sources Tests Package.swift
+        git diff --exit-code -- Sources Tests Package.swift
         swift build
         swift test

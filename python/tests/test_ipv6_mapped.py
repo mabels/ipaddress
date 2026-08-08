@@ -31,7 +31,9 @@ def setup():
     ipv6.valid_mapped_ipv6.append(("0:0:0:0:0:ffff:8190:3426", int("281472855454758")))
     ipv6.valid_mapped_ipv6.append(("::ffff:8190:3426", int("281472855454758")))
     ipv6.valid_mapped_ipv6_conversion.append(("::ffff:13.1.68.3", "13.1.68.3"))
-    ipv6.valid_mapped_ipv6_conversion.append(("0:0:0:0:0:ffff:8190:3426", "129.144.52.38"))
+    ipv6.valid_mapped_ipv6_conversion.append(
+        ("0:0:0:0:0:ffff:8190:3426", "129.144.52.38")
+    )
     ipv6.valid_mapped_ipv6_conversion.append(("::ffff:8190:3426", "129.144.52.38"))
     return ipv6
 

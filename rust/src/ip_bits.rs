@@ -1,19 +1,17 @@
-
 use num::bigint::BigUint;
-
 
 use num_traits::identities::One;
 use num_traits::identities::Zero;
 // use num_integer::Integer;
-use num_traits::cast::ToPrimitive;
-use num_traits::FromPrimitive;
 use core::convert::From;
 use core::ops::Rem;
 use core::ops::Shr;
+use num_traits::cast::ToPrimitive;
+use num_traits::FromPrimitive;
 // use core::marker::Copy;
 use core::clone::Clone;
-use std::fmt;
 use rle;
+use std::fmt;
 
 #[allow(dead_code)]
 #[derive(PartialOrd, PartialEq, Eq, Debug, Clone, Copy)]
@@ -36,48 +34,48 @@ pub struct IpBits {
 }
 
 lazy_static! {
-  static ref V4 : IpBits = {
-    IpBits {
-        version: IpVersion::V4,
-        vt_as_compressed_string: ipv4_as_compressed,
-        vt_as_uncompressed_string: ipv4_as_compressed,
-        bits: 32,
-        part_bits: 8,
-        dns_bits: 8,
-        rev_domain: "in-addr.arpa",
-        part_mod: BigUint::from_usize(1 << 8).unwrap(),
-        host_ofs: BigUint::one(),
-    }
-  };
-  static ref V6 : IpBits = {
-    return IpBits {
-        version: IpVersion::V6,
-        vt_as_compressed_string: ipv6_as_compressed,
-        vt_as_uncompressed_string: ipv6_as_uncompressed,
-        bits: 128,
-        part_bits: 16,
-        dns_bits: 4,
-        rev_domain: "ip6.arpa",
-        part_mod: BigUint::from_usize(1 << 16).unwrap(),
-        host_ofs: BigUint::zero(),
+    static ref V4: IpBits = {
+        IpBits {
+            version: IpVersion::V4,
+            vt_as_compressed_string: ipv4_as_compressed,
+            vt_as_uncompressed_string: ipv4_as_compressed,
+            bits: 32,
+            part_bits: 8,
+            dns_bits: 8,
+            rev_domain: "in-addr.arpa",
+            part_mod: BigUint::from_usize(1 << 8).unwrap(),
+            host_ofs: BigUint::one(),
+        }
     };
-  };
+    static ref V6: IpBits = {
+        return IpBits {
+            version: IpVersion::V6,
+            vt_as_compressed_string: ipv6_as_compressed,
+            vt_as_uncompressed_string: ipv6_as_uncompressed,
+            bits: 128,
+            part_bits: 16,
+            dns_bits: 4,
+            rev_domain: "ip6.arpa",
+            part_mod: BigUint::from_usize(1 << 16).unwrap(),
+            host_ofs: BigUint::zero(),
+        };
+    };
 }
 
 //impl Clone for IpBits {
 //    fn clone(&'static self) -> &'static IpBits {
 //      return self;
-      //  IpBits {
-      //      version: self.version,
-      //      vt_as_compressed_string: self.vt_as_compressed_string,
-      //      vt_as_uncompressed_string: self.vt_as_uncompressed_string,
-      //      bits: self.bits,
-      //      part_bits: self.part_bits,
-      //      dns_bits: self.dns_bits,
-      //      rev_domain: self.rev_domain,
-      //      part_mod: self.part_mod.clone(),
-      //      host_ofs: self.host_ofs.clone(),
-      //  }
+//  IpBits {
+//      version: self.version,
+//      vt_as_compressed_string: self.vt_as_compressed_string,
+//      vt_as_uncompressed_string: self.vt_as_uncompressed_string,
+//      bits: self.bits,
+//      part_bits: self.part_bits,
+//      dns_bits: self.dns_bits,
+//      rev_domain: self.rev_domain,
+//      part_mod: self.part_mod.clone(),
+//      host_ofs: self.host_ofs.clone(),
+//  }
 //   }
 //}
 
@@ -87,13 +85,12 @@ impl fmt::Debug for IpBits {
     }
 }
 
-
 impl IpBits {
     #[allow(unused_variables)]
     pub fn parts(&self, bu: &BigUint) -> Vec<u16> {
         let mut vec: Vec<u16> = Vec::new();
         let mut my = bu.clone();
-        let part_mod = BigUint::one() << self.part_bits;// - BigUint::one();
+        let part_mod = BigUint::one() << self.part_bits; // - BigUint::one();
         for i in 0..(self.bits / self.part_bits) {
             vec.push(my.clone().rem(&part_mod).to_u16().unwrap());
             my = my.shr(self.part_bits);
@@ -144,7 +141,6 @@ impl IpBits {
     }
 }
 
-
 fn ipv4_as_compressed(ip_bits: &IpBits, host_address: &BigUint) -> String {
     let mut ret = String::new();
     let mut sep = "";
@@ -189,34 +185,32 @@ fn ipv6_as_uncompressed(ip_bits: &IpBits, host_address: &BigUint) -> String {
     return ret;
 }
 
-
-
 pub fn v4() -> &'static IpBits {
-  return &V4;
-//    IpBits {
-//        version: IpVersion::V4,
-//        vt_as_compressed_string: ipv4_as_compressed,
-//        vt_as_uncompressed_string: ipv4_as_compressed,
-//        bits: 32,
-//        part_bits: 8,
-//        dns_bits: 8,
-//        rev_domain: "in-addr.arpa",
-//        part_mod: BigUint::from_usize(1 << 8).unwrap(),
-//        host_ofs: BigUint::one(),
-//    }
+    return &V4;
+    //    IpBits {
+    //        version: IpVersion::V4,
+    //        vt_as_compressed_string: ipv4_as_compressed,
+    //        vt_as_uncompressed_string: ipv4_as_compressed,
+    //        bits: 32,
+    //        part_bits: 8,
+    //        dns_bits: 8,
+    //        rev_domain: "in-addr.arpa",
+    //        part_mod: BigUint::from_usize(1 << 8).unwrap(),
+    //        host_ofs: BigUint::one(),
+    //    }
 }
 
 pub fn v6() -> &'static IpBits {
-  return &V6;
-//    return IpBits {
-//        version: IpVersion::V6,
-//        vt_as_compressed_string: ipv6_as_compressed,
-//        vt_as_uncompressed_string: ipv6_as_uncompressed,
-//        bits: 128,
-//        part_bits: 16,
-//        dns_bits: 4,
-//        rev_domain: "ip6.arpa",
-//        part_mod: BigUint::from_usize(1 << 16).unwrap(),
-//        host_ofs: BigUint::zero(),
-//    };
+    return &V6;
+    //    return IpBits {
+    //        version: IpVersion::V6,
+    //        vt_as_compressed_string: ipv6_as_compressed,
+    //        vt_as_uncompressed_string: ipv6_as_uncompressed,
+    //        bits: 128,
+    //        part_bits: 16,
+    //        dns_bits: 4,
+    //        rev_domain: "ip6.arpa",
+    //        part_mod: BigUint::from_usize(1 << 16).unwrap(),
+    //        host_ofs: BigUint::zero(),
+    //    };
 }

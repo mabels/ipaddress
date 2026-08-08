@@ -24,19 +24,43 @@ def assert_array_equal(a, b):
 
 def setup():
     ip6t = IPv6Test()
-    ip6t.compress_addr.append(("2001:db8:0000:0000:0008:0800:200c:417a", "2001:db8::8:800:200c:417a"))
-    ip6t.compress_addr.append(("2001:db8:0:0:8:800:200c:417a", "2001:db8::8:800:200c:417a"))
+    ip6t.compress_addr.append(
+        ("2001:db8:0000:0000:0008:0800:200c:417a", "2001:db8::8:800:200c:417a")
+    )
+    ip6t.compress_addr.append(
+        ("2001:db8:0:0:8:800:200c:417a", "2001:db8::8:800:200c:417a")
+    )
     ip6t.compress_addr.append(("ff01:0:0:0:0:0:0:101", "ff01::101"))
     ip6t.compress_addr.append(("0:0:0:0:0:0:0:1", "::1"))
     ip6t.compress_addr.append(("0:0:0:0:0:0:0:0", "::"))
 
-    ip6t.valid_ipv6.append(("FEDC:BA98:7654:3210:FEDC:BA98:7654:3210", int("338770000845734292534325025077361652240")))
-    ip6t.valid_ipv6.append(("1080:0000:0000:0000:0008:0800:200C:417A", int("21932261930451111902915077091070067066")))
-    ip6t.valid_ipv6.append(("1080:0:0:0:8:800:200C:417A", int("21932261930451111902915077091070067066")))
-    ip6t.valid_ipv6.append(("1080:0::8:800:200C:417A", int("21932261930451111902915077091070067066")))
-    ip6t.valid_ipv6.append(("1080::8:800:200C:417A", int("21932261930451111902915077091070067066")))
-    ip6t.valid_ipv6.append(("FF01:0:0:0:0:0:0:43", int("338958331222012082418099330867817087043")))
-    ip6t.valid_ipv6.append(("FF01:0::0:0:43", int("338958331222012082418099330867817087043")))
+    ip6t.valid_ipv6.append(
+        (
+            "FEDC:BA98:7654:3210:FEDC:BA98:7654:3210",
+            int("338770000845734292534325025077361652240"),
+        )
+    )
+    ip6t.valid_ipv6.append(
+        (
+            "1080:0000:0000:0000:0008:0800:200C:417A",
+            int("21932261930451111902915077091070067066"),
+        )
+    )
+    ip6t.valid_ipv6.append(
+        ("1080:0:0:0:8:800:200C:417A", int("21932261930451111902915077091070067066"))
+    )
+    ip6t.valid_ipv6.append(
+        ("1080:0::8:800:200C:417A", int("21932261930451111902915077091070067066"))
+    )
+    ip6t.valid_ipv6.append(
+        ("1080::8:800:200C:417A", int("21932261930451111902915077091070067066"))
+    )
+    ip6t.valid_ipv6.append(
+        ("FF01:0:0:0:0:0:0:43", int("338958331222012082418099330867817087043"))
+    )
+    ip6t.valid_ipv6.append(
+        ("FF01:0::0:0:43", int("338958331222012082418099330867817087043"))
+    )
     ip6t.valid_ipv6.append(("FF01::43", int("338958331222012082418099330867817087043")))
     ip6t.valid_ipv6.append(("0:0:0:0:0:0:0:1", int("1")))
     ip6t.valid_ipv6.append(("0:0:0::0:0:1", int("1")))
@@ -45,8 +69,12 @@ def setup():
     ip6t.valid_ipv6.append(("0:0:0::0:0:0", int("0")))
     ip6t.valid_ipv6.append(("::", int("0")))
     ip6t.valid_ipv6.append(("::/0", int("0")))
-    ip6t.valid_ipv6.append(("1080:0:0:0:8:800:200C:417A", int("21932261930451111902915077091070067066")))
-    ip6t.valid_ipv6.append(("1080::8:800:200C:417A", int("21932261930451111902915077091070067066")))
+    ip6t.valid_ipv6.append(
+        ("1080:0:0:0:8:800:200C:417A", int("21932261930451111902915077091070067066"))
+    )
+    ip6t.valid_ipv6.append(
+        ("1080::8:800:200C:417A", int("21932261930451111902915077091070067066"))
+    )
 
     ip6t.networks.append(("2001:db8:1:1:1:1:1:1/32", "2001:db8::/32"))
     ip6t.networks.append(("2001:db8:1:1:1:1:1::/32", "2001:db8::/32"))
@@ -76,7 +104,10 @@ def test_attribute_groups():
 
 
 def test_method_hexs():
-    assert_array_equal(setup().ip.parts_hex_str(), ["2001", "0db8", "0000", "0000", "0008", "0800", "200c", "417a"])
+    assert_array_equal(
+        setup().ip.parts_hex_str(),
+        ["2001", "0db8", "0000", "0000", "0008", "0800", "200c", "417a"],
+    )
 
 
 def test_method_to_i():
@@ -118,11 +149,15 @@ def test_method_network_known():
 
 
 def test_method_network_u128():
-    assert Ipv6.from_int(int("42540766411282592856903984951653826560"), 64).eq(setup().ip.network())
+    assert Ipv6.from_int(int("42540766411282592856903984951653826560"), 64).eq(
+        setup().ip.network()
+    )
 
 
 def test_method_broadcast_u128():
-    assert Ipv6.from_int(int("42540766411282592875350729025363378175"), 64).eq(setup().ip.broadcast())
+    assert Ipv6.from_int(int("42540766411282592875350729025363378175"), 64).eq(
+        setup().ip.broadcast()
+    )
 
 
 def test_method_size():
@@ -177,9 +212,17 @@ def test_method_reverse():
 
 
 def test_method_dns_rev_domains():
-    assert_array_equal(IPAddress.parse("f000:f100::/3").dns_rev_domains(), ["e.ip6.arpa", "f.ip6.arpa"])
-    assert_array_equal(IPAddress.parse("fea3:f120::/15").dns_rev_domains(), ["2.a.e.f.ip6.arpa", "3.a.e.f.ip6.arpa"])
-    assert_array_equal(IPAddress.parse("3a03:2f80:f::/48").dns_rev_domains(), ["f.0.0.0.0.8.f.2.3.0.a.3.ip6.arpa"])
+    assert_array_equal(
+        IPAddress.parse("f000:f100::/3").dns_rev_domains(), ["e.ip6.arpa", "f.ip6.arpa"]
+    )
+    assert_array_equal(
+        IPAddress.parse("fea3:f120::/15").dns_rev_domains(),
+        ["2.a.e.f.ip6.arpa", "3.a.e.f.ip6.arpa"],
+    )
+    assert_array_equal(
+        IPAddress.parse("3a03:2f80:f::/48").dns_rev_domains(),
+        ["f.0.0.0.0.8.f.2.3.0.a.3.ip6.arpa"],
+    )
 
     assert_array_equal(
         IPAddress.parse("f000:f100::1234/125").dns_rev_domains(),
@@ -296,7 +339,15 @@ def test_method_compare():
 
     r = sorted([ip1, ip2, ip3, ip4], key=functools.cmp_to_key(lambda a, b: a.cmp(b)))
     ret = [i.to_string() for i in r]
-    assert_array_equal(ret, ["2001:db8:1::1/64", "2001:db8:1::1/65", "2001:db8:1::2/64", "2001:db8:2::1/64"])
+    assert_array_equal(
+        ret,
+        [
+            "2001:db8:1::1/64",
+            "2001:db8:1::1/65",
+            "2001:db8:1::2/64",
+            "2001:db8:2::1/64",
+        ],
+    )
 
 
 def test_classmethod_compress():

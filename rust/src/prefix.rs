@@ -1,14 +1,13 @@
-
 // use core::fmt::Debug;
 //use std::ops::{Add, Sub};
 use num::bigint::BigUint;
 
-use num_traits::identities::Zero;
-use num_traits::identities::One;
-use core::ops::Shl;
-use core::ops::Add;
-use core::cmp::Ordering;
 use core::cmp::Ord;
+use core::cmp::Ordering;
+use core::ops::Add;
+use core::ops::Shl;
+use num_traits::identities::One;
+use num_traits::identities::Zero;
 // use num_integer::Integer;
 use num_traits::cast::ToPrimitive;
 // use num_traits::cast::FromPrimitive;
@@ -29,15 +28,14 @@ impl Clone for Prefix {
             num: self.num,
             ip_bits: self.ip_bits.clone(),
             net_mask: self.net_mask.clone(),
-            vt_from: self.vt_from
+            vt_from: self.vt_from,
         }
     }
 }
 
 impl PartialEq for Prefix {
     fn eq(&self, other: &Self) -> bool {
-        return self.ip_bits.version == other.ip_bits.version &&
-          self.num == other.num;
+        return self.ip_bits.version == other.ip_bits.version && self.num == other.num;
     }
     fn ne(&self, other: &Self) -> bool {
         !self.eq(other)
@@ -51,11 +49,10 @@ impl fmt::Debug for Prefix {
     }
 }
 
-
 impl Eq for Prefix {}
 
 impl Ord for Prefix {
-    fn cmp(&self, oth: & Prefix) -> Ordering {
+    fn cmp(&self, oth: &Prefix) -> Ordering {
         if self.ip_bits.version < oth.ip_bits.version {
             Ordering::Less
         } else if self.ip_bits.version > oth.ip_bits.version {
@@ -75,32 +72,31 @@ impl PartialOrd for Prefix {
     fn partial_cmp(&self, other: &Prefix) -> Option<Ordering> {
         Some(self.cmp(other))
     }
-
 }
 
 impl Prefix {
     //#[allow(dead_code)]
-    pub fn from(&self, num: usize) -> Result<Prefix, String>{
-        return (self.vt_from)(self, num)
+    pub fn from(&self, num: usize) -> Result<Prefix, String> {
+        return (self.vt_from)(self, num);
     }
 
     #[allow(dead_code)]
     pub fn to_ip_str(&self) -> String {
-        return (self.ip_bits.vt_as_compressed_string)(&self.ip_bits, &self.netmask())
+        return (self.ip_bits.vt_as_compressed_string)(&self.ip_bits, &self.netmask());
     }
 
     #[allow(dead_code)]
     pub fn size(&self) -> BigUint {
-      return BigUint::one() << (self.ip_bits.bits-self.num.to_usize().unwrap())
+        return BigUint::one() << (self.ip_bits.bits - self.num.to_usize().unwrap());
     }
 
     pub fn new_netmask(prefix: usize, bits: usize) -> BigUint {
         let mut mask = BigUint::zero();
-        let host_prefix = bits-prefix;
+        let host_prefix = bits - prefix;
         for i in 0..prefix {
-            mask = mask + (BigUint::one() << (host_prefix+i));
+            mask = mask + (BigUint::one() << (host_prefix + i));
         }
-        return mask
+        return mask;
     }
 
     #[allow(dead_code)]
@@ -111,7 +107,7 @@ impl Prefix {
 
     #[allow(dead_code)]
     pub fn get_prefix(&self) -> usize {
-        return self.num
+        return self.num;
     }
 
     ///  The hostmask is the contrary of the subnet mask,
@@ -126,8 +122,8 @@ impl Prefix {
     #[allow(dead_code)]
     pub fn host_mask(&self) -> BigUint {
         let mut ret = BigUint::zero();
-        let one : i32 = 1;
-        for _ in 0..(self.ip_bits.bits-self.num) {
+        let one: i32 = 1;
+        for _ in 0..(self.ip_bits.bits - self.num) {
             ret = ret.shl(one).add(BigUint::one());
         }
         return ret;
@@ -159,7 +155,7 @@ impl Prefix {
     ///
     #[allow(dead_code)]
     pub fn bits(&self) -> String {
-        return self.netmask().to_str_radix(2)
+        return self.netmask().to_str_radix(2);
     }
     #[allow(dead_code)]
     pub fn to_s(&self) -> String {
@@ -185,9 +181,8 @@ impl Prefix {
     #[allow(dead_code)]
     pub fn sub(&self, other: usize) -> Result<Prefix, String> {
         if other > self.get_prefix() {
-            return self.from(other-self.get_prefix());
+            return self.from(other - self.get_prefix());
         }
         return self.from(self.get_prefix() - other);
     }
-
 }

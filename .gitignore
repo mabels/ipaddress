@@ -48,3 +48,6 @@ kotlin/local.properties
 **/*.egg-info/
 **/.pytest_cache/
 python/.venv/
+
+# swift
+swift/.build/

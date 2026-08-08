@@ -106,15 +106,15 @@ func (self *Prefix) Get_prefix() uint8 {
 	return self.Num
 }
 
-///  The hostmask is the contrary of the subnet mask,
-///  as it shows the bits that can change within the
-///  hosts
-///
-///    prefix = IPAddress::Prefix32.new 24
-///
-///    prefix.hostmask
-///      ///  "0.0.0.255"
-///
+// /  The hostmask is the contrary of the subnet mask,
+// /  as it shows the bits that can change within the
+// /  hosts
+// /
+// /    prefix = IPAddress::Prefix32.new 24
+// /
+// /    prefix.hostmask
+// /      ///  "0.0.0.255"
+// /
 func (self *Prefix) Host_mask() *big.Int {
 	ret := big.NewInt(0)
 	one := big.NewInt(1)
@@ -125,29 +125,29 @@ func (self *Prefix) Host_mask() *big.Int {
 	return ret
 }
 
-///
-///  Returns the length of the host portion
-///  of a netmask.
-///
-///    prefix = Prefix128.new 96
-///
-///    prefix.host_prefix
-///      ///  128
-///
+// /
+// /  Returns the length of the host portion
+// /  of a netmask.
+// /
+// /    prefix = Prefix128.new 96
+// /
+// /    prefix.host_prefix
+// /      ///  128
+// /
 func (self *Prefix) Host_prefix() uint8 {
 	return (self.IpBits.Bits) - self.Num
 }
 
-///
-///  Transforms the prefix into a string of bits
-///  representing the netmask
-///
-///    prefix = IPAddress::Prefix128.new 64
-///
-///    prefix.bits
-///      ///  "1111111111111111111111111111111111111111111111111111111111111111"
-///          "0000000000000000000000000000000000000000000000000000000000000000"
-///
+// /
+// /  Transforms the prefix into a string of bits
+// /  representing the netmask
+// /
+// /    prefix = IPAddress::Prefix128.new 64
+// /
+// /    prefix.bits
+// /      ///  "1111111111111111111111111111111111111111111111111111111111111111"
+// /          "0000000000000000000000000000000000000000000000000000000000000000"
+// /
 func (self *Prefix) Bits() string {
 	return self.Netmask.Text(2)
 }

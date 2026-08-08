@@ -12,8 +12,8 @@ class IPAddressTest {
 }
 
 class RangeItem {
-  start: number;
-  target: number;
+  start!: number;
+  target!: number;
 }
 function Range(start: number, target: number) {
   const ri = new RangeItem();
@@ -39,9 +39,9 @@ describe("IPAddressTest", () => {
     assert.isOk(IPAddress.parse(setup().valid_ipv6));
     assert.isOk(IPAddress.parse(setup().valid_mapped));
 
-    assert.isOk(IPAddress.parse(setup().valid_ipv4).is_ipv4());
-    assert.isOk(IPAddress.parse(setup().valid_ipv6).is_ipv6());
-    assert.isOk(IPAddress.parse(setup().valid_mapped).is_mapped());
+    assert.isOk(IPAddress.parse(setup().valid_ipv4)!.is_ipv4());
+    assert.isOk(IPAddress.parse(setup().valid_ipv6)!.is_ipv6());
+    assert.isOk(IPAddress.parse(setup().valid_mapped)!.is_mapped());
 
     assert.isNull(IPAddress.parse(setup().invalid_ipv4));
     assert.isNull(IPAddress.parse(setup().invalid_ipv6));
@@ -91,7 +91,7 @@ describe("IPAddressTest", () => {
     }
     const ip_addresses: IPAddress[] = [];
     for (const net of netstr) {
-      ip_addresses.push(IPAddress.parse(net));
+      ip_addresses.push(IPAddress.parse(net)!);
     }
 
     const empty_vec: string[] = [];
@@ -201,8 +201,8 @@ describe("IPAddressTest", () => {
     // test imutable input parameters
     const a1 = IPAddress.parse("10.0.0.1/24");
     const a2 = IPAddress.parse("10.0.1.1/24");
-    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([a1.clone(), a2.clone()])), ["10.0.0.0/23"]);
-    assert.equal("10.0.0.1/24", a1.to_string());
-    assert.equal("10.0.1.1/24", a2.to_string());
+    assertArrayEqual(IPAddress.to_string_vec(IPAddress.summarize([a1!.clone(), a2!.clone()])), ["10.0.0.0/23"]);
+    assert.equal("10.0.0.1/24", a1!.to_string());
+    assert.equal("10.0.1.1/24", a2!.to_string());
   }, 15000);
 });

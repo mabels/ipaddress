@@ -1,4 +1,3 @@
-
 // use num::bigint::BigUint;
 // use ip_bits::IpBits;
 use ipaddress::IPAddress;
@@ -6,9 +5,9 @@ use ipaddress::IPAddress;
 use num_integer::Integer;
 // use core::fmt::Display;
 
-use num_traits::cast::ToPrimitive;
 use core::ops::Shr;
 use num::bigint::BigUint;
+use num_traits::cast::ToPrimitive;
 use num_traits::Zero;
 
 //  Ac
@@ -120,16 +119,22 @@ pub fn new<S: Into<String>>(_str: S) -> Result<IPAddress, String> {
 
         let mut rebuild_ipv6 = String::new();
         let mut colon = "";
-        for i in 0..split_colon.len()-1 {
+        for i in 0..split_colon.len() - 1 {
             rebuild_ipv6.push_str(colon);
             rebuild_ipv6.push_str(split_colon[i]);
             colon = ":";
         }
         rebuild_ipv6.push_str(colon);
-        let rebuild_ipv4 = format!("{:x}:{:x}/{}",
-            up_addr.shr(::ip_bits::v6().part_bits).mod_floor(&part_mod).to_u16().unwrap(),
+        let rebuild_ipv4 = format!(
+            "{:x}:{:x}/{}",
+            up_addr
+                .shr(::ip_bits::v6().part_bits)
+                .mod_floor(&part_mod)
+                .to_u16()
+                .unwrap(),
             down_addr.mod_floor(&part_mod).to_u16().unwrap(),
-            ipv6_bits.bits-addr.prefix.host_prefix());
+            ipv6_bits.bits - addr.prefix.host_prefix()
+        );
         rebuild_ipv6.push_str(&rebuild_ipv4);
         let r_ipv6 = IPAddress::parse(rebuild_ipv6.clone());
         if r_ipv6.is_err() {
@@ -141,7 +146,7 @@ pub fn new<S: Into<String>>(_str: S) -> Result<IPAddress, String> {
         }
         let ipv6 = r_ipv6.unwrap();
         let p96bit = ipv6.host_address.clone().shr(32);
-        if  p96bit != BigUint::zero() {
+        if p96bit != BigUint::zero() {
             println!("---4|{}", &rebuild_ipv6);
             return Err(format!("is not a mapped address:{}", rebuild_ipv6));
         }

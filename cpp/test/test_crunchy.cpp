@@ -1,14 +1,12 @@
 
-#include "../src/crunchy.hpp"
-
 #include <cascara/cascara.hpp>
+
+#include "../src/crunchy.hpp"
 using namespace cascara;
 
 using namespace ipaddress;
-int main(int, char **) {
-
+int main(int, char**) {
   describe("#compare", []() {
-
     it("Should confirm equality", []() {
       auto x = Crunchy::from_string("12345678901234567890").unwrap();
       auto y = Crunchy::from_string("12345678901234567890").unwrap();
@@ -32,11 +30,9 @@ int main(int, char **) {
       assert.isTrue(x.lt(y));
       // this.done();
     });
-
   });
 
   describe("#add", []() {
-
     it("Should add numbers", []() {
       auto x = Crunchy::from_8bit({242, 62});
       auto y = Crunchy::from_8bit({42, 2});
@@ -70,64 +66,54 @@ int main(int, char **) {
       auto x = Crunchy::from_8bit({255, 255, 255, 255, 255, 255});
       auto y = Crunchy::from_8bit({255, 255, 255, 255, 255, 255});
 
-      assert.deepEqual(x.add(y).to_8bit(),
-                             {1, 255, 255, 255, 255, 255, 254});
+      assert.deepEqual(x.add(y).to_8bit(), {1, 255, 255, 255, 255, 255, 254});
 
       // x.should.eql([255, 255, 255, 255, 255, 255]);
       // y.should.eql([255, 255, 255, 255, 255, 255]);
     });
 
-    it("Should add positive to negative number expecting positive result",
-       []() {
-         auto y = Crunchy::from_8bit({51, 254, 144, 207});
-         auto x = Crunchy::from_8bit(
-             {0xff,      0xff,      0xff,       0xff,     0xff, 0xff, 0xff,
-              0xff,      0xff,      0xff,       0xff,     0xff, 0xff, 0xff,
-              0xff,      0xff,      0xff,       0xff,     0xff, 0xff, 0xff,
-              0xff,      0xff,      0xff,       0xff,     0xff, 0xff, 0xff,
-              0xff - 20, 0xff - 89, 0xff - 145, 0xff - 31});
+    it("Should add positive to negative number expecting positive result", []() {
+      auto y = Crunchy::from_8bit({51, 254, 144, 207});
+      auto x = Crunchy::from_8bit({0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,      0xff,      0xff,       0xff,     0xff,
+                                   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,      0xff,      0xff,       0xff,     0xff,
+                                   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff - 20, 0xff - 89, 0xff - 145, 0xff - 31});
 
-         assert.deepEqual(x.add(y).to_8bit(), {31, 164, 255, 175});
+      assert.deepEqual(x.add(y).to_8bit(), {31, 164, 255, 175});
 
-         // x.should.eql([51, 254, 144, 207]);
-         // y.should.eql([-20, 89, 145, 32]);
-       });
+      // x.should.eql([51, 254, 144, 207]);
+      // y.should.eql([-20, 89, 145, 32]);
+    });
 
-    it("Should add positive to negative number expecting negative result",
-       []() {
-         auto x = Crunchy::from_8bit(
-             {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,       0xff,
-              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,       0xff,
-              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,       0xff,
-              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff - 242, 0xff - 61});
-         auto y = Crunchy::from_8bit({242, 64});
+    it("Should add positive to negative number expecting negative result", []() {
+      auto x =
+          Crunchy::from_8bit({0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,       0xff,
+                              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff - 242, 0xff - 61});
+      auto y = Crunchy::from_8bit({242, 64});
 
-         assert.deepEqual(x.add(y).to_8bit(), {2});
+      assert.deepEqual(x.add(y).to_8bit(), {2});
 
-         // x.should.eql([242, 62]);
-         // y.should.eql([-242, 64]);
-       });
+      // x.should.eql([242, 62]);
+      // y.should.eql([-242, 64]);
+    });
 
-    it("Should add negative to positive number expecting positive result",
-       []() {
-         auto x = Crunchy::from_8bit({42, 2});
-         auto y = Crunchy::from_8bit({242, 62});
+    it("Should add negative to positive number expecting positive result", []() {
+      auto x = Crunchy::from_8bit({42, 2});
+      auto y = Crunchy::from_8bit({242, 62});
 
-         assert.deepEqual(x.add(y).to_8bit(), {1, 28, 64});
+      assert.deepEqual(x.add(y).to_8bit(), {1, 28, 64});
 
-         // x, [-42, 2]);
-         // y, [242, 62]);
-       });
+      // x, [-42, 2]);
+      // y, [242, 62]);
+    });
 
-    it("Should add negative to positive number expecting negative result",
-       []() {
-         auto x = Crunchy::from_8bit({42, 2});
-         auto y = Crunchy::from_8bit({42, 0});
+    it("Should add negative to positive number expecting negative result", []() {
+      auto x = Crunchy::from_8bit({42, 2});
+      auto y = Crunchy::from_8bit({42, 0});
 
-         assert.deepEqual(x.add(y).to_8bit(), {84, 2});
-         // x, [-42, 2]);
-         // y, [42, 0]);
-       });
+      assert.deepEqual(x.add(y).to_8bit(), {84, 2});
+      // x, [-42, 2]);
+      // y, [42, 0]);
+    });
 
     it("Should add two negative numbers expecting negative result", []() {
       auto x = Crunchy::from_8bit({242, 62});
@@ -168,11 +154,9 @@ int main(int, char **) {
       // x.should.eql({ 0 });
       // y.should.eql({ 0 });
     });
-
   });
 
   describe("#add-from_string", []() {
-
     it("Should add numbers", []() {
       // console.log(new Date());
       auto x = Crunchy::from_string("12345678911234567891").unwrap();
@@ -227,11 +211,9 @@ int main(int, char **) {
       assert.equal(x.add(y).toString(), "0");
       // this.done();
     });
-
   });
 
   describe("#sub", []() {
-
     it("Should subtract numbers", []() {
       auto x = Crunchy::from_8bit({170, 1, 79, 119, 242, 62});
       auto y = Crunchy::from_8bit({17, 241, 123, 250, 42, 2});
@@ -246,8 +228,7 @@ int main(int, char **) {
       auto x = Crunchy::from_8bit({240, 0, 0, 0, 0, 0});
       auto y = Crunchy::from_8bit({1});
 
-      assert.deepEqual(x.sub(y).to_8bit(),
-                             {239, 255, 255, 255, 255, 255});
+      assert.deepEqual(x.sub(y).to_8bit(), {239, 255, 255, 255, 255, 255});
 
       // x.should.eql([240, 0, 0, 0, 0, 0]);
       // y.should.eql({ 1 });
@@ -258,10 +239,8 @@ int main(int, char **) {
       auto y = Crunchy::from_8bit({255});
 
       assert.deepEqual(x.sub(y).to_8bit(),
-                             {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x1b});
+                       {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x1b});
 
       // x.should.eql({ 26 });
       // y.should.eql({ 255 });
@@ -272,10 +251,8 @@ int main(int, char **) {
       auto y = Crunchy::from_8bit({188, 197});
 
       assert.deepEqual(x.sub(y).to_8bit(),
-                             {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff});
+                       {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff});
 
       // x.should.eql([188, 196]);
       // y.should.eql([188, 197]);
@@ -286,10 +263,8 @@ int main(int, char **) {
       auto x = Crunchy::from_8bit({1});
       // console.log("negative:", x, y, x.sub(y));
       assert.deepEqual(x.sub(y).to_8bit(),
-                             {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                              0xff, 0xff, 0x10, 0x00, 0x00, 0x00, 0x00, 0x01});
+                       {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x10, 0x00, 0x00, 0x00, 0x00, 0x01});
 
       // x.should.eql([240, 0, 0, 0, 0, 0]);
       // y.should.eql([-1]);
@@ -299,8 +274,7 @@ int main(int, char **) {
       auto x = Crunchy::from_8bit({240, 0, 0, 0, 0, 0});
       auto y = Crunchy::from_8bit({1});
 
-      assert.deepEqual(x.sub(y).to_8bit(),
-                             {239, 255, 255, 255, 255, 255});
+      assert.deepEqual(x.sub(y).to_8bit(), {239, 255, 255, 255, 255, 255});
 
       // x.should.eql([-240, 0, 0, 0, 0, 0]);
       // y.should.eql({ 1 });
@@ -310,8 +284,7 @@ int main(int, char **) {
       auto x = Crunchy::from_8bit({240, 0, 0, 0, 0, 0});
       auto y = Crunchy::from_8bit({1});
 
-      assert.deepEqual(x.sub(y).to_8bit(),
-                             {239, 255, 255, 255, 255, 255});
+      assert.deepEqual(x.sub(y).to_8bit(), {239, 255, 255, 255, 255, 255});
 
       // x.should.eql([-240, 0, 0, 0, 0, 0]);
       // y.should.eql([-1]);
@@ -352,19 +325,15 @@ int main(int, char **) {
       auto y = Crunchy::from_8bit({15});
 
       assert.deepEqual(x.sub(y).to_8bit(),
-                             {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-                              0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xf1});
+                       {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xf1});
 
       // x.should.eql({ 0 });
       // y.should.eql({ 15 });
     });
-
   });
 
   describe("#mul", []() {
-
     it("Should multiply numbers", []() {
       auto x = Crunchy::from_8bit({162, 51, 95});
       auto y = Crunchy::from_8bit({42, 18, 204});
@@ -376,32 +345,28 @@ int main(int, char **) {
       auto x = Crunchy::from_8bit({255, 65, 34, 51, 95});
       auto y = Crunchy::from_8bit({42, 18, 204});
 
-      assert.deepEqual(x.mul(y).to_8bit(),
-                             {41, 243, 109, 152, 188, 115, 157, 180});
+      assert.deepEqual(x.mul(y).to_8bit(), {41, 243, 109, 152, 188, 115, 157, 180});
     });
 
     it("Should multiply numbers", []() {
       auto x = Crunchy::from_8bit({255, 255, 255, 255});
       auto y = Crunchy::from_8bit({255, 255, 255, 255});
 
-      assert.deepEqual(x.mul(y).to_8bit(),
-                             {255, 255, 255, 254, 0, 0, 0, 1});
+      assert.deepEqual(x.mul(y).to_8bit(), {255, 255, 255, 254, 0, 0, 0, 1});
     });
 
     it("Should multiply positive with negative number", []() {
       auto x = Crunchy::from_8bit({77, 242, 62});
       auto y = Crunchy::from_8bit({42, 2, 113, 43, 57, 65});
 
-      assert.deepEqual(x.mul(y).to_8bit(),
-                             {12, 202, 124, 133, 146, 125, 36, 79, 190});
+      assert.deepEqual(x.mul(y).to_8bit(), {12, 202, 124, 133, 146, 125, 36, 79, 190});
     });
 
     it("Should multiply negative with positive number", []() {
       auto x = Crunchy::from_8bit({255, 17, 162, 62});
       auto y = Crunchy::from_8bit({255, 17, 162, 62});
 
-      assert.deepEqual(x.mul(y).to_8bit(),
-                             {254, 36, 34, 110, 119, 14, 135, 4});
+      assert.deepEqual(x.mul(y).to_8bit(), {254, 36, 34, 110, 119, 14, 135, 4});
     });
 
     it("Should multiply two negative numbers", []() {
@@ -431,11 +396,9 @@ int main(int, char **) {
 
       assert.deepEqual(x.mul(y).to_8bit(), {0});
     });
-
   });
 
   describe("#div", []() {
-
     it("Should divide numbers", []() {
       auto x = Crunchy::from_8bit({52, 155, 168, 23, 6, 85});
       auto y = Crunchy::from_8bit({19, 26, 247});
@@ -505,14 +468,11 @@ int main(int, char **) {
       } catch (std::overflow_error e) {
       }
     });
-
   });
 
   describe("#mod", []() {
-
     it("Should calculate modulo", []() {
-      auto x = Crunchy::from_8bit({52, 155, 168, 23, 6, 85}),
-           y = Crunchy::from_8bit({19, 26, 247});
+      auto x = Crunchy::from_8bit({52, 155, 168, 23, 6, 85}), y = Crunchy::from_8bit({19, 26, 247});
 
       assert.deepEqual(x.mod(y).to_8bit(), {10, 237, 29});
     });
@@ -555,11 +515,9 @@ int main(int, char **) {
     //
     //   assert.deepEqual(x.mod(y).to_8bit(), {12, 123, 46, 72});
     // });
-
   });
 
   describe("#leftShift", []() {
-
     it("Should left shift a number", []() {
       auto x = Crunchy::from_8bit({22, 11});
       size_t s = 5;
@@ -593,11 +551,9 @@ int main(int, char **) {
       size_t s = 1;
       assert.deepEqual(x.shl(s).to_8bit(), {2, 0, 0, 0, 0});
     });
-
   });
 
   describe("#rightShift", []() {
-
     it("Should right shift a number to zero", []() {
       auto x = Crunchy::from_8bit({44, 44, 44});
       // assert.deepEqual(x.rsh(32).num, { 0 });
@@ -624,7 +580,6 @@ int main(int, char **) {
       size_t s = 8;
       assert.deepEqual(x.shr(s).to_8bit(), {0});
     });
-
   });
 
   // describe("#parse", [](){

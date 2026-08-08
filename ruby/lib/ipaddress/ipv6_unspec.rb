@@ -1,5 +1,4 @@
-
-#require_relative '../ipaddress'
+# require_relative '../ipaddress'
 
 class IPAddress
   class Ipv6Unspec
@@ -52,8 +51,8 @@ class IPAddress
     #    ip.to_s
     #       # => => "::/128"
     #
-    def self.create()
-      return Ipv6.from_number(Crunchy.zero, 128)
+    def self.create
+      Ipv6.from_number(Crunchy.zero, 128)
     end
 
     #  class IPv6::Unspecified

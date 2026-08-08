@@ -3,10 +3,10 @@ extern crate num;
 
 #[cfg(test)]
 mod tests {
-    use num::bigint::BigUint;
-    use num::One;
     use ipaddress::ipv6_loopback;
     use ipaddress::IPAddress;
+    use num::bigint::BigUint;
+    use num::One;
 
     struct IPv6LoopbackTest {
         ip: IPAddress,

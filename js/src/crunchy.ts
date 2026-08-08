@@ -65,11 +65,26 @@ export class Crunchy {
   }
 
   public static parse(val: string): Crunchy {
-    return Crunchy.from_string(val, 10)!;
+    const ret = Crunchy.from_string(val, 10);
+    if (ret === null) {
+      throw new Error(`invalid decimal number: ${val}`);
+    }
+    return ret;
   }
 
   public static from_number(val: number): Crunchy {
     return Crunchy.parse("" + val);
+  }
+
+  //  Same as from_string(), but for literals that are known to be valid
+  //  numbers (e.g. hardcoded hex constants), so the caller doesn't need
+  //  to deal with a nullable result it can never actually observe.
+  public static from_string_or_throw(val: string, radix = 10): Crunchy {
+    const ret = Crunchy.from_string(val, radix);
+    if (ret === null) {
+      throw new Error(`invalid number: ${val} (radix ${radix})`);
+    }
+    return ret;
   }
 
   public static from_string(val: string, radix = 10): Crunchy | null {
@@ -87,7 +102,11 @@ export class Crunchy {
       x.shift();
     }
     while (x.length > 0) {
-      const c = parseInt(x.pop()!, radix);
+      const popped = x.pop();
+      if (popped === undefined) {
+        break;
+      }
+      const c = parseInt(popped, radix);
       if (isNaN(c)) {
         console.error("from_string:", val);
         return null;
@@ -478,11 +497,22 @@ export class Crunchy {
   //   return Crunchy.from_8bit(Crunch.sub(this.num, cry.num));
   // }
 
+  //  Same as div(), but for divisors that are known to be non-zero, so the
+  //  caller doesn't need to deal with a nullable result it can never
+  //  actually observe.
+  public div_or_throw(y: Crunchy, internal = false): Crunchy {
+    const ret = this.div(y, internal);
+    if (ret === null) {
+      throw new Error("division by zero");
+    }
+    return ret;
+  }
+
   public mod(y: Crunchy): Crunchy {
     // For negative x, cmp doesn't work and result of div is negative
     // so take result away from the modulus to get the correct result
     if (this.negative) {
-      return y.sub(this.div(y, true)!);
+      return y.sub(this.div_or_throw(y, true));
     }
     switch (this.compare(y)) {
       case -1:
@@ -490,7 +520,7 @@ export class Crunchy {
       case 0:
         return Crunchy.from_8bit([0]);
       default:
-        return this.div(y, true)!;
+        return this.div_or_throw(y, true);
     }
   }
 
@@ -512,7 +542,7 @@ export class Crunchy {
     const zero = Crunchy.zero();
     do {
       const digit = x.mds(radix);
-      x = x.div(cradix)!;
+      x = x.div_or_throw(cradix);
       a[i++] = "0123456789abcdef"[digit];
       // console.log("1-toString:", x, radix, digit, a.join(""));
       // console.log("2-toString:", x, radix, digit, a, Crunch.compare(x, Crunchy._zero.num));

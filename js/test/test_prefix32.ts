@@ -50,7 +50,7 @@ describe("prefix32", () => {
   it("test_attributes", () => {
     for (const e of setup().prefix_hash) {
       const prefix = Prefix32.create(e[1]);
-      assert.equal(e[1], prefix.num);
+      assert.equal(e[1], prefix!.num);
     }
   });
 
@@ -68,36 +68,36 @@ describe("prefix32", () => {
       const netmask = hash[0];
       const num = hash[1];
       const prefix = Prefix32.create(num);
-      assert.equal(netmask, prefix.to_ip_str());
+      assert.equal(netmask, prefix!.to_ip_str());
     }
   });
   it("test_method_to_s", () => {
     const prefix = Prefix32.create(8);
-    assert.equal("8", prefix.to_s());
+    assert.equal("8", prefix!.to_s());
   });
   it("test_method_bits", () => {
     const prefix = Prefix32.create(16);
-    assert.equal("11111111111111110000000000000000", prefix.bits());
+    assert.equal("11111111111111110000000000000000", prefix!.bits());
   });
   it("test_method_to_u32", () => {
     for (const i of setup().u32_hash) {
       const num = i[0];
       const ip32 = i[1];
-      assert.isTrue(ip32.eq(Prefix32.create(num).netmask()));
+      assert.isTrue(ip32.eq(Prefix32.create(num)!.netmask()));
     }
   });
   it("test_method_plus", () => {
     const p1 = Prefix32.create(8);
     const p2 = Prefix32.create(10);
-    assert.equal(18, p1.add_prefix(p2).num);
-    assert.equal(12, p1.add(4).num);
+    assert.equal(18, p1!.add_prefix(p2!).num);
+    assert.equal(12, p1!.add(4).num);
   });
   it("test_method_minus", () => {
     const p1 = Prefix32.create(8);
     const p2 = Prefix32.create(24);
-    assert.equal(16, p1.sub_prefix(p2).num);
-    assert.equal(16, p2.sub_prefix(p1).num);
-    assert.equal(20, p2.sub(4).num);
+    assert.equal(16, p1!.sub_prefix(p2!).num);
+    assert.equal(16, p2!.sub_prefix(p1!).num);
+    assert.equal(20, p2!.sub(4).num);
   });
   it("test_initialize", () => {
     assert.isNull(Prefix32.create(33));
@@ -108,7 +108,7 @@ describe("prefix32", () => {
       const arr = i[0];
       const pref = i[1];
       const prefix = Prefix32.create(pref);
-      assertArrayEqual(prefix.ip_bits.parts(prefix.netmask()), arr);
+      assertArrayEqual(prefix!.ip_bits.parts(prefix!.netmask()), arr);
     }
   });
   it("test_method_brackets", () => {
@@ -118,13 +118,13 @@ describe("prefix32", () => {
       const prefix = Prefix32.create(pref);
       for (let index = 0; index < arr.length; ++index) {
         // console.log("xxxx", prefix.netmask());
-        assert.equal(prefix.ip_bits.parts(prefix.netmask())[index], arr[index]);
+        assert.equal(prefix!.ip_bits.parts(prefix!.netmask())[index], arr[index]);
       }
     }
   });
   it("test_method_hostmask", () => {
     const prefix = Prefix32.create(8);
     // console.log(">>>>", prefix.host_mask());
-    assert.equal("0.255.255.255", Ipv4.from_number(prefix.host_mask(), 0).to_s());
+    assert.equal("0.255.255.255", Ipv4.from_number(prefix!.host_mask(), 0)!.to_s());
   });
 });

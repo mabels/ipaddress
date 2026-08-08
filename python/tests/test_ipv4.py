@@ -172,14 +172,28 @@ def test_method_each_host():
     ip = IPAddress.parse("10.0.0.1/29")
     arr = []
     ip.each_host(lambda i: arr.append(i.to_s()))
-    assert_array_equal(arr, ["10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5", "10.0.0.6"])
+    assert_array_equal(
+        arr, ["10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5", "10.0.0.6"]
+    )
 
 
 def test_method_each():
     ip = IPAddress.parse("10.0.0.1/29")
     arr = []
     ip.each(lambda i: arr.append(i.to_s()))
-    assert_array_equal(arr, ["10.0.0.0", "10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5", "10.0.0.6", "10.0.0.7"])
+    assert_array_equal(
+        arr,
+        [
+            "10.0.0.0",
+            "10.0.0.1",
+            "10.0.0.2",
+            "10.0.0.3",
+            "10.0.0.4",
+            "10.0.0.5",
+            "10.0.0.6",
+            "10.0.0.7",
+        ],
+    )
 
 
 def test_method_size():
@@ -279,10 +293,17 @@ def test_method_reverse():
 
 def test_method_dns_rev_domains():
     assert_array_equal(
-        IPAddress.parse("173.17.5.1/23").dns_rev_domains(), ["4.17.173.in-addr.arpa", "5.17.173.in-addr.arpa"]
+        IPAddress.parse("173.17.5.1/23").dns_rev_domains(),
+        ["4.17.173.in-addr.arpa", "5.17.173.in-addr.arpa"],
     )
-    assert_array_equal(IPAddress.parse("173.17.1.1/15").dns_rev_domains(), ["16.173.in-addr.arpa", "17.173.in-addr.arpa"])
-    assert_array_equal(IPAddress.parse("173.17.1.1/7").dns_rev_domains(), ["172.in-addr.arpa", "173.in-addr.arpa"])
+    assert_array_equal(
+        IPAddress.parse("173.17.1.1/15").dns_rev_domains(),
+        ["16.173.in-addr.arpa", "17.173.in-addr.arpa"],
+    )
+    assert_array_equal(
+        IPAddress.parse("173.17.1.1/7").dns_rev_domains(),
+        ["172.in-addr.arpa", "173.in-addr.arpa"],
+    )
     assert_array_equal(
         IPAddress.parse("173.17.1.1/29").dns_rev_domains(),
         [
@@ -296,11 +317,21 @@ def test_method_dns_rev_domains():
             "7.1.17.173.in-addr.arpa",
         ],
     )
-    assert_array_equal(IPAddress.parse("174.17.1.1/24").dns_rev_domains(), ["1.17.174.in-addr.arpa"])
-    assert_array_equal(IPAddress.parse("175.17.1.1/16").dns_rev_domains(), ["17.175.in-addr.arpa"])
-    assert_array_equal(IPAddress.parse("176.17.1.1/8").dns_rev_domains(), ["176.in-addr.arpa"])
-    assert_array_equal(IPAddress.parse("177.17.1.1/0").dns_rev_domains(), ["in-addr.arpa"])
-    assert_array_equal(IPAddress.parse("178.17.1.1/32").dns_rev_domains(), ["1.1.17.178.in-addr.arpa"])
+    assert_array_equal(
+        IPAddress.parse("174.17.1.1/24").dns_rev_domains(), ["1.17.174.in-addr.arpa"]
+    )
+    assert_array_equal(
+        IPAddress.parse("175.17.1.1/16").dns_rev_domains(), ["17.175.in-addr.arpa"]
+    )
+    assert_array_equal(
+        IPAddress.parse("176.17.1.1/8").dns_rev_domains(), ["176.in-addr.arpa"]
+    )
+    assert_array_equal(
+        IPAddress.parse("177.17.1.1/0").dns_rev_domains(), ["in-addr.arpa"]
+    )
+    assert_array_equal(
+        IPAddress.parse("178.17.1.1/32").dns_rev_domains(), ["1.1.17.178.in-addr.arpa"]
+    )
 
 
 def test_method_compare():
@@ -323,13 +354,17 @@ def test_method_compare():
     import functools
 
     res = sorted([ip1, ip2, ip3], key=functools.cmp_to_key(lambda a, b: a.cmp(b)))
-    assert_array_equal(IPAddress.to_string_vec(res), ["10.1.1.1/8", "10.1.1.1/16", "172.16.1.1/14"])
+    assert_array_equal(
+        IPAddress.to_string_vec(res), ["10.1.1.1/8", "10.1.1.1/16", "172.16.1.1/14"]
+    )
 
     ip1 = IPAddress.parse("10.0.0.0/24")
     ip2 = IPAddress.parse("10.0.0.0/16")
     ip3 = IPAddress.parse("10.0.0.0/8")
     res = sorted([ip1, ip2, ip3], key=functools.cmp_to_key(lambda a, b: a.cmp(b)))
-    assert_array_equal(IPAddress.to_string_vec(res), ["10.0.0.0/8", "10.0.0.0/16", "10.0.0.0/24"])
+    assert_array_equal(
+        IPAddress.to_string_vec(res), ["10.0.0.0/8", "10.0.0.0/16", "10.0.0.0/24"]
+    )
 
 
 def test_method_minus():
@@ -345,15 +380,22 @@ def test_method_plus():
     assert_array_equal(IPAddress.to_string_vec(ip1.add(ip2)), ["172.16.10.0/23"])
 
     ip2 = IPAddress.parse("172.16.12.2/24")
-    assert_array_equal(IPAddress.to_string_vec(ip1.add(ip2)), [ip1.network().to_string(), ip2.network().to_string()])
+    assert_array_equal(
+        IPAddress.to_string_vec(ip1.add(ip2)),
+        [ip1.network().to_string(), ip2.network().to_string()],
+    )
 
     ip1 = IPAddress.parse("10.0.0.0/23")
     ip2 = IPAddress.parse("10.0.2.0/24")
-    assert_array_equal(IPAddress.to_string_vec(ip1.add(ip2)), ["10.0.0.0/23", "10.0.2.0/24"])
+    assert_array_equal(
+        IPAddress.to_string_vec(ip1.add(ip2)), ["10.0.0.0/23", "10.0.2.0/24"]
+    )
 
     ip1 = IPAddress.parse("10.0.0.0/23")
     ip2 = IPAddress.parse("10.0.2.0/24")
-    assert_array_equal(IPAddress.to_string_vec(ip1.add(ip2)), ["10.0.0.0/23", "10.0.2.0/24"])
+    assert_array_equal(
+        IPAddress.to_string_vec(ip1.add(ip2)), ["10.0.0.0/23", "10.0.2.0/24"]
+    )
 
     ip1 = IPAddress.parse("10.0.0.0/16")
     ip2 = IPAddress.parse("10.0.2.0/24")
@@ -361,7 +403,9 @@ def test_method_plus():
 
     ip1 = IPAddress.parse("10.0.0.0/23")
     ip2 = IPAddress.parse("10.1.0.0/24")
-    assert_array_equal(IPAddress.to_string_vec(ip1.add(ip2)), ["10.0.0.0/23", "10.1.0.0/24"])
+    assert_array_equal(
+        IPAddress.to_string_vec(ip1.add(ip2)), ["10.0.0.0/23", "10.1.0.0/24"]
+    )
 
 
 def test_method_netmask_equal():
@@ -375,7 +419,9 @@ def test_method_split():
     assert setup().ip.split(0) is None
     assert setup().ip.split(257) is None
 
-    assert_array_equal(IPAddress.to_string_vec(setup().ip.split(1)), [setup().ip.network().to_string()])
+    assert_array_equal(
+        IPAddress.to_string_vec(setup().ip.split(1)), [setup().ip.network().to_string()]
+    )
 
     assert_array_equal(
         IPAddress.to_string_vec(setup().network.split(8)),
@@ -430,10 +476,16 @@ def test_method_split():
         ["172.16.10.0/26", "172.16.10.64/26", "172.16.10.128/26", "172.16.10.192/26"],
     )
     assert_array_equal(
-        IPAddress.to_string_vec(setup().network.split(3)), ["172.16.10.0/26", "172.16.10.64/26", "172.16.10.128/25"]
+        IPAddress.to_string_vec(setup().network.split(3)),
+        ["172.16.10.0/26", "172.16.10.64/26", "172.16.10.128/25"],
     )
-    assert_array_equal(IPAddress.to_string_vec(setup().network.split(2)), ["172.16.10.0/25", "172.16.10.128/25"])
-    assert_array_equal(IPAddress.to_string_vec(setup().network.split(1)), ["172.16.10.0/24"])
+    assert_array_equal(
+        IPAddress.to_string_vec(setup().network.split(2)),
+        ["172.16.10.0/25", "172.16.10.128/25"],
+    )
+    assert_array_equal(
+        IPAddress.to_string_vec(setup().network.split(1)), ["172.16.10.0/24"]
+    )
 
 
 def test_method_subnet():
@@ -444,8 +496,13 @@ def test_method_subnet():
         IPAddress.to_string_vec(setup().network.subnet(26)),
         ["172.16.10.0/26", "172.16.10.64/26", "172.16.10.128/26", "172.16.10.192/26"],
     )
-    assert_array_equal(IPAddress.to_string_vec(setup().network.subnet(25)), ["172.16.10.0/25", "172.16.10.128/25"])
-    assert_array_equal(IPAddress.to_string_vec(setup().network.subnet(24)), ["172.16.10.0/24"])
+    assert_array_equal(
+        IPAddress.to_string_vec(setup().network.subnet(25)),
+        ["172.16.10.0/25", "172.16.10.128/25"],
+    )
+    assert_array_equal(
+        IPAddress.to_string_vec(setup().network.subnet(24)), ["172.16.10.0/24"]
+    )
 
 
 def test_method_supernet():
@@ -464,30 +521,49 @@ def test_classmethod_parse_u32():
 
 
 def test_classmethod_summarize():
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize([setup().ip])), [setup().ip.network().to_string()])
+    assert_array_equal(
+        IPAddress.to_string_vec(IPAddress.summarize([setup().ip])),
+        [setup().ip.network().to_string()],
+    )
 
     ip1 = IPAddress.parse("172.16.10.1/24")
     ip2 = IPAddress.parse("172.16.11.2/24")
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), ["172.16.10.0/23"])
+    assert_array_equal(
+        IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), ["172.16.10.0/23"]
+    )
 
     ip1 = IPAddress.parse("10.0.0.1/24")
     ip2 = IPAddress.parse("10.0.1.1/24")
     ip3 = IPAddress.parse("10.0.2.1/24")
     ip4 = IPAddress.parse("10.0.3.1/24")
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2, ip3, ip4])), ["10.0.0.0/22"])
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize([ip4, ip3, ip2, ip1])), ["10.0.0.0/22"])
+    assert_array_equal(
+        IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2, ip3, ip4])),
+        ["10.0.0.0/22"],
+    )
+    assert_array_equal(
+        IPAddress.to_string_vec(IPAddress.summarize([ip4, ip3, ip2, ip1])),
+        ["10.0.0.0/22"],
+    )
 
     ip1 = IPAddress.parse("10.0.0.0/23")
     ip2 = IPAddress.parse("10.0.2.0/24")
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), ["10.0.0.0/23", "10.0.2.0/24"])
+    assert_array_equal(
+        IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])),
+        ["10.0.0.0/23", "10.0.2.0/24"],
+    )
 
     ip1 = IPAddress.parse("10.0.0.0/16")
     ip2 = IPAddress.parse("10.0.2.0/24")
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), ["10.0.0.0/16"])
+    assert_array_equal(
+        IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), ["10.0.0.0/16"]
+    )
 
     ip1 = IPAddress.parse("10.0.0.0/23")
     ip2 = IPAddress.parse("10.1.0.0/24")
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])), ["10.0.0.0/23", "10.1.0.0/24"])
+    assert_array_equal(
+        IPAddress.to_string_vec(IPAddress.summarize([ip1, ip2])),
+        ["10.0.0.0/23", "10.1.0.0/24"],
+    )
 
     ip1 = IPAddress.parse("10.0.0.0/23")
     ip2 = IPAddress.parse("10.0.2.0/23")
@@ -521,13 +597,22 @@ def test_classmethod_summarize():
     )
 
     ips = [IPAddress.parse("10.0.0.12/30"), IPAddress.parse("10.0.100.0/24")]
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize(ips)), ["10.0.0.12/30", "10.0.100.0/24"])
+    assert_array_equal(
+        IPAddress.to_string_vec(IPAddress.summarize(ips)),
+        ["10.0.0.12/30", "10.0.100.0/24"],
+    )
 
     ips = [IPAddress.parse("172.16.0.0/31"), IPAddress.parse("10.10.2.1/32")]
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize(ips)), ["10.10.2.1/32", "172.16.0.0/31"])
+    assert_array_equal(
+        IPAddress.to_string_vec(IPAddress.summarize(ips)),
+        ["10.10.2.1/32", "172.16.0.0/31"],
+    )
 
     ips = [IPAddress.parse("172.16.0.0/32"), IPAddress.parse("10.10.2.1/32")]
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize(ips)), ["10.10.2.1/32", "172.16.0.0/32"])
+    assert_array_equal(
+        IPAddress.to_string_vec(IPAddress.summarize(ips)),
+        ["10.10.2.1/32", "172.16.0.0/32"],
+    )
 
 
 def test_classmethod_parse_classful():

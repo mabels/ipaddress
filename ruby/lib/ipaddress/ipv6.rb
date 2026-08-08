@@ -1,11 +1,9 @@
-
-require_relative 'prefix'
-require_relative 'ip_bits'
-#require_relative '../ipaddress'
-#require_relative 'ipv4'
-require_relative 'prefix128'
-require_relative 'crunchy'
-
+require_relative "prefix"
+require_relative "ip_bits"
+# require_relative '../ipaddress'
+# require_relative 'ipv4'
+require_relative "prefix128"
+require_relative "crunchy"
 
 class IPAddress
   class Ipv6
@@ -78,17 +76,17 @@ class IPAddress
 
     def self.from_str(str, radix, prefix)
       num = Crunchy.from_string(str, radix)
-      if (!num)
+      if !num
         return nil
       end
 
-      return Ipv6.from_int(num, prefix)
+      Ipv6.from_int(num, prefix)
     end
 
     def self.enhance_if_mapped(ip)
       # console.log("------A")
       # println!("real mapped {:x} {:x}", &ip.host_address, ip.host_address.clone().shr(32))
-      if (ip.is_mapped())
+      if ip.is_mapped
         # console.log("------B")
         return ip
       end
@@ -96,25 +94,25 @@ class IPAddress
       # console.log("------C", ip)
       ipv6_top_96bit = ip.host_address.shr(32)
       # console.log("------D", ip)
-      if (ipv6_top_96bit.eq(Crunchy.from_number(0xffff)))
+      if ipv6_top_96bit.eq(Crunchy.from_number(0xffff))
         # console.log("------E")
-        num = ip.host_address.mod(Crunchy.one().shl(32))
+        num = ip.host_address.mod(Crunchy.one.shl(32))
         # console.log("------F")
-        if (num.eq(Crunchy.zero()))
+        if num.eq(Crunchy.zero)
           return ip
         end
 
-        #println!("ip:{},{:x}", ip.to_string(), num)
-        ipv4_bits = IpBits.v4()
-        if (ipv4_bits.bits < ip.prefix.host_prefix())
-          #println!("enhance_if_mapped-2:{}:{}", ip.to_string(), ip.prefix.host_prefix())
+        # println!("ip:{},{:x}", ip.to_string(), num)
+        ipv4_bits = IpBits.v4
+        if ipv4_bits.bits < ip.prefix.host_prefix
+          # println!("enhance_if_mapped-2:{}:{}", ip.to_string(), ip.prefix.host_prefix())
           return nil
         end
 
         # console.log("------G")
-        mapped = Ipv4.from_number(num, ipv4_bits.bits - ip.prefix.host_prefix())
+        mapped = Ipv4.from_number(num, ipv4_bits.bits - ip.prefix.host_prefix)
         # console.log("------H")
-        if (!mapped)
+        if !mapped
           # println!("enhance_if_mapped-3")
           return mapped
         end
@@ -123,26 +121,25 @@ class IPAddress
         ip.mapped = mapped
       end
 
-      return ip
+      ip
     end
 
     def self.from_number(adr, prefix_num)
       prefix = Prefix128.create(prefix_num)
-      if (prefix.nil?)
+      if prefix.nil?
         return nil
       end
 
-      ret = Ipv6.enhance_if_mapped(IPAddress.new({
-        ip_bits: IpBits.v6(),
-        host_address: adr.clone(),
+      Ipv6.enhance_if_mapped(IPAddress.new({
+        ip_bits: IpBits.v6,
+        host_address: adr.clone,
         prefix: prefix,
         mapped: nil,
-        vt_is_private: ->(a) {Ipv6.ipv6_is_private(a) },
-        vt_is_loopback: ->(a) {Ipv6.ipv6_is_loopback(a) },
-        vt_to_ipv6: ->(a) {Ipv6.to_ipv6(a) },
+        vt_is_private: ->(a) { Ipv6.ipv6_is_private(a) },
+        vt_is_loopback: ->(a) { Ipv6.ipv6_is_loopback(a) },
+        vt_to_ipv6: ->(a) { Ipv6.to_ipv6(a) }
       }))
-      #console.log("from_int:", adr, prefix, ret)
-      return ret
+      # console.log("from_int:", adr, prefix, ret)
     end
 
     #  Creates a new IPv6 address object.
@@ -165,10 +162,10 @@ class IPAddress
       ip, o_netmask = IPAddress.split_at_slash(str)
       # console.log("2>>>>>>>>>", str)
       # puts "IPAddress.create #{ip}"
-      if (IPAddress.is_valid_ipv6(ip))
+      if IPAddress.is_valid_ipv6(ip)
         # console.log("3>>>>>>>>>", str)
         o_num = IPAddress.split_to_num(ip)
-        if (o_num.nil?)
+        if o_num.nil?
           # console.log("ipv6_create-1", str)
           # puts "IPAddress.split_to_num #{ip}"
           return nil
@@ -176,9 +173,9 @@ class IPAddress
 
         # console.log("4>>>>>>>>>", str)
         netmask = 128
-        if (!o_netmask.nil?)
+        if !o_netmask.nil?
           netmask = IPAddress.parse_dec_str(o_netmask)
-          if (netmask.nil?)
+          if netmask.nil?
             # console.log("ipv6_create-2", str)
             return nil
           end
@@ -186,38 +183,38 @@ class IPAddress
 
         # console.log("5>>>>>>>>>", str)
         prefix = Prefix128.create(netmask)
-        if (prefix.nil?)
+        if prefix.nil?
           # console.log("ipv6_create-3", str)
           return nil
         end
 
-        #console.log("6>>>>>>>>>", str, prefix.num, o_netmask, netmask)
-        return Ipv6.enhance_if_mapped(IPAddress.new({
-          ip_bits: IpBits.v6(),
+        # console.log("6>>>>>>>>>", str, prefix.num, o_netmask, netmask)
+        Ipv6.enhance_if_mapped(IPAddress.new({
+          ip_bits: IpBits.v6,
           host_address: o_num.crunchy,
           prefix: prefix,
           mapped: nil,
-          vt_is_private: -> (a) { Ipv6.ipv6_is_private(a) },
-          vt_is_loopback: -> (a) { Ipv6.ipv6_is_loopback(a) },
-          vt_to_ipv6: -> (a) { Ipv6.to_ipv6(a) }
+          vt_is_private: ->(a) { Ipv6.ipv6_is_private(a) },
+          vt_is_loopback: ->(a) { Ipv6.ipv6_is_loopback(a) },
+          vt_to_ipv6: ->(a) { Ipv6.to_ipv6(a) }
         }))
       else
         # console.log("ipv6_create-4", str)
-        return nil
+        nil
       end
     end #  pub fn initialize
 
     def self.to_ipv6(ia)
-      return ia.clone()
+      ia.clone
     end
 
     def self.ipv6_is_loopback(my)
       # console.log("*************", my.host_address, Crunchy.one())
-      return my.host_address.eq(Crunchy.one())
+      my.host_address.eq(Crunchy.one)
     end
 
     def self.ipv6_is_private(my)
-      return IPAddress.parse("fd00::/8").includes(my)
+      IPAddress.parse("fd00::/8").includes(my)
     end
   end
 end

@@ -16,7 +16,7 @@ Homepage = "https://github.com/mabels/ipaddress"
 Repository = "https://github.com/mabels/ipaddress.git"
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0"]
+dev = ["pytest>=7.0", "black>=24.0"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

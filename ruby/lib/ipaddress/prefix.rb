@@ -1,10 +1,7 @@
-
-require_relative 'ip_bits'
-require_relative 'crunchy'
-
+require_relative "ip_bits"
+require_relative "crunchy"
 
 class IPAddress
-
   class Prefix
     include Comparable
 
@@ -17,8 +14,8 @@ class IPAddress
       @vt_from = obj[:vt_from]
     end
 
-    def clone()
-      return Prefix.new({
+    def clone
+      Prefix.new({
         num: @num,
         ip_bits: @ip_bits,
         net_mask: @net_mask,
@@ -27,64 +24,62 @@ class IPAddress
     end
 
     def eq(other)
-      return @ip_bits.version == other.ip_bits.version &&
+      @ip_bits.version == other.ip_bits.version &&
         @num == other.num
     end
 
     def ne(other)
-      return !eq(other)
+      !eq(other)
     end
 
-    def <=>(oth)
-      cmp(oth)
+    def <=>(other)
+      cmp(other)
     end
 
     def cmp(oth)
-      if (@ip_bits.version < oth.ip_bits.version)
-        return -1
-      elsif (@ip_bits.version > oth.ip_bits.version)
-        return 1
+      if @ip_bits.version < oth.ip_bits.version
+        -1
+      elsif @ip_bits.version > oth.ip_bits.version
+        1
+      elsif @num < oth.num
+        -1
+      elsif @num > oth.num
+        1
       else
-        if (@num < oth.num)
-          return -1
-        elsif (@num > oth.num)
-          return 1
-        else
-          return 0
-        end
+        0
       end
     end
 
-    ##[allow(dead_code)]
+    # #[allow(dead_code)]
     def from(num)
-      return (@vt_from).call(self, num)
+      @vt_from.call(self, num)
     end
 
-    def to_ip_str()
-      return @ip_bits.vt_as_compressed_string.call(@ip_bits, @net_mask)
+    def to_ip_str
+      @ip_bits.vt_as_compressed_string.call(@ip_bits, @net_mask)
     end
 
-    def size()
-      return Crunchy.one().shl(@ip_bits.bits - @num)
+    def size
+      Crunchy.one.shl(@ip_bits.bits - @num)
     end
 
     def self.new_netmask(prefix, bits)
-      mask = Crunchy.zero()
+      mask = Crunchy.zero
       host_prefix = bits - prefix
-      prefix.times do  |i|
+      prefix.times do |i|
         # console.log(">>>", i, host_prefix, mask)
-        mask = mask.add(Crunchy.one().shl(host_prefix + i))
+        mask = mask.add(Crunchy.one.shl(host_prefix + i))
       end
 
-      return mask
+      mask
     end
 
-    def netmask()
-      return @net_mask
+    def netmask
+      @net_mask
     end
 
-    def get_prefix()
-      return @num
+    def get_prefix
+      @num
     end
 
     #  The hostmask is the contrary of the subnet mask,
@@ -96,13 +91,13 @@ class IPAddress
     #    prefix.hostmask
     #      # => "0.0.0.255"
     #
-    def host_mask()
-      ret = Crunchy.zero()
+    def host_mask
+      ret = Crunchy.zero
       (@ip_bits.bits - @num).times do
-        ret = ret.shl(1).add(Crunchy.one())
+        ret = ret.shl(1).add(Crunchy.one)
       end
 
-      return ret
+      ret
     end
 
     #
@@ -114,8 +109,8 @@ class IPAddress
     #    prefix.host_prefix
     #      # => 128
     #
-    def host_prefix()
-      return @ip_bits.bits - @num
+    def host_prefix
+      @ip_bits.bits - @num
     end
 
     #
@@ -128,8 +123,8 @@ class IPAddress
     #      # => "1111111111111111111111111111111111111111111111111111111111111111"
     #          "0000000000000000000000000000000000000000000000000000000000000000"
     #
-    def bits()
-      return netmask().toString(2)
+    def bits
+      netmask.toString(2)
     end
 
     # #[allow(dead_code)]
@@ -137,36 +132,36 @@ class IPAddress
     #     return (self.in_mask.clone() >> (self.host_prefix() as usize)) << (self.host_prefix() as usize)
     # }
 
-    def to_s()
-      return get_prefix().to_s
+    def to_s
+      get_prefix.to_s
     end
 
-    ##[allow(dead_code)]
+    # #[allow(dead_code)]
     # def inspect(&self) -> String {
     #     return self.to_s()
     # }
-    def to_i()
-      return get_prefix()
+    def to_i
+      get_prefix
     end
 
     def add_prefix(other)
-      return from(get_prefix() + other.get_prefix())
+      from(get_prefix + other.get_prefix)
     end
 
     def add(other)
-      return from(get_prefix() + other)
+      from(get_prefix + other)
     end
 
     def sub_prefix(other)
-      return sub(other.get_prefix())
+      sub(other.get_prefix)
     end
 
     def sub(other)
-      if (other > get_prefix())
-        return from(other - get_prefix())
+      if other > get_prefix
+        return from(other - get_prefix)
       end
 
-      return from(get_prefix() - other)
+      from(get_prefix - other)
     end
   end
 end

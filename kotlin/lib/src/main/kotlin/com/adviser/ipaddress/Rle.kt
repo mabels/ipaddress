@@ -1,6 +1,5 @@
 package com.adviser.ipaddress.kotlin
 
-
 class Rle(val part: Int, var pos: Int, var cnt: Int, var max: Boolean) {
 
     fun inspect(): String {
@@ -16,7 +15,7 @@ class Rle(val part: Int, var pos: Int, var cnt: Int, var max: Boolean) {
 
     fun eq(other: Rle): Boolean {
         return this.part == other.part && this.pos == other.pos &&
-                this.cnt == other.cnt && this.max == other.max
+            this.cnt == other.cnt && this.max == other.max
     }
 
     class Last {
@@ -45,11 +44,11 @@ class Rle(val part: Int, var pos: Int, var cnt: Int, var max: Boolean) {
                     // nothing
                 } else /* if (prev.cnt < _last.cnt) */ {
                     // println!("<<<<< last={:?}->{}->prev={:?}", _last, idx, prev)
-                    //this.ret[idx].max = false
+                    // this.ret[idx].max = false
                     prev.max = false
                 }
             }
-            //println!("push:{}:{:?}", this.ret.len(), _last)
+            // println!("push:{}:{:?}", this.ret.len(), _last)
             max_rles.add(this.ret.size)
             _last.pos = this.ret.size
             this.ret.add(_last)

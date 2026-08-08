@@ -19,7 +19,7 @@ func (self *Rle) Equal(other Rle) bool {
 		self.Cnt == other.Cnt && self.Max == other.Max
 }
 
-//impl<T: PartialEq> Eq for Rle<T> {}
+// impl<T: PartialEq> Eq for Rle<T> {}
 type Last struct {
 	val       *Rle
 	Max_Poses map[uint16][]int

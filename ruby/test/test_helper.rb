@@ -1,17 +1,19 @@
-require 'rubygems'
-require 'test/unit'
+require "rubygems"
+require "test/unit"
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-require 'ipaddress'
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
+require "ipaddress"
 
 module Test::Unit
-  
   class TestCase
-    
     def self.must(name, &block)
-      test_name = "test_#{name.gsub(/\s+/,'_')}".to_sym
-      defined = instance_method(test_name) rescue false
+      test_name = :"test_#{name.gsub(/\s+/, "_")}"
+      defined = begin
+        instance_method(test_name)
+      rescue
+        false
+      end
       raise "#{test_name} is already defined in #{self}" if defined
       if block_given?
         define_method(test_name, &block)
@@ -21,8 +23,5 @@ module Test::Unit
         end
       end
     end
-    
   end
 end
-
-

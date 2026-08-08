@@ -1,4 +1,3 @@
-
 //import IPAddress from './ipaddress';
 
 public class Ipv6Unspec {
@@ -52,7 +51,7 @@ public class Ipv6Unspec {
   //       // => => "::/128"
   //
   public class func create() -> IPAddress {
-    return IPAddress.parse("::")!;
+    return IPAddress.parse("::")!
   }
   //  class IPv6::Unspecified
 }

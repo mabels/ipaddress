@@ -1,18 +1,17 @@
-
-use ipaddress::IPAddress;
-use core::result::Result;
-use num::bigint::BigUint;
-use core::str::FromStr;
-use num_traits::One;
-use num_traits::Num;
 use core::ops::Rem;
 use core::ops::Shl;
 use core::ops::Shr;
-use num_traits::Zero;
-use num_traits::FromPrimitive;
-use num_traits::ToPrimitive;
-use prefix128;
+use core::result::Result;
+use core::str::FromStr;
+use ipaddress::IPAddress;
 use ipv4;
+use num::bigint::BigUint;
+use num_traits::FromPrimitive;
+use num_traits::Num;
+use num_traits::One;
+use num_traits::ToPrimitive;
+use num_traits::Zero;
+use prefix128;
 
 ///  =Name
 ///
@@ -94,10 +93,20 @@ pub fn enhance_if_mapped(mut ip: IPAddress) -> Result<IPAddress, String> {
         println!("ip:{},{:x}", ip.to_string(), num);
         let ipv4_bits = ::ip_bits::v4();
         if ipv4_bits.bits < ip.prefix.host_prefix() {
-            println!("enhance_if_mapped-2:{}:{}", ip.to_string(), ip.prefix.host_prefix());
-            return Err(format!("enhance_if_mapped prefix not ipv4 compatible {}", ip.prefix.host_prefix()));
+            println!(
+                "enhance_if_mapped-2:{}:{}",
+                ip.to_string(),
+                ip.prefix.host_prefix()
+            );
+            return Err(format!(
+                "enhance_if_mapped prefix not ipv4 compatible {}",
+                ip.prefix.host_prefix()
+            ));
         }
-        let mapped = ipv4::from_u32(num.to_u32().unwrap(), ipv4_bits.bits-ip.prefix.host_prefix());
+        let mapped = ipv4::from_u32(
+            num.to_u32().unwrap(),
+            ipv4_bits.bits - ip.prefix.host_prefix(),
+        );
         if mapped.is_err() {
             println!("enhance_if_mapped-3");
             return mapped;
@@ -123,7 +132,6 @@ pub fn from_int(adr: BigUint, prefix: usize) -> Result<IPAddress, String> {
         vt_to_ipv6: to_ipv6,
     });
 }
-
 
 ///  Creates a new IPv6 address object.
 ///
@@ -168,7 +176,7 @@ pub fn new<S: Into<String>>(_str: S) -> Result<IPAddress, String> {
             mapped: None,
             vt_is_private: ipv6_is_private,
             vt_is_loopback: ipv6_is_loopback,
-            vt_to_ipv6: to_ipv6
+            vt_to_ipv6: to_ipv6,
         });
     } else {
         return Err(format!("Invalid IP {}", str));
@@ -182,7 +190,6 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 pub fn ipv6_is_loopback(my: &IPAddress) -> bool {
     return my.host_address == BigUint::one();
 }
-
 
 pub fn ipv6_is_private(my: &IPAddress) -> bool {
     return IPAddress::parse("fd00::/8").unwrap().includes(my);

@@ -106,7 +106,9 @@ class Ipv4:
     #
     @staticmethod
     def is_class_b(my: IPAddress) -> bool:
-        return my.is_ipv4() and int("80000000", 16) <= my.host_address < int("c0000000", 16)
+        return my.is_ipv4() and int("80000000", 16) <= my.host_address < int(
+            "c0000000", 16
+        )
 
     # Checks whether the ip address belongs to a
     # RFC 791 CLASS C network, no matter
@@ -121,7 +123,9 @@ class Ipv4:
     #
     @staticmethod
     def is_class_c(my: IPAddress) -> bool:
-        return my.is_ipv4() and int("c0000000", 16) <= my.host_address < int("e0000000", 16)
+        return my.is_ipv4() and int("c0000000", 16) <= my.host_address < int(
+            "e0000000", 16
+        )
 
     # Creates a new IPv4 address object by parsing the
     # address in a classful way.

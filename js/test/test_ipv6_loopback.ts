@@ -29,7 +29,7 @@ class IPv6LoopbackTest {
 describe("ipv6_loopback", () => {
   function setup(): IPv6LoopbackTest {
     return new IPv6LoopbackTest({
-      ip: Ipv6Loopback.create(),
+      ip: Ipv6Loopback.create()!,
       s: "::1",
       n: "::1/128",
       string: "0000:0000:0000:0000:0000:0000:0000:0001/128",

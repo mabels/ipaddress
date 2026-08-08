@@ -24,17 +24,17 @@ func Parse(str string) ResultIPAddress {
 	return &Error{&tmp}
 }
 
-/// Checks if the given string is a valid IP address,
-/// either IPv4 or IPv6
-///
-/// Example:
-///
-///  IPAddress::valid? "2002::1"
-///    //=> true
-///
-///  IPAddress::valid? "10.0.0.256"
-///    //=> false
-///
+// / Checks if the given string is a valid IP address,
+// / either IPv4 or IPv6
+// /
+// / Example:
+// /
+// /  IPAddress::valid? "2002::1"
+// /    //=> true
+// /
+// /  IPAddress::valid? "10.0.0.256"
+// /    //=> false
+// /
 func Is_valid(addr string) bool {
 	return Is_valid_ipv4(addr) || Is_valid_ipv6(addr)
 }
@@ -44,16 +44,16 @@ func Is_valid_netmask(addr string) bool {
 	return ret != nil
 }
 
-/// Checks if the given string is a valid IPv4 address
-///
-/// Example:
-///
-///   IPAddress::valid_ipv4? "2002::1"
-///     //=> false
-///
-///   IPAddress::valid_ipv4? "172.16.10.1"
-///     //=> true
-///
+// / Checks if the given string is a valid IPv4 address
+// /
+// / Example:
+// /
+// /   IPAddress::valid_ipv4? "2002::1"
+// /     //=> false
+// /
+// /   IPAddress::valid_ipv4? "172.16.10.1"
+// /     //=> true
+// /
 func parse_ipv4_part(i string, addr string) (*uint32, *string) {
 	part, err := strconv.ParseUint(i, 10, 32)
 	if err != nil {
@@ -128,16 +128,16 @@ func Is_valid_ipv4(addr string) bool {
 	return err == nil
 }
 
-/// Checks if the given string is a valid IPv6 address
-///
-/// Example:
-///
-///   IPAddress::valid_ipv6? "2002::1"
-///     //=> true
-///
-///   IPAddress::valid_ipv6? "2002::DEAD::BEEF"
-///     // => false
-///
+// / Checks if the given string is a valid IPv6 address
+// /
+// / Example:
+// /
+// /   IPAddress::valid_ipv6? "2002::1"
+// /     //=> true
+// /
+// /   IPAddress::valid_ipv6? "2002::DEAD::BEEF"
+// /     // => false
+// /
 func split_on_colon(addr string) (*big.Int, *string, uint) {
 	parts := strings.Split(strings.TrimSpace(addr), ":")
 	ip := big.NewInt(0)

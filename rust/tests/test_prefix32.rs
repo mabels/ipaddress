@@ -2,16 +2,14 @@ extern crate ipaddress;
 extern crate num;
 extern crate num_traits;
 
-
 #[cfg(test)]
 mod tests {
-    use ipaddress::IPAddress;
-    use ipaddress::prefix32;
     use ipaddress::ipv4;
+    use ipaddress::prefix32;
+    use ipaddress::IPAddress;
     use std::collections::HashMap;
     // use num::bigint::BigUint;
     use num_traits::cast::ToPrimitive;
-
 
     #[allow(dead_code)]
     pub struct Prefix32Test {
@@ -108,8 +106,10 @@ mod tests {
     #[test]
     pub fn test_method_to_u32() {
         for (num, ip32) in setup().u32_hash {
-            assert_eq!(ip32,
-                       prefix32::new(num).unwrap().netmask().to_u32().unwrap())
+            assert_eq!(
+                ip32,
+                prefix32::new(num).unwrap().netmask().to_u32().unwrap()
+            )
         }
     }
     #[allow(dead_code)]
@@ -164,7 +164,11 @@ mod tests {
     #[test]
     pub fn test_method_hostmask() {
         let prefix = prefix32::new(8).unwrap();
-        assert_eq!("0.255.255.255",
-                   ipv4::from_u32(prefix.host_mask().to_u32().unwrap(), 0).unwrap().to_s());
+        assert_eq!(
+            "0.255.255.255",
+            ipv4::from_u32(prefix.host_mask().to_u32().unwrap(), 0)
+                .unwrap()
+                .to_s()
+        );
     }
 }

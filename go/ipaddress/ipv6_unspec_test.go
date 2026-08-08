@@ -17,7 +17,7 @@ func ipv6UnspecSetup() IPv6UnspecifiedTest {
 		to_s:                   "::",
 		to_string:              "::/128",
 		to_string_uncompressed: "0000:0000:0000:0000:0000:0000:0000:0000/128",
-		num: *big.NewInt(0)}
+		num:                    *big.NewInt(0)}
 }
 
 func TestIpv6Unspec(tx *testing.T) {

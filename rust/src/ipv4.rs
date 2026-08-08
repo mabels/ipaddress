@@ -6,7 +6,6 @@ use ipaddress::IPAddress;
 use prefix32;
 // use num_integer::Integer;
 
-
 // use num_traits::identities::One;
 
 // use num_traits::cast::ToPrimitive;
@@ -118,34 +117,32 @@ pub fn new<S: Into<String>>(_str: S) -> Result<IPAddress, String> {
 }
 
 fn ipv4_is_private(my: &IPAddress) -> bool {
-    return [IPAddress::parse("10.0.0.0/8").unwrap(),
-     IPAddress::parse("169.254.0.0/16").unwrap(),
-     IPAddress::parse("172.16.0.0/12").unwrap(),
-     IPAddress::parse("192.168.0.0/16").unwrap()]
-     .iter().find(|i| i.includes(my)).is_some();
+    return [
+        IPAddress::parse("10.0.0.0/8").unwrap(),
+        IPAddress::parse("169.254.0.0/16").unwrap(),
+        IPAddress::parse("172.16.0.0/12").unwrap(),
+        IPAddress::parse("192.168.0.0/16").unwrap(),
+    ]
+    .iter()
+    .find(|i| i.includes(my))
+    .is_some();
 }
 
 fn ipv4_is_loopback(my: &IPAddress) -> bool {
-    return IPAddress::parse("127.0.0.0/8")
-        .unwrap().includes(my);
+    return IPAddress::parse("127.0.0.0/8").unwrap().includes(my);
 }
 
 pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
-        return IPAddress {
-            ip_bits: ::ip_bits::v6(),
-            host_address: ia.host_address.clone(),
-            prefix: ::prefix128::new(ia.prefix.num).unwrap(),
-            mapped: None,
-            vt_is_private: ::ipv6::ipv6_is_private,
-            vt_is_loopback: ::ipv6::ipv6_is_loopback,
-            vt_to_ipv6: ::ipv6::to_ipv6
-        }
+    return IPAddress {
+        ip_bits: ::ip_bits::v6(),
+        host_address: ia.host_address.clone(),
+        prefix: ::prefix128::new(ia.prefix.num).unwrap(),
+        mapped: None,
+        vt_is_private: ::ipv6::ipv6_is_private,
+        vt_is_loopback: ::ipv6::ipv6_is_loopback,
+        vt_to_ipv6: ::ipv6::to_ipv6,
+    };
 }
-
-
-
-
-
 
 // pub fn is_private(my: &IPAddress) -> bool {
 //     for i in vec![IPv4::new("10.0.0.0/8"),
@@ -635,7 +632,6 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //      // => true
 //
 
-
 //  Returns the IP address in in-addr.arpa format
 //  for DNS lookups
 //
@@ -786,7 +782,6 @@ pub fn to_ipv6(ia: &IPAddress) -> IPAddress {
 //   return ret
 // }
 
-
 //  Checks whether the ip address belongs to a
 //  RFC 791 CLASS A network, no matter
 //  what the subnet mask is.
@@ -816,9 +811,9 @@ pub fn is_class_a(my: &IPAddress) -> bool {
 //
 #[allow(dead_code)]
 pub fn is_class_b(my: &IPAddress) -> bool {
-    return my.is_ipv4() &&
-        BigUint::from_u32(0x80000000).unwrap() <= my.host_address &&
-        my.host_address < BigUint::from_u32(0xc0000000).unwrap();
+    return my.is_ipv4()
+        && BigUint::from_u32(0x80000000).unwrap() <= my.host_address
+        && my.host_address < BigUint::from_u32(0xc0000000).unwrap();
 }
 
 //  Checks whether the ip address belongs to a
@@ -834,9 +829,9 @@ pub fn is_class_b(my: &IPAddress) -> bool {
 //
 #[allow(dead_code)]
 pub fn is_class_c(my: &IPAddress) -> bool {
-    return my.is_ipv4() &&
-        BigUint::from_u32(0xc0000000).unwrap() <= my.host_address &&
-        my.host_address < BigUint::from_u32(0xe0000000).unwrap();
+    return my.is_ipv4()
+        && BigUint::from_u32(0xc0000000).unwrap() <= my.host_address
+        && my.host_address < BigUint::from_u32(0xe0000000).unwrap();
 }
 
 //  Return the ip address in a format compatible

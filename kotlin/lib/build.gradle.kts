@@ -12,6 +12,16 @@ plugins {
 
     // Apply the java-library plugin for API and implementation separation.
     `java-library`
+
+    // Formatting check (ktlint).
+    id("org.jlleitschuh.gradle.ktlint") version "11.6.1"
+}
+
+ktlint {
+    // This project intentionally mirrors the same (non-camelCase) method
+    // names across every language port, so only enforce whitespace/style,
+    // not ktlint's naming-convention rules.
+    disabledRules.set(setOf("function-naming", "property-naming"))
 }
 
 repositories {

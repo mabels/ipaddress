@@ -4,17 +4,17 @@ import java.math.BigInteger
 
 typealias Vt_as_string = (b: IpBits, bi: BigInteger) -> String
 
-
 class IpBits(
-        val version: IpVersion,
-        val vt_as_compressed_string: Vt_as_string,
-        val vt_as_uncompressed_string: Vt_as_string,
-        val bits: Int,
-        val part_bits: Int,
-        val dns_bits: Int,
-        val rev_domain: String,
-        val part_mod: BigInteger,
-        val host_ofs: BigInteger) {
+    val version: IpVersion,
+    val vt_as_compressed_string: Vt_as_string,
+    val vt_as_uncompressed_string: Vt_as_string,
+    val bits: Int,
+    val part_bits: Int,
+    val dns_bits: Int,
+    val rev_domain: String,
+    val part_mod: BigInteger,
+    val host_ofs: BigInteger
+) {
 
     companion object {
         val V4 = v4()
@@ -94,7 +94,6 @@ class IpBits(
     }
 }
 
-
 val ipv4_as_compressed: Vt_as_string = { ip_bits: IpBits, host_address: BigInteger ->
     val ret = StringBuilder()
     var sep = ""
@@ -106,23 +105,22 @@ val ipv4_as_compressed: Vt_as_string = { ip_bits: IpBits, host_address: BigInteg
     ret.toString()
 }
 
-
 fun v4(): IpBits {
-    return IpBits(IpVersion.V4,
-            ipv4_as_compressed,
-            ipv4_as_compressed,
-            32,
-            8,
-            8,
-            "in-addr.arpa",
-            BigInteger.ONE.shiftLeft(8),
-            BigInteger.ONE
+    return IpBits(
+        IpVersion.V4,
+        ipv4_as_compressed,
+        ipv4_as_compressed,
+        32,
+        8,
+        8,
+        "in-addr.arpa",
+        BigInteger.ONE.shiftLeft(8),
+        BigInteger.ONE
     )
 }
 
-
 val ipv6_as_compressed: Vt_as_string = { ip_bits, host_address ->
-    //println!("ipv6_as_compressed:{}", host_address);
+    // println!("ipv6_as_compressed:{}", host_address);
     val ret = StringBuilder()
     val theColon = ":"
     val theEmpty = ""
@@ -159,16 +157,15 @@ val ipv6_as_uncompressed: Vt_as_string = { ip_bits, host_address ->
 }
 
 fun v6(): IpBits {
-    return IpBits(IpVersion.V6,
-            ipv6_as_compressed,
-            ipv6_as_uncompressed,
-            128,
-            16,
-            4,
-            "ip6.arpa",
-            BigInteger.ONE.shiftLeft(16),
-            BigInteger.ZERO)
+    return IpBits(
+        IpVersion.V6,
+        ipv6_as_compressed,
+        ipv6_as_uncompressed,
+        128,
+        16,
+        4,
+        "ip6.arpa",
+        BigInteger.ONE.shiftLeft(16),
+        BigInteger.ZERO
+    )
 }
-
-
-

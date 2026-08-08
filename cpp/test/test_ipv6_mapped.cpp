@@ -11,13 +11,13 @@ using namespace cascara;
 using namespace ipaddress;
 
 class IPv6MappedTest {
-public:
+ public:
   IPAddress ip = Ipv6Mapped::create("::172.16.10.1").unwrap();
-  const char *s = "::ffff:172.16.10.1";
-  const char *sstr = "::ffff:172.16.10.1/32";
-  const char *string = "0000:0000:0000:0000:0000:ffff:ac10:0a01/128";
+  const char* s = "::ffff:172.16.10.1";
+  const char* sstr = "::ffff:172.16.10.1/32";
+  const char* string = "0000:0000:0000:0000:0000:ffff:ac10:0a01/128";
   Crunchy u128 = Crunchy::parse("281473568475649").unwrap();
-  const char *address = "::ffff:ac10:a01/128";
+  const char* address = "::ffff:ac10:a01/128";
 
   std::vector<std::pair<std::string, Crunchy>> valid_mapped;
   std::vector<std::pair<std::string, Crunchy>> valid_mapped_ipv6;
@@ -26,24 +26,15 @@ public:
 
 IPv6MappedTest setup() {
   IPv6MappedTest ipv6;
-  ipv6.valid_mapped.push_back(
-      {"::13.1.68.3", Crunchy::parse("281470899930115").unwrap()});
-  ipv6.valid_mapped.push_back({"0:0:0:0:0:ffff:129.144.52.38",
-                               Crunchy::parse("281472855454758").unwrap()});
-  ipv6.valid_mapped.push_back(
-      {"::ffff:129.144.52.38", Crunchy::parse("281472855454758").unwrap()});
-  ipv6.valid_mapped_ipv6.push_back(
-      {"::ffff:13.1.68.3", Crunchy::parse("281470899930115").unwrap()});
-  ipv6.valid_mapped_ipv6.push_back(
-      {"0:0:0:0:0:ffff:8190:3426", Crunchy::parse("281472855454758").unwrap()});
-  ipv6.valid_mapped_ipv6.push_back(
-      {"::ffff:8190:3426", Crunchy::parse("281472855454758").unwrap()});
-  ipv6.valid_mapped_ipv6_conversion.push_back(
-      {"::ffff:13.1.68.3", "13.1.68.3"});
-  ipv6.valid_mapped_ipv6_conversion.push_back(
-      {"0:0:0:0:0:ffff:8190:3426", "129.144.52.38"});
-  ipv6.valid_mapped_ipv6_conversion.push_back(
-      {"::ffff:8190:3426", "129.144.52.38"});
+  ipv6.valid_mapped.push_back({"::13.1.68.3", Crunchy::parse("281470899930115").unwrap()});
+  ipv6.valid_mapped.push_back({"0:0:0:0:0:ffff:129.144.52.38", Crunchy::parse("281472855454758").unwrap()});
+  ipv6.valid_mapped.push_back({"::ffff:129.144.52.38", Crunchy::parse("281472855454758").unwrap()});
+  ipv6.valid_mapped_ipv6.push_back({"::ffff:13.1.68.3", Crunchy::parse("281470899930115").unwrap()});
+  ipv6.valid_mapped_ipv6.push_back({"0:0:0:0:0:ffff:8190:3426", Crunchy::parse("281472855454758").unwrap()});
+  ipv6.valid_mapped_ipv6.push_back({"::ffff:8190:3426", Crunchy::parse("281472855454758").unwrap()});
+  ipv6.valid_mapped_ipv6_conversion.push_back({"::ffff:13.1.68.3", "13.1.68.3"});
+  ipv6.valid_mapped_ipv6_conversion.push_back({"0:0:0:0:0:ffff:8190:3426", "129.144.52.38"});
+  ipv6.valid_mapped_ipv6_conversion.push_back({"::ffff:8190:3426", "129.144.52.38"});
   return ipv6;
 }
 
@@ -53,22 +44,18 @@ int main() {
       auto s = setup();
       assert.isTrue(IPAddress::parse("::172.16.10.1").isOk());
       for (auto i : s.valid_mapped) {
-            auto ip = i.first;
-            auto u128 = i.second;
-            // println("-{}--{}", ip, u128);
-            assert.isTrue(IPAddress::parse(ip).isOk());
-            assert.equal(
-                u128.toString(),
-                IPAddress::parse(ip)->host_address.toString());
+        auto ip = i.first;
+        auto u128 = i.second;
+        // println("-{}--{}", ip, u128);
+        assert.isTrue(IPAddress::parse(ip).isOk());
+        assert.equal(u128.toString(), IPAddress::parse(ip)->host_address.toString());
       }
       for (auto i : s.valid_mapped_ipv6) {
         auto ip = i.first;
         auto u128 = i.second;
         // println("===={}=={:x}", ip, u128);
         assert.isTrue(IPAddress::parse(ip).isOk());
-        assert.equal(
-            u128.toString(),
-            IPAddress::parse(ip)->host_address.toString());
+        assert.equal(u128.toString(), IPAddress::parse(ip)->host_address.toString());
       }
     });
     it("test_mapped_from_ipv6_conversion", []() {

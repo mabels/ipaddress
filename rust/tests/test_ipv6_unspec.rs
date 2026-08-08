@@ -3,8 +3,8 @@ extern crate num;
 
 #[cfg(test)]
 mod tests {
-    use ipaddress::IPAddress;
     use ipaddress::ipv6_unspec;
+    use ipaddress::IPAddress;
     use num::bigint::BigUint;
     use num::Zero;
 
@@ -33,8 +33,10 @@ mod tests {
         assert_eq!(true, setup().ip.is_unspecified());
         assert_eq!(setup().to_s, setup().ip.to_s());
         assert_eq!(setup().to_string, setup().ip.to_string());
-        assert_eq!(setup().to_string_uncompressed,
-                   setup().ip.to_string_uncompressed());
+        assert_eq!(
+            setup().to_string_uncompressed,
+            setup().ip.to_string_uncompressed()
+        );
     }
     #[test]
     pub fn test_method_ipv6() {

@@ -3,10 +3,7 @@
 
 namespace ipaddress {
 
-typedef enum {
-    V4 = 4,
-    V6 = 6
-} IpVersion;
+typedef enum { V4 = 4, V6 = 6 } IpVersion;
 
 }
 #endif

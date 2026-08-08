@@ -31,7 +31,11 @@ const Prefix128 = {
   },
 
   from(my: Prefix, num: number): Prefix {
-    return Prefix128.create(num)!;
+    const ret = Prefix128.create(num);
+    if (ret === null) {
+      throw new Error(`invalid ipv6 prefix: ${num}`);
+    }
+    return ret;
   },
 };
 

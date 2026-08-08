@@ -1,1 +1,1 @@
-require_relative '../ipaddress.rb'
+require_relative "../ipaddress"

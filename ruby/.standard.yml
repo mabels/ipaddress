@@ -1,0 +1,14 @@
+# Only enforce formatting/layout in CI, not broader style/lint suggestions
+# (those are pre-existing and out of scope for a formatting pass).
+ignore:
+  - "**/*":
+      - Naming/VariableName
+      - Lint/UnderscorePrefixedVariableName
+      - Lint/BinaryOperatorWithIdenticalOperands
+      - Style/InfiniteLoop
+      - Style/IdenticalConditionalBranches
+      - Style/RedundantInterpolation
+      - Style/SlicingWithRange
+      - Style/ComparableBetween
+      - Style/YodaCondition
+      - Style/LineEndConcatenation

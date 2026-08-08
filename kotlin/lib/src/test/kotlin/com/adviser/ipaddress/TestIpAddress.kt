@@ -1,8 +1,6 @@
 package com.adviser.ipaddress.kotlin
 
 import kotlin.test.Test
-import kotlin.test.assertTrue
-
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -29,25 +27,25 @@ fun <T> assertArrayEquals(t1: List<T>, t2: List<T>) {
 class TestIpAddress {
 
     class IPAddressTest(
-            val valid_ipv4: String,
-            val valid_ipv6: String,
-            val valid_mapped: String,
-            val invalid_ipv4: String,
-            val invalid_ipv6: String,
-            val invalid_mapped: String) {
-    }
+        val valid_ipv4: String,
+        val valid_ipv6: String,
+        val valid_mapped: String,
+        val invalid_ipv4: String,
+        val invalid_ipv6: String,
+        val invalid_mapped: String
+    )
 
-    class Range(val start: Int, val stop: Int) {
-    }
+    class Range(val start: Int, val stop: Int)
 
     fun setup(): IPAddressTest {
         return IPAddressTest(
-                "172.16.10.1/24",
-                "2001:db8::8:800:200c:417a/64",
-                "::13.1.68.3",
-                "10.0.0.256",
-                ":1:2:3:4:5:6:7",
-                "::1:2.3.4")
+            "172.16.10.1/24",
+            "2001:db8::8:800:200c:417a/64",
+            "::13.1.68.3",
+            "10.0.0.256",
+            ":1:2:3:4:5:6:7",
+            "::1:2.3.4"
+        )
     }
 
     @Test
@@ -90,9 +88,12 @@ class TestIpAddress {
     fun test_summarize() {
         val netstr = mutableListOf<String>()
         val ranges = arrayOf(
-                Range(1, 10), Range(11, 127),
-                Range(128, 169), Range(170, 172),
-                Range(173, 192), Range(193, 224)
+            Range(1, 10),
+            Range(11, 127),
+            Range(128, 169),
+            Range(170, 172),
+            Range(173, 192),
+            Range(193, 224)
         )
         for (range in ranges) {
             for (i in range.start until range.stop) {
@@ -124,104 +125,160 @@ class TestIpAddress {
         val sone = IPAddress.summarize_str(listOf("10.1.0.4/24")).unwrap()
         val one = IPAddress.to_string_vec(sone)
         assertArrayEquals(one, listOf("10.1.0.0/24"))
-        assertArrayEquals(IPAddress.to_string_vec(IPAddress.summarize_str(listOf("2000:1::4711/32"))
-                .unwrap()),
-                listOf("2000:1::/32"))
+        assertArrayEquals(
+            IPAddress.to_string_vec(
+                IPAddress.summarize_str(listOf("2000:1::4711/32"))
+                    .unwrap()
+            ),
+            listOf("2000:1::/32")
+        )
 
-        assertArrayEquals(IPAddress.to_string_vec(IPAddress.summarize_str(listOf("10.1.0.4/24",
-                "7.0.0.0/0",
-                "1.2.3.4/4"))
-                .unwrap()), listOf("0.0.0.0/0"))
-        val tmp = IPAddress.to_string_vec(IPAddress.summarize_str(listOf("2000:1::/32",
-                "3000:1::/32",
-                "2000:2::/32",
-                "2000:3::/32",
-                "2000:4::/32",
-                "2000:5::/32",
-                "2000:6::/32",
-                "2000:7::/32",
-                "2000:8::/32"))
-                .unwrap())
-        assertArrayEquals(tmp,
-                listOf("2000:1::/32", "2000:2::/31", "2000:4::/30", "2000:8::/32", "3000:1::/32"))
+        assertArrayEquals(
+            IPAddress.to_string_vec(
+                IPAddress.summarize_str(
+                    listOf(
+                        "10.1.0.4/24",
+                        "7.0.0.0/0",
+                        "1.2.3.4/4"
+                    )
+                )
+                    .unwrap()
+            ),
+            listOf("0.0.0.0/0")
+        )
+        val tmp = IPAddress.to_string_vec(
+            IPAddress.summarize_str(
+                listOf(
+                    "2000:1::/32",
+                    "3000:1::/32",
+                    "2000:2::/32",
+                    "2000:3::/32",
+                    "2000:4::/32",
+                    "2000:5::/32",
+                    "2000:6::/32",
+                    "2000:7::/32",
+                    "2000:8::/32"
+                )
+            )
+                .unwrap()
+        )
+        assertArrayEquals(
+            tmp,
+            listOf("2000:1::/32", "2000:2::/31", "2000:4::/30", "2000:8::/32", "3000:1::/32")
+        )
 
-        assertArrayEquals(IPAddress.to_string_vec(IPAddress.summarize_str(listOf("10.0.1.1/24",
-                "30.0.1.0/16",
-                "10.0.2.0/24",
-                "10.0.3.0/24",
-                "10.0.4.0/24",
-                "10.0.5.0/24",
-                "10.0.6.0/24",
-                "10.0.7.0/24",
-                "10.0.8.0/24"))
-                .unwrap()),
-                listOf("10.0.1.0/24", "10.0.2.0/23", "10.0.4.0/22", "10.0.8.0/24", "30.0.0.0/16"))
+        assertArrayEquals(
+            IPAddress.to_string_vec(
+                IPAddress.summarize_str(
+                    listOf(
+                        "10.0.1.1/24",
+                        "30.0.1.0/16",
+                        "10.0.2.0/24",
+                        "10.0.3.0/24",
+                        "10.0.4.0/24",
+                        "10.0.5.0/24",
+                        "10.0.6.0/24",
+                        "10.0.7.0/24",
+                        "10.0.8.0/24"
+                    )
+                )
+                    .unwrap()
+            ),
+            listOf("10.0.1.0/24", "10.0.2.0/23", "10.0.4.0/22", "10.0.8.0/24", "30.0.0.0/16")
+        )
 
-        assertArrayEquals(IPAddress.to_string_vec(IPAddress.summarize_str(listOf("10.0.0.0/23",
-                "10.0.2.0/24"))
-                .unwrap()),
-                listOf("10.0.0.0/23", "10.0.2.0/24"))
-        assertArrayEquals(IPAddress.to_string_vec(IPAddress.summarize_str(listOf("10.0.0.0/24",
-                "10.0.1.0/24",
-                "10.0.2.0/23"))
-                .unwrap()),
-                listOf("10.0.0.0/22"))
+        assertArrayEquals(
+            IPAddress.to_string_vec(
+                IPAddress.summarize_str(
+                    listOf(
+                        "10.0.0.0/23",
+                        "10.0.2.0/24"
+                    )
+                )
+                    .unwrap()
+            ),
+            listOf("10.0.0.0/23", "10.0.2.0/24")
+        )
+        assertArrayEquals(
+            IPAddress.to_string_vec(
+                IPAddress.summarize_str(
+                    listOf(
+                        "10.0.0.0/24",
+                        "10.0.1.0/24",
+                        "10.0.2.0/23"
+                    )
+                )
+                    .unwrap()
+            ),
+            listOf("10.0.0.0/22")
+        )
 
-
-        assertArrayEquals(IPAddress.to_string_vec(IPAddress.summarize_str(listOf("10.0.0.0/16",
-                "10.0.2.0/24"))
-                .unwrap()),
-                listOf("10.0.0.0/16"))
+        assertArrayEquals(
+            IPAddress.to_string_vec(
+                IPAddress.summarize_str(
+                    listOf(
+                        "10.0.0.0/16",
+                        "10.0.2.0/24"
+                    )
+                )
+                    .unwrap()
+            ),
+            listOf("10.0.0.0/16")
+        )
 
         val cnt = 10
         for (i in 0 until cnt) {
-            assertArrayEquals(IPAddress.to_string_vec(IPAddress.summarize(ip_addresses)),
-                    listOf("1.0.0.0/8",
-                            "2.0.0.0/7",
-                            "4.0.0.0/6",
-                            "8.0.0.0/7",
-                            "11.0.0.0/8",
-                            "12.0.0.0/6",
-                            "16.0.0.0/4",
-                            "32.0.0.0/3",
-                            "64.0.0.0/3",
-                            "96.0.0.0/4",
-                            "112.0.0.0/5",
-                            "120.0.0.0/6",
-                            "124.0.0.0/7",
-                            "126.0.0.0/8",
-                            "128.0.0.0/3",
-                            "160.0.0.0/5",
-                            "168.0.0.0/8",
-                            "169.0.0.0/9",
-                            "169.128.0.0/10",
-                            "169.192.0.0/11",
-                            "169.224.0.0/12",
-                            "169.240.0.0/13",
-                            "169.248.0.0/14",
-                            "169.252.0.0/15",
-                            "169.255.0.0/16",
-                            "170.0.0.0/7",
-                            "172.0.0.0/12",
-                            "172.32.0.0/11",
-                            "172.64.0.0/10",
-                            "172.128.0.0/9",
-                            "173.0.0.0/8",
-                            "174.0.0.0/7",
-                            "176.0.0.0/4",
-                            "192.0.0.0/9",
-                            "192.128.0.0/11",
-                            "192.160.0.0/13",
-                            "192.169.0.0/16",
-                            "192.170.0.0/15",
-                            "192.172.0.0/14",
-                            "192.176.0.0/12",
-                            "192.192.0.0/10",
-                            "193.0.0.0/8",
-                            "194.0.0.0/7",
-                            "196.0.0.0/6",
-                            "200.0.0.0/5",
-                            "208.0.0.0/4"))
+            assertArrayEquals(
+                IPAddress.to_string_vec(IPAddress.summarize(ip_addresses)),
+                listOf(
+                    "1.0.0.0/8",
+                    "2.0.0.0/7",
+                    "4.0.0.0/6",
+                    "8.0.0.0/7",
+                    "11.0.0.0/8",
+                    "12.0.0.0/6",
+                    "16.0.0.0/4",
+                    "32.0.0.0/3",
+                    "64.0.0.0/3",
+                    "96.0.0.0/4",
+                    "112.0.0.0/5",
+                    "120.0.0.0/6",
+                    "124.0.0.0/7",
+                    "126.0.0.0/8",
+                    "128.0.0.0/3",
+                    "160.0.0.0/5",
+                    "168.0.0.0/8",
+                    "169.0.0.0/9",
+                    "169.128.0.0/10",
+                    "169.192.0.0/11",
+                    "169.224.0.0/12",
+                    "169.240.0.0/13",
+                    "169.248.0.0/14",
+                    "169.252.0.0/15",
+                    "169.255.0.0/16",
+                    "170.0.0.0/7",
+                    "172.0.0.0/12",
+                    "172.32.0.0/11",
+                    "172.64.0.0/10",
+                    "172.128.0.0/9",
+                    "173.0.0.0/8",
+                    "174.0.0.0/7",
+                    "176.0.0.0/4",
+                    "192.0.0.0/9",
+                    "192.128.0.0/11",
+                    "192.160.0.0/13",
+                    "192.169.0.0/16",
+                    "192.170.0.0/15",
+                    "192.172.0.0/14",
+                    "192.176.0.0/12",
+                    "192.192.0.0/10",
+                    "193.0.0.0/8",
+                    "194.0.0.0/7",
+                    "196.0.0.0/6",
+                    "200.0.0.0/5",
+                    "208.0.0.0/4"
+                )
+            )
         }
         // end
         // printer = RubyProf::GraphPrinter.new(result)

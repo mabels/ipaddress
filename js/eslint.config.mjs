@@ -9,6 +9,15 @@ const opts = tseslint.config(
   {
     ignores: ["dist/**"],
   },
+  {
+    // Test fixtures assume success (e.g. IPAddress.parse of a hardcoded
+    // literal); non-null assertions there are a known-safe convenience
+    // that production code (src/**) must not rely on.
+    files: ["test/**/*.ts"],
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": "off",
+    },
+  },
 );
 
 export default opts;

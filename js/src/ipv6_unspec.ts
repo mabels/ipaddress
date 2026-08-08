@@ -50,7 +50,7 @@ export const Ipv6Unspec = {
   //    ip.to_s
   //       // => => "::/128"
   //
-  create(): IPAddress {
+  create(): IPAddress | null {
     return IPAddress.parse("::");
   },
   //  class IPv6::Unspecified

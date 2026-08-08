@@ -1,10 +1,8 @@
-
-require_relative 'crunchy'
-require_relative 'ip_bits'
-#require_relative '../ipaddress'
+require_relative "crunchy"
+require_relative "ip_bits"
+# require_relative '../ipaddress'
 
 class IPAddress
-
   class Ipv6Mapped
     #  Ac
     #  It is usually identified as a IPv4 mapped IPv6 address, a particular
@@ -88,7 +86,7 @@ class IPAddress
       ip = i[0]
       o_netmask = i[1]
       split_colon = ip.split(":")
-      if (split_colon.length <= 1)
+      if split_colon.length <= 1
         # console.log("mapped-2")
         return nil
       end
@@ -99,24 +97,24 @@ class IPAddress
       # }
       # mapped: Option<IPAddress> = None
       netmask = ""
-      if (o_netmask != nil)
+      if !o_netmask.nil?
         netmask = "/#{o_netmask}"
       end
 
-      ipv4_str = split_colon[split_colon.length - 1]
-      if (IPAddress.is_valid_ipv4(ipv4_str))
+      ipv4_str = split_colon[-1]
+      if IPAddress.is_valid_ipv4(ipv4_str)
         ipv4 = IPAddress.parse("#{ipv4_str}#{netmask}")
-        if (ipv4.nil?)
+        if ipv4.nil?
           # console.log("mapped-3")
           return ipv4
         end
 
-        #mapped = Some(ipv4.unwrap())
+        # mapped = Some(ipv4.unwrap())
         addr = ipv4
-        ipv6_bits = IpBits.v6()
-        part_mod = ipv6_bits.part_mod #Crunchy.from_number(ipv6_bits.part_mod)
-        up_addr = addr.host_address.clone()
-        down_addr = addr.host_address.clone()
+        ipv6_bits = IpBits.v6
+        part_mod = ipv6_bits.part_mod # Crunchy.from_number(ipv6_bits.part_mod)
+        up_addr = addr.host_address.clone
+        down_addr = addr.host_address.clone
 
         rebuild_ipv6 = ""
         colon = ""
@@ -127,37 +125,37 @@ class IPAddress
         end
 
         rebuild_ipv6 += colon
-        high_part = up_addr.shr(IpBits.v6().part_bits).mod(part_mod).toString(16)
+        high_part = up_addr.shr(IpBits.v6.part_bits).mod(part_mod).toString(16)
         low_part = down_addr.mod(part_mod).toString(16)
-        bits = ipv6_bits.bits - addr.prefix.host_prefix()
+        bits = ipv6_bits.bits - addr.prefix.host_prefix
         rebuild_ipv4 = "#{high_part}:#{low_part}/#{bits}"
         rebuild_ipv6 += rebuild_ipv4
 
         # console.log("-----A", rebuild_ipv6, part_mod)
         r_ipv6 = IPAddress.parse(rebuild_ipv6)
-        if (r_ipv6.nil?)
+        if r_ipv6.nil?
           # println!("---3|{}", &rebuild_ipv6)
           # console.log("mapped-4")
           return r_ipv6
         end
 
-        if (r_ipv6.is_mapped())
+        if r_ipv6.is_mapped
           # console.log("mapped-5")
           return r_ipv6
         end
 
         ipv6 = r_ipv6
         p96bit = ipv6.host_address.shr(32)
-        if (!p96bit.eq(Crunchy.zero()))
+        if !p96bit.eq(Crunchy.zero)
           # println!("---4|{}", &rebuild_ipv6)
-          #console.log("mapped-6",ipv6.host_address, p96bit, Crunchy.zero())
+          # console.log("mapped-6",ipv6.host_address, p96bit, Crunchy.zero())
           return nil
         end
 
         r_ipv6 = IPAddress.parse("::ffff:#{rebuild_ipv4}")
-        if (r_ipv6.nil?)
+        if r_ipv6.nil?
           # println!("---3|{}", &rebuild_ipv6)
-          #console.log("mapped-7")
+          # console.log("mapped-7")
           return nil
         end
 
@@ -166,7 +164,7 @@ class IPAddress
       end
 
       # console.log("mapped-9")
-      return nil
+      nil
     end
   end
 end

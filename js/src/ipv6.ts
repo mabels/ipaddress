@@ -62,7 +62,7 @@ export const Ipv6 = {
   //
   //
 
-  from_str(str: string, radix: number, prefix: number): IPAddress {
+  from_str(str: string, radix: number, prefix: number): IPAddress | null {
     const num = Crunchy.from_string(str, radix);
     if (!num) {
       return null;
@@ -70,7 +70,7 @@ export const Ipv6 = {
     return Ipv6.from_int(num, prefix);
   },
 
-  enhance_if_mapped(ip: IPAddress): IPAddress {
+  enhance_if_mapped(ip: IPAddress): IPAddress | null {
     // console.log("------A");
     // println!("real mapped {:x} {:x}", &ip.host_address, ip.host_address.clone().shr(32));
     if (ip.is_mapped()) {
@@ -106,7 +106,7 @@ export const Ipv6 = {
     return ip;
   },
 
-  from_int(adr: Crunchy, prefix_num: number): IPAddress {
+  from_int(adr: Crunchy, prefix_num: number): IPAddress | null {
     const prefix = Prefix128.create(prefix_num);
     if (prefix === null) {
       return null;
@@ -141,7 +141,7 @@ export const Ipv6 = {
   //
   //    ip6 = IPAddress "2001:db8::8:800:200c:417a/64"
   //
-  create(str: string): IPAddress {
+  create(str: string): IPAddress | null {
     // console.log("1>>>>>>>>>", str);
     const [ip, o_netmask] = IPAddress.split_at_slash(str);
     // console.log("2>>>>>>>>>", str);
@@ -153,7 +153,7 @@ export const Ipv6 = {
         return null;
       }
       // console.log("4>>>>>>>>>", str);
-      let netmask = 128;
+      let netmask: number | null = 128;
       if (o_netmask !== null) {
         netmask = IPAddress.parse_dec_str(o_netmask);
         if (netmask === null) {
@@ -195,7 +195,7 @@ export const Ipv6 = {
   },
 
   ipv6_is_private(my: IPAddress): boolean {
-    return IPAddress.parse("fd00::/8").includes(my);
+    return IPAddress.parse_or_throw("fd00::/8").includes(my);
   },
 };
 

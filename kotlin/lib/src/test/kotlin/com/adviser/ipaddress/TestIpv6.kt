@@ -1,14 +1,16 @@
 package com.adviser.ipaddress.kotlin
 
-import kotlin.test.Test
 import java.math.BigInteger
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class IPv6Test(val invalid_ipv6: List<String>,
-               val ip: IPAddress,
-               val network: IPAddress,
-               val hex: String,
-               val arr: IntArray) {
+class IPv6Test(
+    val invalid_ipv6: List<String>,
+    val ip: IPAddress,
+    val network: IPAddress,
+    val hex: String,
+    val arr: IntArray
+) {
     val compress_addr = HashMap<String, String>()
     val valid_ipv6 = HashMap<String, BigInteger>()
     val networks = HashMap<String, String>()
@@ -17,9 +19,13 @@ class IPv6Test(val invalid_ipv6: List<String>,
 class TestIpv6 {
 
     fun setup(): IPv6Test {
-        val ip6t = IPv6Test(listOf(":1:2:3:4:5:6:7", ":1:2:3:4:5:6:7", "2002:516:2:200", "dd"),
-                IPAddress.parse("2001:db8::8:800:200c:417a/64").unwrap(), IPAddress.parse("2001:db8:8:800::/64").unwrap(),
-                "20010db80000000000080800200c417a", intArrayOf(8193, 3512, 0, 0, 8, 2048, 8204, 16762))
+        val ip6t = IPv6Test(
+            listOf(":1:2:3:4:5:6:7", ":1:2:3:4:5:6:7", "2002:516:2:200", "dd"),
+            IPAddress.parse("2001:db8::8:800:200c:417a/64").unwrap(),
+            IPAddress.parse("2001:db8:8:800::/64").unwrap(),
+            "20010db80000000000080800200c417a",
+            intArrayOf(8193, 3512, 0, 0, 8, 2048, 8204, 16762)
+        )
 
         ip6t.compress_addr.put("2001:db8:0000:0000:0008:0800:200c:417a", "2001:db8::8:800:200c:417a")
         ip6t.compress_addr.put("2001:db8:0:0:8:800:200c:417a", "2001:db8::8:800:200c:417a")
@@ -27,10 +33,14 @@ class TestIpv6 {
         ip6t.compress_addr.put("0:0:0:0:0:0:0:1", "::1")
         ip6t.compress_addr.put("0:0:0:0:0:0:0:0", "::")
 
-        ip6t.valid_ipv6.put("FEDC:BA98:7654:3210:FEDC:BA98:7654:3210",
-                BigInteger("338770000845734292534325025077361652240"))
-        ip6t.valid_ipv6.put("1080:0000:0000:0000:0008:0800:200C:417A",
-                BigInteger("21932261930451111902915077091070067066"))
+        ip6t.valid_ipv6.put(
+            "FEDC:BA98:7654:3210:FEDC:BA98:7654:3210",
+            BigInteger("338770000845734292534325025077361652240")
+        )
+        ip6t.valid_ipv6.put(
+            "1080:0000:0000:0000:0008:0800:200C:417A",
+            BigInteger("21932261930451111902915077091070067066")
+        )
         ip6t.valid_ipv6.put("1080:0:0:0:8:800:200C:417A", BigInteger("21932261930451111902915077091070067066"))
         ip6t.valid_ipv6.put("1080:0::8:800:200C:417A", BigInteger("21932261930451111902915077091070067066"))
         ip6t.valid_ipv6.put("1080::8:800:200C:417A", BigInteger("21932261930451111902915077091070067066"))
@@ -52,7 +62,6 @@ class TestIpv6 {
         ip6t.networks.put("2001:db8::1/64", "2001:db8::/64")
         return ip6t
     }
-
 
     @Test
     fun test_attribute_address() {
@@ -146,14 +155,18 @@ class TestIpv6 {
 
     @Test
     fun test_method_network_u128() {
-        assertEquals(IpV6.from_int(BigInteger("42540766411282592856903984951653826560"), 64).unwrap(),
-                setup().ip.network())
+        assertEquals(
+            IpV6.from_int(BigInteger("42540766411282592856903984951653826560"), 64).unwrap(),
+            setup().ip.network()
+        )
     }
 
     @Test
     fun test_method_broadcast_u128() {
-        assertEquals(IpV6.from_int(BigInteger("42540766411282592875350729025363378175"), 64).unwrap(),
-                setup().ip.broadcast())
+        assertEquals(
+            IpV6.from_int(BigInteger("42540766411282592875350729025363378175"), 64).unwrap(),
+            setup().ip.broadcast()
+        )
     }
 
     @Test
@@ -219,20 +232,28 @@ class TestIpv6 {
     @Test
     fun test_method_dns_rev_domains() {
         assertArrayEquals(IPAddress.parse("f000:f100::/3").unwrap().dns_rev_domains(), arrayOf("e.ip6.arpa", "f.ip6.arpa"))
-        assertArrayEquals(IPAddress.parse("fea3:f120::/15").unwrap().dns_rev_domains(),
-                arrayOf("2.a.e.f.ip6.arpa", "3.a.e.f.ip6.arpa"))
-        assertArrayEquals(IPAddress.parse("3a03:2f80:f::/48").unwrap().dns_rev_domains(),
-                arrayOf("f.0.0.0.0.8.f.2.3.0.a.3.ip6.arpa"))
+        assertArrayEquals(
+            IPAddress.parse("fea3:f120::/15").unwrap().dns_rev_domains(),
+            arrayOf("2.a.e.f.ip6.arpa", "3.a.e.f.ip6.arpa")
+        )
+        assertArrayEquals(
+            IPAddress.parse("3a03:2f80:f::/48").unwrap().dns_rev_domains(),
+            arrayOf("f.0.0.0.0.8.f.2.3.0.a.3.ip6.arpa")
+        )
 
-        assertArrayEquals(IPAddress.parse("f000:f100::1234/125").unwrap().dns_rev_domains(),
-                arrayOf("0.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                        "1.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                        "2.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                        "3.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                        "4.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                        "5.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                        "6.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                        "7.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa"))
+        assertArrayEquals(
+            IPAddress.parse("f000:f100::1234/125").unwrap().dns_rev_domains(),
+            arrayOf(
+                "0.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "1.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "2.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "3.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "4.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "5.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "6.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "7.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa"
+            )
+        )
     }
 
     @Test
@@ -272,21 +293,33 @@ class TestIpv6 {
         val ip = IPAddress.parse("2001:db8::4/125").unwrap()
         val arr = mutableListOf<String>()
         ip.each { i -> arr.add(i.to_s()) }
-        assertArrayEquals(arr,
-                listOf("2001:db8::", "2001:db8::1", "2001:db8::2", "2001:db8::3", "2001:db8::4", "2001:db8::5", "2001:db8::6",
-                        "2001:db8::7"))
+        assertArrayEquals(
+            arr,
+            listOf(
+                "2001:db8::",
+                "2001:db8::1",
+                "2001:db8::2",
+                "2001:db8::3",
+                "2001:db8::4",
+                "2001:db8::5",
+                "2001:db8::6",
+                "2001:db8::7"
+            )
+        )
     }
 
     @Test
     fun test_method_each_net() {
-        val test_addrs = arrayOf("0000:0000:0000:0000:0000:0000:0000:0000", "1111:1111:1111:1111:1111:1111:1111:1111",
-                "2222:2222:2222:2222:2222:2222:2222:2222", "3333:3333:3333:3333:3333:3333:3333:3333",
-                "4444:4444:4444:4444:4444:4444:4444:4444", "5555:5555:5555:5555:5555:5555:5555:5555",
-                "6666:6666:6666:6666:6666:6666:6666:6666", "7777:7777:7777:7777:7777:7777:7777:7777",
-                "8888:8888:8888:8888:8888:8888:8888:8888", "9999:9999:9999:9999:9999:9999:9999:9999",
-                "aaaa:aaaa:aaaa:aaaa:aaaa:aaaa:aaaa:aaaa", "bbbb:bbbb:bbbb:bbbb:bbbb:bbbb:bbbb:bbbb",
-                "cccc:cccc:cccc:cccc:cccc:cccc:cccc:cccc", "dddd:dddd:dddd:dddd:dddd:dddd:dddd:dddd",
-                "eeee:eeee:eeee:eeee:eeee:eeee:eeee:eeee", "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
+        val test_addrs = arrayOf(
+            "0000:0000:0000:0000:0000:0000:0000:0000", "1111:1111:1111:1111:1111:1111:1111:1111",
+            "2222:2222:2222:2222:2222:2222:2222:2222", "3333:3333:3333:3333:3333:3333:3333:3333",
+            "4444:4444:4444:4444:4444:4444:4444:4444", "5555:5555:5555:5555:5555:5555:5555:5555",
+            "6666:6666:6666:6666:6666:6666:6666:6666", "7777:7777:7777:7777:7777:7777:7777:7777",
+            "8888:8888:8888:8888:8888:8888:8888:8888", "9999:9999:9999:9999:9999:9999:9999:9999",
+            "aaaa:aaaa:aaaa:aaaa:aaaa:aaaa:aaaa:aaaa", "bbbb:bbbb:bbbb:bbbb:bbbb:bbbb:bbbb:bbbb",
+            "cccc:cccc:cccc:cccc:cccc:cccc:cccc:cccc", "dddd:dddd:dddd:dddd:dddd:dddd:dddd:dddd",
+            "eeee:eeee:eeee:eeee:eeee:eeee:eeee:eeee", "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"
+        )
         for (prefix in 0..128) {
             val nr_networks = 1.shl((128 - prefix) % 4)
             for (adr in test_addrs) {
@@ -365,4 +398,3 @@ class TestIpv6 {
         assertEquals(setup().ip.to_string(), IpV6.from_str(setup().hex, 16, 64).unwrap().to_string())
     }
 }
-  

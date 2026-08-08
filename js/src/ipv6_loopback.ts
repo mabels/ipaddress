@@ -47,7 +47,7 @@ export const Ipv6Loopback = {
   //    ip.to_string
   //      // => "::1/128"
   //
-  create(): IPAddress {
+  create(): IPAddress | null {
     return Ipv6.from_int(Crunchy.one(), 128);
   },
 };

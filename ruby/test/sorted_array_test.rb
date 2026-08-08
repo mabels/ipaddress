@@ -1,10 +1,10 @@
-#require_relative 'test_helper'
+# require_relative 'test_helper'
 #
-#require 'pry'
+# require 'pry'
 #
-#require_relative '../lib/sorted_array'
+# require_relative '../lib/sorted_array'
 #
-#class SortedArrayTest < Test::Unit::TestCase
+# class SortedArrayTest < Test::Unit::TestCase
 #  def setup
 #    @unsorted = ['x', 'd', 'e', 'o', 'c', 'q', 'j', 'm', 'o']
 #    @unsorted = ['x', 'd', 'e', 'o']
@@ -76,4 +76,4 @@
 #  end
 #
 #
-#end
+# end

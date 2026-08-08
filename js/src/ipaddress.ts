@@ -29,9 +29,9 @@ export interface IPAddressParams {
   host_address: Crunchy;
   prefix: Prefix;
   mapped?: IPAddress | null;
-  vt_is_private?: Is;
-  vt_is_loopback?: Is;
-  vt_to_ipv6?: ToIpv4;
+  vt_is_private: Is;
+  vt_is_loopback: Is;
+  vt_to_ipv6: ToIpv4;
 }
 
 export class IPAddress {
@@ -39,9 +39,9 @@ export class IPAddress {
   host_address: Crunchy;
   prefix: Prefix;
   mapped: IPAddress | null;
-  vt_is_private: Is | undefined;
-  vt_is_loopback: Is | undefined;
-  vt_to_ipv6: ToIpv4 | undefined;
+  vt_is_private: Is;
+  vt_is_loopback: Is;
+  vt_to_ipv6: ToIpv4;
 
   constructor(obj: IPAddressParams) {
     this.ip_bits = obj.ip_bits;
@@ -153,6 +153,18 @@ export class IPAddress {
       }
     }
     return null;
+  }
+
+  //  Like parse(), but for literals that are known to be valid IP
+  //  addresses (e.g. hardcoded well-known ranges). Throws instead of
+  //  returning null so call sites don't need to deal with a nullable
+  //  result they can never actually observe.
+  public static parse_or_throw(str: string): IPAddress {
+    const ip = IPAddress.parse(str);
+    if (ip === null) {
+      throw new Error(`invalid literal ip address: ${str}`);
+    }
+    return ip;
   }
 
   public static split_at_slash(str: string): [string, string | null] {
@@ -823,14 +835,14 @@ export class IPAddress {
   }
 
   public to_s_mapped(): string {
-    if (this.is_mapped()) {
+    if (this.is_mapped() && this.mapped !== null) {
       return `::ffff:${this.mapped.to_s()}`;
     }
     return this.to_s();
   }
 
   public to_string_mapped(): string {
-    if (this.is_mapped()) {
+    if (this.is_mapped() && this.mapped !== null) {
       const mapped = this.mapped.clone();
       return `${this.to_s_mapped()}/${mapped.prefix.num}`;
     }
@@ -1016,7 +1028,7 @@ export class IPAddress {
     }
   }
 
-  public inc(): IPAddress {
+  public inc(): IPAddress | null {
     const ret = this.clone();
     ret.host_address = ret.host_address.add(Crunchy.one());
     if (ret.lte(this.last())) {
@@ -1025,7 +1037,7 @@ export class IPAddress {
     return null;
   }
 
-  public dec(): IPAddress {
+  public dec(): IPAddress | null {
     const ret = this.clone();
     ret.host_address = ret.host_address.sub(Crunchy.one());
     if (ret.gte(this.first())) {
@@ -1216,11 +1228,15 @@ export class IPAddress {
     return dup;
   }
 
-  public split(subnets: number): IPAddress[] {
+  public split(subnets: number): IPAddress[] | null {
     if (subnets == 0 || 1 << this.prefix.host_prefix() <= subnets) {
       return null;
     }
-    const networks = this.subnet(this.newprefix(subnets).num);
+    const newprefix = this.newprefix(subnets);
+    if (newprefix === null) {
+      return null;
+    }
+    const networks = this.subnet(newprefix.num);
     if (!networks) {
       return networks;
     }
@@ -1255,7 +1271,7 @@ export class IPAddress {
   //
   //  If +new_prefix+ is less than 1, returns 0.0.0.0/0
   //
-  public supernet(new_prefix: number): IPAddress {
+  public supernet(new_prefix: number): IPAddress | null {
     if (new_prefix >= this.prefix.num) {
       return null;
     }
@@ -1287,7 +1303,7 @@ export class IPAddress {
   //  The resulting number of subnets will of course always be
   //  a power of two.
   //
-  public subnet(subprefix: number): IPAddress[] {
+  public subnet(subprefix: number): IPAddress[] | null {
     if (subprefix < this.prefix.num || this.ip_bits.bits < subprefix) {
       return null;
     }
@@ -1317,7 +1333,7 @@ export class IPAddress {
     return this.vt_to_ipv6(this);
   }
 
-  public newprefix(num: number): Prefix {
+  public newprefix(num: number): Prefix | null {
     for (let i = num; i < this.ip_bits.bits; ++i) {
       const a = ~~Math.log2(i);
       if (a == Math.log2(i)) {

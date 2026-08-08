@@ -79,7 +79,7 @@ export const Ipv6Mapped = {
   //    ip6.to_string
   //      // => "::ffff:13.1.68.3"
   //
-  create(str: string): IPAddress {
+  create(str: string): IPAddress | null {
     // console.log("mapped-1");
     const i = IPAddress.split_at_slash(str);
     const ip = i[0];

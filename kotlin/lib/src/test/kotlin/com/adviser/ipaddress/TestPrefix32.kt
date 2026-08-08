@@ -1,16 +1,16 @@
 package com.adviser.ipaddress.kotlin
 
-
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class Prefix32Test(
-        val netmask0: String,
-        val netmask8: String,
-        val netmask16: String,
-        val netmask24: String,
-        val netmask30: String) {
+    val netmask0: String,
+    val netmask8: String,
+    val netmask16: String,
+    val netmask24: String,
+    val netmask30: String
+) {
     val netmasks = emptyArray<String>()
     val prefix_hash = HashMap<String, Int>()
     val octets_hash = HashMap<IntArray, Int>()
@@ -21,11 +21,12 @@ class TestPrefix32 {
 
     public fun setup(): Prefix32Test {
         val p32t = Prefix32Test(
-                "0.0.0.0",
-                "255.0.0.0",
-                "255.255.0.0",
-                "255.255.255.0",
-                "255.255.255.252")
+            "0.0.0.0",
+            "255.0.0.0",
+            "255.255.0.0",
+            "255.255.255.0",
+            "255.255.255.252"
+        )
         p32t.netmasks.plus(p32t.netmask0)
         p32t.netmasks.plus(p32t.netmask8)
         p32t.netmasks.plus(p32t.netmask16)
@@ -139,7 +140,9 @@ class TestPrefix32 {
     @Test
     public fun test_method_hostmask() {
         val prefix = Prefix32.create(8).unwrap()
-        assertEquals("0.255.255.255",
-                IpV4.from_u32(prefix.host_mask().toLong(), 0).unwrap().to_s())
+        assertEquals(
+            "0.255.255.255",
+            IpV4.from_u32(prefix.host_mask().toLong(), 0).unwrap().to_s()
+        )
     }
 }

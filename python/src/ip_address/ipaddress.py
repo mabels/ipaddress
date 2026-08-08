@@ -261,7 +261,9 @@ class IPAddress:
             post = IPAddress.split_on_colon(pre_post[1])
             if post is None:
                 return None
-            return ResultIntParts((pre.value << (128 - pre.parts * 16)) + post.value, 128 // 16)
+            return ResultIntParts(
+                (pre.value << (128 - pre.parts * 16)) + post.value, 128 // 16
+            )
         ret = IPAddress.split_on_colon(addr)
         if ret is None or ret.parts != 128 // 16:
             return None
@@ -285,7 +287,9 @@ class IPAddress:
             return []
         if len(networks) == 1:
             return [networks[0].network()]
-        stack = sorted((i.network() for i in networks), key=cmp_to_key(lambda a, b: a.cmp(b)))
+        stack = sorted(
+            (i.network() for i in networks), key=cmp_to_key(lambda a, b: a.cmp(b))
+        )
         pos = 0
         while True:
             if pos < 0:
@@ -305,7 +309,9 @@ class IPAddress:
                 stack = stack[:pidx] + stack[pidx + 1 :]
             else:
                 stack[first].prefix = stack[first].prefix.sub(1)
-                if stack[first].prefix.num + 1 == stack[second].prefix.num and stack[first].includes(stack[second]):
+                if stack[first].prefix.num + 1 == stack[second].prefix.num and stack[
+                    first
+                ].includes(stack[second]):
                     pos = pos - 2
                     idx = IPAddress.pos_to_idx(pos, stack_len)
                     stack[idx] = stack[first].clone()
@@ -342,7 +348,9 @@ class IPAddress:
         ret = ""
         dot = ""
         dns_parts = self.dns_parts()
-        i = (self.prefix.host_prefix() + (self.ip_bits.dns_bits - 1)) // self.ip_bits.dns_bits
+        i = (
+            self.prefix.host_prefix() + (self.ip_bits.dns_bits - 1)
+        ) // self.ip_bits.dns_bits
         while i < len(dns_parts):
             ret += dot
             ret += self.ip_bits.dns_part_format(dns_parts[i])
@@ -363,7 +371,11 @@ class IPAddress:
         return ret
 
     def dns_networks(self) -> List["IPAddress"]:
-        next_bit_mask = self.ip_bits.bits - (self.prefix.host_prefix() // self.ip_bits.dns_bits) * self.ip_bits.dns_bits
+        next_bit_mask = (
+            self.ip_bits.bits
+            - (self.prefix.host_prefix() // self.ip_bits.dns_bits)
+            * self.ip_bits.dns_bits
+        )
         if next_bit_mask <= 0:
             return [self.network()]
         step_bit_net = 1 << (self.ip_bits.bits - next_bit_mask)
@@ -564,7 +576,10 @@ class IPAddress:
     #     // => true
     #
     def is_network(self) -> bool:
-        return self.prefix.num != self.ip_bits.bits and self.host_address == self.network().host_address
+        return (
+            self.prefix.num != self.ip_bits.bits
+            and self.host_address == self.network().host_address
+        )
 
     # Returns a new IPv4 object with the network number
     # for the given IP.
@@ -575,7 +590,10 @@ class IPAddress:
     #     // => "172.16.10.0"
     #
     def network(self) -> "IPAddress":
-        return self.from_(IPAddress.to_network(self.host_address, self.prefix.host_prefix()), self.prefix)
+        return self.from_(
+            IPAddress.to_network(self.host_address, self.prefix.host_prefix()),
+            self.prefix,
+        )
 
     @staticmethod
     def to_network(adr: int, host_prefix: int) -> int:
@@ -619,7 +637,9 @@ class IPAddress:
     #     // => "192.168.100.1"
     #
     def first(self) -> "IPAddress":
-        return self.from_(self.network().host_address + self.ip_bits.host_ofs, self.prefix)
+        return self.from_(
+            self.network().host_address + self.ip_bits.host_ofs, self.prefix
+        )
 
     # Like its sibling method IPv4// first, this method
     # returns a new IPv4 object with the
@@ -634,7 +654,9 @@ class IPAddress:
     #     // => "192.168.100.254"
     #
     def last(self) -> "IPAddress":
-        return self.from_(self.broadcast().host_address - self.ip_bits.host_ofs, self.prefix)
+        return self.from_(
+            self.broadcast().host_address - self.ip_bits.host_ofs, self.prefix
+        )
 
     # Iterates over all the hosts IP addresses for the given
     # network (or IP address).
@@ -718,7 +740,8 @@ class IPAddress:
         return (
             self.is_same_kind(oth)
             and self.prefix.num <= oth.prefix.num
-            and self.network().host_address == IPAddress.to_network(oth.host_address, self.prefix.host_prefix())
+            and self.network().host_address
+            == IPAddress.to_network(oth.host_address, self.prefix.host_prefix())
         )
 
     # Checks whether a subnet includes all the

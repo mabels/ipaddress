@@ -3,14 +3,14 @@ extern crate num;
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
+    use ipaddress::ipv6;
+    use ipaddress::IPAddress;
     use num::bigint::BigUint;
     use num::One;
-    use std::str::FromStr;
     use std::collections::HashMap;
-    use ipaddress::IPAddress;
-    use ipaddress::ipv6;
     use std::ops::Deref;
+    use std::str::FromStr;
+    use std::sync::{Arc, Mutex};
 
     struct IPv6Test {
         compress_addr: HashMap<&'static str, &'static str>,
@@ -22,7 +22,6 @@ mod tests {
         arr: Vec<u16>,
         hex: &'static str,
     }
-
 
     fn setup() -> IPv6Test {
         let mut ip6t = IPv6Test {
@@ -36,53 +35,76 @@ mod tests {
             hex: "20010db80000000000080800200c417a",
         };
 
-        ip6t.compress_addr.insert("2001:db8:0000:0000:0008:0800:200c:417a",
-                                  "2001:db8::8:800:200c:417a");
-        ip6t.compress_addr.insert("2001:db8:0:0:8:800:200c:417a", "2001:db8::8:800:200c:417a");
-        ip6t.compress_addr.insert("ff01:0:0:0:0:0:0:101", "ff01::101");
+        ip6t.compress_addr.insert(
+            "2001:db8:0000:0000:0008:0800:200c:417a",
+            "2001:db8::8:800:200c:417a",
+        );
+        ip6t.compress_addr
+            .insert("2001:db8:0:0:8:800:200c:417a", "2001:db8::8:800:200c:417a");
+        ip6t.compress_addr
+            .insert("ff01:0:0:0:0:0:0:101", "ff01::101");
         ip6t.compress_addr.insert("0:0:0:0:0:0:0:1", "::1");
         ip6t.compress_addr.insert("0:0:0:0:0:0:0:0", "::");
 
-        ip6t.valid_ipv6.insert("FEDC:BA98:7654:3210:FEDC:BA98:7654:3210",
-                               BigUint::from_str("338770000845734292534325025077361652240")
-                                   .unwrap());
-        ip6t.valid_ipv6.insert("1080:0000:0000:0000:0008:0800:200C:417A",
-                               BigUint::from_str("21932261930451111902915077091070067066")
-                                   .unwrap());
-        ip6t.valid_ipv6.insert("1080:0:0:0:8:800:200C:417A",
-                               BigUint::from_str("21932261930451111902915077091070067066")
-                                   .unwrap());
-        ip6t.valid_ipv6.insert("1080:0::8:800:200C:417A",
-                               BigUint::from_str("21932261930451111902915077091070067066")
-                                   .unwrap());
-        ip6t.valid_ipv6.insert("1080::8:800:200C:417A",
-                               BigUint::from_str("21932261930451111902915077091070067066")
-                                   .unwrap());
-        ip6t.valid_ipv6.insert("FF01:0:0:0:0:0:0:43",
-                               BigUint::from_str("338958331222012082418099330867817087043")
-                                   .unwrap());
-        ip6t.valid_ipv6.insert("FF01:0:0::0:0:43",
-                               BigUint::from_str("338958331222012082418099330867817087043")
-                                   .unwrap());
-        ip6t.valid_ipv6.insert("FF01::43",
-                               BigUint::from_str("338958331222012082418099330867817087043")
-                                   .unwrap());
-        ip6t.valid_ipv6.insert("0:0:0:0:0:0:0:1", BigUint::from_str("1").unwrap());
-        ip6t.valid_ipv6.insert("0:0:0::0:0:1", BigUint::from_str("1").unwrap());
-        ip6t.valid_ipv6.insert("::1", BigUint::from_str("1").unwrap());
-        ip6t.valid_ipv6.insert("0:0:0:0:0:0:0:0", BigUint::from_str("0").unwrap());
-        ip6t.valid_ipv6.insert("0:0:0::0:0:0", BigUint::from_str("0").unwrap());
-        ip6t.valid_ipv6.insert("::", BigUint::from_str("0").unwrap());
-        ip6t.valid_ipv6.insert("::/0", BigUint::from_str("0").unwrap());
-        ip6t.valid_ipv6.insert("1080:0:0:0:8:800:200C:417A",
-                               BigUint::from_str("21932261930451111902915077091070067066")
-                                   .unwrap());
-        ip6t.valid_ipv6.insert("1080::8:800:200C:417A",
-                               BigUint::from_str("21932261930451111902915077091070067066")
-                                   .unwrap());
+        ip6t.valid_ipv6.insert(
+            "FEDC:BA98:7654:3210:FEDC:BA98:7654:3210",
+            BigUint::from_str("338770000845734292534325025077361652240").unwrap(),
+        );
+        ip6t.valid_ipv6.insert(
+            "1080:0000:0000:0000:0008:0800:200C:417A",
+            BigUint::from_str("21932261930451111902915077091070067066").unwrap(),
+        );
+        ip6t.valid_ipv6.insert(
+            "1080:0:0:0:8:800:200C:417A",
+            BigUint::from_str("21932261930451111902915077091070067066").unwrap(),
+        );
+        ip6t.valid_ipv6.insert(
+            "1080:0::8:800:200C:417A",
+            BigUint::from_str("21932261930451111902915077091070067066").unwrap(),
+        );
+        ip6t.valid_ipv6.insert(
+            "1080::8:800:200C:417A",
+            BigUint::from_str("21932261930451111902915077091070067066").unwrap(),
+        );
+        ip6t.valid_ipv6.insert(
+            "FF01:0:0:0:0:0:0:43",
+            BigUint::from_str("338958331222012082418099330867817087043").unwrap(),
+        );
+        ip6t.valid_ipv6.insert(
+            "FF01:0:0::0:0:43",
+            BigUint::from_str("338958331222012082418099330867817087043").unwrap(),
+        );
+        ip6t.valid_ipv6.insert(
+            "FF01::43",
+            BigUint::from_str("338958331222012082418099330867817087043").unwrap(),
+        );
+        ip6t.valid_ipv6
+            .insert("0:0:0:0:0:0:0:1", BigUint::from_str("1").unwrap());
+        ip6t.valid_ipv6
+            .insert("0:0:0::0:0:1", BigUint::from_str("1").unwrap());
+        ip6t.valid_ipv6
+            .insert("::1", BigUint::from_str("1").unwrap());
+        ip6t.valid_ipv6
+            .insert("0:0:0:0:0:0:0:0", BigUint::from_str("0").unwrap());
+        ip6t.valid_ipv6
+            .insert("0:0:0::0:0:0", BigUint::from_str("0").unwrap());
+        ip6t.valid_ipv6
+            .insert("::", BigUint::from_str("0").unwrap());
+        ip6t.valid_ipv6
+            .insert("::/0", BigUint::from_str("0").unwrap());
+        ip6t.valid_ipv6.insert(
+            "1080:0:0:0:8:800:200C:417A",
+            BigUint::from_str("21932261930451111902915077091070067066").unwrap(),
+        );
+        ip6t.valid_ipv6.insert(
+            "1080::8:800:200C:417A",
+            BigUint::from_str("21932261930451111902915077091070067066").unwrap(),
+        );
 
-        ip6t.networks.insert("2001:db8:1:1:1:1:1:1/32", "2001:db8::/32");
-        ip6t.networks.insert("2001:db8:1:1:1:1:1::/32", "2001:db8::/32");
+        ip6t.networks
+            .insert("2001:db8:1:1:1:1:1:1/32", "2001:db8::/32");
+        ip6t.networks
+            .insert("2001:db8:1:1:1:1:1::/32", "2001:db8::/32");
         ip6t.networks.insert("2001:db8::1/64", "2001:db8::/64");
         return ip6t;
     }
@@ -113,8 +135,10 @@ mod tests {
     }
     #[test]
     fn test_method_hexs() {
-        assert_eq!(setup().ip.parts_hex_str(),
-                   ["2001", "0db8", "0000", "0000", "0008", "0800", "200c", "417a"]);
+        assert_eq!(
+            setup().ip.parts_hex_str(),
+            ["2001", "0db8", "0000", "0000", "0008", "0800", "200c", "417a"]
+        );
     }
 
     #[test]
@@ -170,19 +194,25 @@ mod tests {
     }
     #[test]
     fn test_method_network_u128() {
-        assert_eq!(ipv6::from_int(BigUint::from_str("42540766411282592856903984951653826560")
-                                      .unwrap(),
-                                  64)
-                       .unwrap(),
-                   setup().ip.network());
+        assert_eq!(
+            ipv6::from_int(
+                BigUint::from_str("42540766411282592856903984951653826560").unwrap(),
+                64
+            )
+            .unwrap(),
+            setup().ip.network()
+        );
     }
     #[test]
     fn test_method_broadcast_u128() {
-        assert_eq!(ipv6::from_int(BigUint::from_str("42540766411282592875350729025363378175")
-                                      .unwrap(),
-                                  64)
-                       .unwrap(),
-                   setup().ip.broadcast());
+        assert_eq!(
+            ipv6::from_int(
+                BigUint::from_str("42540766411282592875350729025363378175").unwrap(),
+                64
+            )
+            .unwrap(),
+            setup().ip.broadcast()
+        );
     }
     #[test]
     fn test_method_size() {
@@ -235,42 +265,72 @@ mod tests {
     #[test]
     fn test_method_reverse() {
         let str = "f.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.0.0.0.5.0.5.0.e.f.f.3.ip6.arpa";
-        assert_eq!(str,
-                   IPAddress::parse("3ffe:505:2::f").unwrap().dns_reverse());
+        assert_eq!(
+            str,
+            IPAddress::parse("3ffe:505:2::f").unwrap().dns_reverse()
+        );
     }
     #[test]
     fn test_method_dns_rev_domains() {
-        assert_eq!(IPAddress::parse("f000:f100::/3").unwrap().dns_rev_domains(),
-                   ["e.ip6.arpa", "f.ip6.arpa"]);
-        assert_eq!(IPAddress::parse("fea3:f120::/15").unwrap().dns_rev_domains(),
-                   ["2.a.e.f.ip6.arpa", "3.a.e.f.ip6.arpa"]);
-        assert_eq!(IPAddress::parse("3a03:2f80:f::/48").unwrap().dns_rev_domains(),
-                   ["f.0.0.0.0.8.f.2.3.0.a.3.ip6.arpa"]);
+        assert_eq!(
+            IPAddress::parse("f000:f100::/3").unwrap().dns_rev_domains(),
+            ["e.ip6.arpa", "f.ip6.arpa"]
+        );
+        assert_eq!(
+            IPAddress::parse("fea3:f120::/15")
+                .unwrap()
+                .dns_rev_domains(),
+            ["2.a.e.f.ip6.arpa", "3.a.e.f.ip6.arpa"]
+        );
+        assert_eq!(
+            IPAddress::parse("3a03:2f80:f::/48")
+                .unwrap()
+                .dns_rev_domains(),
+            ["f.0.0.0.0.8.f.2.3.0.a.3.ip6.arpa"]
+        );
 
-        assert_eq!(IPAddress::parse("f000:f100::1234/125").unwrap().dns_rev_domains(),
-                   ["0.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                    "1.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                    "2.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                    "3.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                    "4.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                    "5.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                    "6.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
-                    "7.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa"]);
+        assert_eq!(
+            IPAddress::parse("f000:f100::1234/125")
+                .unwrap()
+                .dns_rev_domains(),
+            [
+                "0.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "1.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "2.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "3.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "4.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "5.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "6.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa",
+                "7.3.2.1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.f.0.0.0.f.ip6.arpa"
+            ]
+        );
     }
     #[test]
     fn test_method_compressed() {
-        assert_eq!("1:1:1::1",
-                   IPAddress::parse("1:1:1:0:0:0:0:1").unwrap().to_s());
-        assert_eq!("1:0:1::1",
-                   IPAddress::parse("1:0:1:0:0:0:0:1").unwrap().to_s());
-        assert_eq!("1::1:1:1:2:3:1",
-                   IPAddress::parse("1:0:1:1:1:2:3:1").unwrap().to_s());
-        assert_eq!("1::1:1:0:2:3:1",
-                   IPAddress::parse("1:0:1:1::2:3:1").unwrap().to_s());
-        assert_eq!("1:0:0:1::1",
-                   IPAddress::parse("1:0:0:1:0:0:0:1").unwrap().to_s());
-        assert_eq!("1::1:0:0:1",
-                   IPAddress::parse("1:0:0:0:1:0:0:1").unwrap().to_s());
+        assert_eq!(
+            "1:1:1::1",
+            IPAddress::parse("1:1:1:0:0:0:0:1").unwrap().to_s()
+        );
+        assert_eq!(
+            "1:0:1::1",
+            IPAddress::parse("1:0:1:0:0:0:0:1").unwrap().to_s()
+        );
+        assert_eq!(
+            "1::1:1:1:2:3:1",
+            IPAddress::parse("1:0:1:1:1:2:3:1").unwrap().to_s()
+        );
+        assert_eq!(
+            "1::1:1:0:2:3:1",
+            IPAddress::parse("1:0:1:1::2:3:1").unwrap().to_s()
+        );
+        assert_eq!(
+            "1:0:0:1::1",
+            IPAddress::parse("1:0:0:1:0:0:0:1").unwrap().to_s()
+        );
+        assert_eq!(
+            "1::1:0:0:1",
+            IPAddress::parse("1:0:0:0:1:0:0:1").unwrap().to_s()
+        );
         assert_eq!("1::1", IPAddress::parse("1:0:0:0:0:0:0:1").unwrap().to_s());
         // assert_eq!("1:1::1:2:0:0:1", IPAddress::parse("1:1:0:1:2::1").unwrap().to_s
     }
@@ -296,34 +356,40 @@ mod tests {
         let ip = IPAddress::parse("2001:db8::4/125").unwrap();
         let arr = Arc::new(Mutex::new(Vec::new()));
         ip.each(|i| arr.lock().unwrap().push(i.to_s()));
-        assert_eq!(*arr.lock().unwrap().deref(),
-                   ["2001:db8::",
-                    "2001:db8::1",
-                    "2001:db8::2",
-                    "2001:db8::3",
-                    "2001:db8::4",
-                    "2001:db8::5",
-                    "2001:db8::6",
-                    "2001:db8::7"]);
+        assert_eq!(
+            *arr.lock().unwrap().deref(),
+            [
+                "2001:db8::",
+                "2001:db8::1",
+                "2001:db8::2",
+                "2001:db8::3",
+                "2001:db8::4",
+                "2001:db8::5",
+                "2001:db8::6",
+                "2001:db8::7"
+            ]
+        );
     }
     #[test]
     fn test_method_each_net() {
-        let test_addrs = vec!["0000:0000:0000:0000:0000:0000:0000:0000",
-                                  "1111:1111:1111:1111:1111:1111:1111:1111",
-                                  "2222:2222:2222:2222:2222:2222:2222:2222",
-                                  "3333:3333:3333:3333:3333:3333:3333:3333",
-                                  "4444:4444:4444:4444:4444:4444:4444:4444",
-                                  "5555:5555:5555:5555:5555:5555:5555:5555",
-                                  "6666:6666:6666:6666:6666:6666:6666:6666",
-                                  "7777:7777:7777:7777:7777:7777:7777:7777",
-                                  "8888:8888:8888:8888:8888:8888:8888:8888",
-                                  "9999:9999:9999:9999:9999:9999:9999:9999",
-                                  "aaaa:aaaa:aaaa:aaaa:aaaa:aaaa:aaaa:aaaa",
-                                  "bbbb:bbbb:bbbb:bbbb:bbbb:bbbb:bbbb:bbbb",
-                                  "cccc:cccc:cccc:cccc:cccc:cccc:cccc:cccc",
-                                  "dddd:dddd:dddd:dddd:dddd:dddd:dddd:dddd",
-                                  "eeee:eeee:eeee:eeee:eeee:eeee:eeee:eeee",
-                                  "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"];
+        let test_addrs = vec![
+            "0000:0000:0000:0000:0000:0000:0000:0000",
+            "1111:1111:1111:1111:1111:1111:1111:1111",
+            "2222:2222:2222:2222:2222:2222:2222:2222",
+            "3333:3333:3333:3333:3333:3333:3333:3333",
+            "4444:4444:4444:4444:4444:4444:4444:4444",
+            "5555:5555:5555:5555:5555:5555:5555:5555",
+            "6666:6666:6666:6666:6666:6666:6666:6666",
+            "7777:7777:7777:7777:7777:7777:7777:7777",
+            "8888:8888:8888:8888:8888:8888:8888:8888",
+            "9999:9999:9999:9999:9999:9999:9999:9999",
+            "aaaa:aaaa:aaaa:aaaa:aaaa:aaaa:aaaa:aaaa",
+            "bbbb:bbbb:bbbb:bbbb:bbbb:bbbb:bbbb:bbbb",
+            "cccc:cccc:cccc:cccc:cccc:cccc:cccc:cccc",
+            "dddd:dddd:dddd:dddd:dddd:dddd:dddd:dddd",
+            "eeee:eeee:eeee:eeee:eeee:eeee:eeee:eeee",
+            "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+        ];
         for prefix in 0..128 {
             let nr_networks = 1 << ((128 - prefix) % 4);
             for adr in test_addrs.clone() {
@@ -331,8 +397,14 @@ mod tests {
                 let ret = net_adr.dns_networks();
                 assert_eq!(ret.first().unwrap().prefix.num % 4, 0);
                 assert_eq!(ret.len(), nr_networks);
-                assert_eq!(net_adr.network().to_s(), ret.first().unwrap().network().to_s());
-                assert_eq!(net_adr.broadcast().to_s(), ret.last().unwrap().broadcast().to_s());
+                assert_eq!(
+                    net_adr.network().to_s(),
+                    ret.first().unwrap().network().to_s()
+                );
+                assert_eq!(
+                    net_adr.broadcast().to_s(),
+                    ret.last().unwrap().broadcast().to_s()
+                );
                 //        puts "//{adr}///{prefix} //{nr_networks} //{ret}"
             }
         }
@@ -377,11 +449,15 @@ mod tests {
         for i in r {
             ret.push(i.to_string());
         }
-        assert_eq!(ret,
-                   ["2001:db8:1::1/64",
-                    "2001:db8:1::1/65",
-                    "2001:db8:1::2/64",
-                    "2001:db8:2::1/64"]);
+        assert_eq!(
+            ret,
+            [
+                "2001:db8:1::1/64",
+                "2001:db8:1::1/65",
+                "2001:db8:1::2/64",
+                "2001:db8:2::1/64"
+            ]
+        );
     }
 
     // fn test_classmethod_expand() {
@@ -397,24 +473,34 @@ mod tests {
         let compressed = "2001:db8:0:cd30::";
         let expanded = "2001:0db8:0000:cd30:0000:0000:0000:0000";
         assert_eq!(compressed, IPAddress::parse(expanded).unwrap().to_s());
-        assert_eq!("2001:db8::cd3",
-                   IPAddress::parse("2001:0db8:0::cd3").unwrap().to_s());
-        assert_eq!("2001:db8::cd30",
-                   IPAddress::parse("2001:0db8::cd30").unwrap().to_s());
-        assert_eq!("2001:db8::cd3",
-                   IPAddress::parse("2001:0db8::cd3").unwrap().to_s());
+        assert_eq!(
+            "2001:db8::cd3",
+            IPAddress::parse("2001:0db8:0::cd3").unwrap().to_s()
+        );
+        assert_eq!(
+            "2001:db8::cd30",
+            IPAddress::parse("2001:0db8::cd30").unwrap().to_s()
+        );
+        assert_eq!(
+            "2001:db8::cd3",
+            IPAddress::parse("2001:0db8::cd3").unwrap().to_s()
+        );
     }
     #[test]
     fn test_classhmethod_parse_u128() {
         for (ip, num) in setup().valid_ipv6 {
             println!(">>>{}==={}", ip, num);
-            assert_eq!(IPAddress::parse(String::from(ip)).unwrap().to_s(),
-                       ipv6::from_int(num, 128).unwrap().to_s());
+            assert_eq!(
+                IPAddress::parse(String::from(ip)).unwrap().to_s(),
+                ipv6::from_int(num, 128).unwrap().to_s()
+            );
         }
     }
     #[test]
     fn test_classmethod_parse_hex() {
-        assert_eq!(setup().ip.to_string(),
-                   ipv6::from_str(setup().hex, 16, 64).unwrap().to_string());
+        assert_eq!(
+            setup().ip.to_string(),
+            ipv6::from_str(setup().hex, 16, 64).unwrap().to_string()
+        );
     }
 }

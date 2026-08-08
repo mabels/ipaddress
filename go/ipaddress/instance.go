@@ -149,24 +149,24 @@ func (self *IPAddress) From(addr *big.Int, prefix *Prefix) *IPAddress {
 	return padr
 }
 
-/// True if the object is an IPv4 address
-///
-///   ip = IPAddress("192.168.10.100/24")
-///
-///   ip.ipv4?
-///     //-> true
-///
+// / True if the object is an IPv4 address
+// /
+// /   ip = IPAddress("192.168.10.100/24")
+// /
+// /   ip.ipv4?
+// /     //-> true
+// /
 func (self *IPAddress) Is_ipv4() bool {
 	return self.Ip_bits.Version == FamilyV4
 }
 
-/// True if the object is an IPv6 address
-///
-///   ip = IPAddress("192.168.10.100/24")
-///
-///   ip.ipv6?
-///     //-> false
-///
+// / True if the object is an IPv6 address
+// /
+// /   ip = IPAddress("192.168.10.100/24")
+// /
+// /   ip.ipv6?
+// /     //-> false
+// /
 func (self *IPAddress) Is_ipv6() bool {
 	return self.Ip_bits.Version == FamilyV6
 }
@@ -184,14 +184,14 @@ func (self *IPAddress) Parts_hex_str() []string {
 	return ret
 }
 
-///  Returns the IP address in in-addr.arpa format
-///  for DNS Domain definition entries like SOA Records
-///
-///    ip = IPAddress("172.17.100.50/15")
-///
-///    ip.dns_rev_domains
-///      // => ["16.172.in-addr.arpa","17.172.in-addr.arpa"]
-///
+// /  Returns the IP address in in-addr.arpa format
+// /  for DNS Domain definition entries like SOA Records
+// /
+// /    ip = IPAddress("172.17.100.50/15")
+// /
+// /    ip.dns_rev_domains
+// /      // => ["16.172.in-addr.arpa","17.172.in-addr.arpa"]
+// /
 func (self *IPAddress) Dns_rev_domains() []string {
 	dnet := self.Dns_networks()
 	ret := make([]string, len(dnet))
@@ -316,23 +316,23 @@ func (self *IPAddress) Is_mapped() bool {
 ///     ///  true
 ///
 
-///  Set a new prefix number for the object
-///
-///  This is useful if you want to change the prefix
-///  to an object created with IPv4::parse_u32 or
-///  if the object was created using the classful
-///  mask.
-///
-///    ip = IPAddress("172.16.100.4")
-///
-///    puts ip
-///      ///  172.16.100.4/16
-///
-///    ip.Prefix = 22
-///
-///    puts ip
-///      ///  172.16.100.4/22
-///
+// /  Set a new prefix number for the object
+// /
+// /  This is useful if you want to change the prefix
+// /  to an object created with IPv4::parse_u32 or
+// /  if the object was created using the classful
+// /  mask.
+// /
+// /    ip = IPAddress("172.16.100.4")
+// /
+// /    puts ip
+// /      ///  172.16.100.4/16
+// /
+// /    ip.Prefix = 22
+// /
+// /    puts ip
+// /      ///  172.16.100.4/22
+// /
 func (self *IPAddress) Change_prefix(num uint8) ResultIPAddress {
 	prefix := self.Prefix.From(num)
 	if prefix.IsErr() {
@@ -497,25 +497,25 @@ func (self *IPAddress) Add(other *IPAddress) *[]*IPAddress {
 	return Aggregate(&[]*IPAddress{self, other})
 }
 
-///  Returns a new IPv4 object with the
-///  first host IP address in the range.
-///
-///  Example: given the 192.168.100.0/24 network, the first
-///  host IP address is 192.168.100.1.
-///
-///    ip = IPAddress("192.168.100.0/24")
-///
-///    ip.first.to_s
-///      ///  "192.168.100.1"
-///
-///  The object IP doesn't need to be a network: the method
-///  automatically gets the network number from it
-///
-///    ip = IPAddress("192.168.100.50/24")
-///
-///    ip.first.to_s
-///      ///  "192.168.100.1"
-///
+// /  Returns a new IPv4 object with the
+// /  first host IP address in the range.
+// /
+// /  Example: given the 192.168.100.0/24 network, the first
+// /  host IP address is 192.168.100.1.
+// /
+// /    ip = IPAddress("192.168.100.0/24")
+// /
+// /    ip.first.to_s
+// /      ///  "192.168.100.1"
+// /
+// /  The object IP doesn't need to be a network: the method
+// /  automatically gets the network number from it
+// /
+// /    ip = IPAddress("192.168.100.50/24")
+// /
+// /    ip.first.to_s
+// /      ///  "192.168.100.1"
+// /
 func (self *IPAddress) First() *IPAddress {
 	ha := self.Network().Host_address
 	return self.From(big.NewInt(0).Add(&ha, &self.Ip_bits.Host_ofs), &self.Prefix)

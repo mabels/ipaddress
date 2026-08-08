@@ -15,22 +15,20 @@ public class Prefix128 {
   //
   //#[allow(unused_comparisons)]
   public class func create(_ num: UInt8) -> Prefix? {
-    if (num <= 128) {
-      let ip_bits = IpBits.v6();
-      let bits = ip_bits.bits;
-      return  Prefix(
+    if num <= 128 {
+      let ip_bits = IpBits.v6()
+      let bits = ip_bits.bits
+      return Prefix(
         num: num,
         ip_bits: ip_bits,
         net_mask: Prefix.new_netmask(num, bits),
-        vt_from: Prefix128.from // vt_to_ip_str: _TO_IP_STR
-      );
+        vt_from: Prefix128.from  // vt_to_ip_str: _TO_IP_STR
+      )
     }
-    return nil;
+    return nil
   }
-  
+
   public class func from(_ my: Prefix, _ num: UInt8) -> Prefix? {
-    return Prefix128.create(num);
+    return Prefix128.create(num)
   }
 }
-
-

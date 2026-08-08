@@ -10,12 +10,11 @@ using namespace cascara;
 using namespace ipaddress;
 
 class IPv6UnspecifiedTest {
-public:
+ public:
   IPAddress ip = Ipv6Unspec::create();
-  const char *to_s = "::";
-  const char *to_string = "::/128";
-  const char *to_string_uncompressed =
-      "0000:0000:0000:0000:0000:0000:0000:0000/128";
+  const char* to_s = "::";
+  const char* to_string = "::/128";
+  const char* to_string_uncompressed = "0000:0000:0000:0000:0000:0000:0000:0000/128";
   Crunchy num = Crunchy::zero();
 };
 
@@ -29,12 +28,9 @@ int main() {
       assert.equal(true, setup().ip.is_unspecified());
       assert.equal(setup().to_s, setup().ip.to_s());
       assert.equal(setup().to_string, setup().ip.to_string());
-      assert.equal(setup().to_string_uncompressed,
-                         setup().ip.to_string_uncompressed());
+      assert.equal(setup().to_string_uncompressed, setup().ip.to_string_uncompressed());
     });
-    it("test_method_ipv6", []() {
-      assert.equal(true, setup().ip.is_ipv6());
-    });
+    it("test_method_ipv6", []() { assert.equal(true, setup().ip.is_ipv6()); });
   });
   return exit();
 }

@@ -2,7 +2,6 @@ package com.adviser.ipaddress.kotlin
 
 import java.io.IOException
 
-
 /**
  * Created by menabe on 19.06.17.
  */
@@ -39,7 +38,5 @@ class Result<T>(val value: T?, val msg: String?) {
         fun <T> Err(str: String): Result<T> {
             return Result<T>(null, str)
         }
-
     }
 }
-

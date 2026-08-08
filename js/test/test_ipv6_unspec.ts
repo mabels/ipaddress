@@ -29,7 +29,7 @@ class IPv6UnspecifiedTest {
 describe("ipv6_unspec", () => {
   function setup(): IPv6UnspecifiedTest {
     return new IPv6UnspecifiedTest({
-      ip: Ipv6Unspec.create(),
+      ip: Ipv6Unspec.create()!,
       to_s: "::",
       to_string: "::/128",
       to_string_uncompressed: "0000:0000:0000:0000:0000:0000:0000:0000/128",

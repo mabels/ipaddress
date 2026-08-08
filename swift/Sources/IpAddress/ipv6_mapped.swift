@@ -1,5 +1,6 @@
 //
 import BigInt
+
 //import IpBits from './ip_bits';
 //import IPAddress from './ipaddress';
 
@@ -82,77 +83,77 @@ public class Ipv6Mapped {
   //
   public class func create(_ str: String) -> IPAddress? {
     // console.log("mapped-1");
-    let (ip, o_netmask) = IPAddress.split_at_slash(str);
-    let split_colon = ip.components(separatedBy: ":");
-    if (split_colon.count <= 1) {
+    let (ip, o_netmask) = IPAddress.split_at_slash(str)
+    let split_colon = ip.components(separatedBy: ":")
+    if split_colon.count <= 1 {
       // console.log("mapped-2");
-      return nil;
+      return nil
     }
     // if split_colon.get(0).unwrap().len() > 0 {
     //     // println!("---1a");
     //     return Err(format!("not mapped format-2: {}", &str));
     // }
     // let mapped: Option<IPAddress> = None;
-    var netmask = "";
-    if (o_netmask != nil) {
-      netmask = "/\(o_netmask!)";
+    var netmask = ""
+    if o_netmask != nil {
+      netmask = "/\(o_netmask!)"
     }
-    let ipv4_str = split_colon[split_colon.count - 1];
-    if (IPAddress.is_valid_ipv4(ipv4_str)) {
-      let ipv4 = IPAddress.parse("\(ipv4_str)\(netmask)");
-      if (ipv4 == nil) {
+    let ipv4_str = split_colon[split_colon.count - 1]
+    if IPAddress.is_valid_ipv4(ipv4_str) {
+      let ipv4 = IPAddress.parse("\(ipv4_str)\(netmask)")
+      if ipv4 == nil {
         // console.log("mapped-3");
-        return ipv4;
+        return ipv4
       }
       //mapped = Some(ipv4.unwrap());
-      let addr = ipv4!;
-      let ipv6_bits = IpBits.v6();
-      let part_mod = BigUInt(ipv6_bits.part_mod);
-      let up_addr = addr.host_address;
-      let down_addr = addr.host_address;
-      
-      var rebuild_ipv6 = "";
-      var colon = "";
-      for i in stride(from: 0, to: split_colon.count-1, by: 1) {
-        rebuild_ipv6 += colon;
-        rebuild_ipv6 += split_colon[i];
-        colon = ":";
+      let addr = ipv4!
+      let ipv6_bits = IpBits.v6()
+      let part_mod = BigUInt(ipv6_bits.part_mod)
+      let up_addr = addr.host_address
+      let down_addr = addr.host_address
+
+      var rebuild_ipv6 = ""
+      var colon = ""
+      for i in stride(from: 0, to: split_colon.count - 1, by: 1) {
+        rebuild_ipv6 += colon
+        rebuild_ipv6 += split_colon[i]
+        colon = ":"
       }
-      rebuild_ipv6 += colon;
-      let high_part = String((up_addr >> Int(IpBits.v6().part_bits)) % part_mod, radix: 16);
-      let low_part = String(down_addr % part_mod, radix: 16);
-      let bits = ipv6_bits.bits - addr.prefix.host_prefix();
-      let rebuild_ipv4 = "\(high_part):\(low_part)/\(bits)";
-      rebuild_ipv6 += rebuild_ipv4;
-      
+      rebuild_ipv6 += colon
+      let high_part = String((up_addr >> Int(IpBits.v6().part_bits)) % part_mod, radix: 16)
+      let low_part = String(down_addr % part_mod, radix: 16)
+      let bits = ipv6_bits.bits - addr.prefix.host_prefix()
+      let rebuild_ipv4 = "\(high_part):\(low_part)/\(bits)"
+      rebuild_ipv6 += rebuild_ipv4
+
       // console.log("-----A", rebuild_ipv6, part_mod);
-      let r_ipv6 = IPAddress.parse(rebuild_ipv6);
-      if (r_ipv6 == nil) {
+      let r_ipv6 = IPAddress.parse(rebuild_ipv6)
+      if r_ipv6 == nil {
         // println!("---3|{}", &rebuild_ipv6);
         // console.log("mapped-4");
-        return r_ipv6;
+        return r_ipv6
       }
-      if (r_ipv6!.is_mapped()) {
+      if r_ipv6!.is_mapped() {
         // console.log("mapped-5");
-        return r_ipv6;
+        return r_ipv6
       }
-      let ipv6 = r_ipv6!;
-      let p96bit = ipv6.host_address >> 32;
-      if (p96bit != BigUInt(0)) {
+      let ipv6 = r_ipv6!
+      let p96bit = ipv6.host_address >> 32
+      if p96bit != BigUInt(0) {
         // println!("---4|{}", &rebuild_ipv6);
         //console.log("mapped-6",ipv6.host_address, p96bit, BigUInt(0));
-        return nil;
+        return nil
       }
-      let rr_ipv6 = IPAddress.parse("::ffff:\(rebuild_ipv4)");
-      if (rr_ipv6 == nil) {
+      let rr_ipv6 = IPAddress.parse("::ffff:\(rebuild_ipv4)")
+      if rr_ipv6 == nil {
         // println!("---3|{}", &rebuild_ipv6);
         //console.log("mapped-7");
-        return nil;
+        return nil
       }
       // console.log("mapped-8");
-      return rr_ipv6;
+      return rr_ipv6
     }
     // console.log("mapped-9");
-    return nil;
+    return nil
   }
 }

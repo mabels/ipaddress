@@ -1,8 +1,7 @@
+# require_relative '../ipaddress'
+require_relative "ipv6"
 
-#require_relative '../ipaddress'
-require_relative 'ipv6'
-
-require_relative 'crunchy'
+require_relative "crunchy"
 
 class IPAddress
   class Ipv6Loopback
@@ -49,8 +48,8 @@ class IPAddress
     #    ip.to_string
     #      # => "::1/128"
     #
-    def self.create()
-      return Ipv6.from_number(Crunchy.one(), 128);
+    def self.create
+      Ipv6.from_number(Crunchy.one, 128)
     end
   end
 end

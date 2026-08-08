@@ -29,11 +29,11 @@ describe("prefix128", () => {
     for (let i = 0; i < 64; ++i) {
       str += "0";
     }
-    assert.equal(str, prefix.bits());
+    assert.equal(str, prefix!.bits());
   });
   it("test_method_to_u32", () => {
     for (const hash of setup().u128_hash) {
-      assert.isOk(hash[1].eq(Prefix128.create(hash[0]).netmask()));
+      assert.isOk(hash[1].eq(Prefix128.create(hash[0])!.netmask()));
     }
   });
 });

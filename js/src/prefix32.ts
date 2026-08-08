@@ -3,7 +3,11 @@ import IpBits from "./ip_bits.js";
 
 const Prefix32 = {
   from(my: Prefix, num: number): Prefix {
-    return Prefix32.create(num)!;
+    const ret = Prefix32.create(num);
+    if (ret === null) {
+      throw new Error(`invalid ipv4 prefix: ${num}`);
+    }
+    return ret;
   },
 
   create(num: number): Prefix | null {

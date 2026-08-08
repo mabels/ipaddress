@@ -12,7 +12,12 @@ class Rle:
         return f"<Rle@part:{self.part},pos:{self.pos},cnt:{self.cnt},max:{self.max}>"
 
     def eq(self, other: "Rle") -> bool:
-        return self.part == other.part and self.pos == other.pos and self.cnt == other.cnt and self.max == other.max
+        return (
+            self.part == other.part
+            and self.pos == other.pos
+            and self.cnt == other.cnt
+            and self.max == other.max
+        )
 
     def ne(self, other: "Rle") -> bool:
         return not self.eq(other)

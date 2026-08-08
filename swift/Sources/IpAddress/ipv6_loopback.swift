@@ -1,4 +1,3 @@
-
 //import IPAddress from './ipaddress';
 //import Ipv6 from './ipv6';
 //
@@ -49,6 +48,6 @@ public class Ipv6Loopback {
   //      // => "::1/128"
   //
   public class func create() -> IPAddress {
-    return Ipv6.from_int(BigUInt(1), 128)!;
+    return Ipv6.from_int(BigUInt(1), 128)!
   }
 }

@@ -8,10 +8,12 @@ interface VtFrom {
 }
 */
 
-class Prefix(val num: Int,
-                    val ip_bits: IpBits,
-                    val net_mask: BigInteger,
-                    val vt_from: (p: Prefix, n: Int) -> Result<Prefix>) {
+class Prefix(
+    val num: Int,
+    val ip_bits: IpBits,
+    val net_mask: BigInteger,
+    val vt_from: (p: Prefix, n: Int) -> Result<Prefix>
+) {
 
     companion object {
         fun new_netmask(prefix: Int, bits: Int): BigInteger {
@@ -30,11 +32,11 @@ class Prefix(val num: Int,
 
     fun equal(other: Prefix): Boolean {
         return this.ip_bits.version == other.ip_bits.version &&
-                this.num == other.num
+            this.num == other.num
     }
 
     fun inspect(): String {
-        return "Prefix: ${num}"
+        return "Prefix: $num"
     }
 
     fun compare(oth: Prefix): Int {
@@ -65,7 +67,6 @@ class Prefix(val num: Int,
         return BigInteger.ONE.shiftLeft(this.ip_bits.bits - this.num)
     }
 
-
     fun netmask(): BigInteger {
         return BigInteger.ZERO.add(this.net_mask)
     }
@@ -74,15 +75,15 @@ class Prefix(val num: Int,
         return this.num
     }
 
-    ///  The hostmask is the contrary of the subnet mask,
-    ///  as it shows the bits that can change within the
-    ///  hosts
-    ///
-    ///    prefix = IPAddress::Prefix32.new 24
-    ///
-    ///    prefix.hostmask
-    ///      ///  "0.0.0.255"
-    ///
+    // /  The hostmask is the contrary of the subnet mask,
+    // /  as it shows the bits that can change within the
+    // /  hosts
+    // /
+    // /    prefix = IPAddress::Prefix32.new 24
+    // /
+    // /    prefix.hostmask
+    // /      ///  "0.0.0.255"
+    // /
     fun host_mask(): BigInteger {
         var ret = BigInteger.ZERO
         for (i in 0 until this.ip_bits.bits - this.num) {
@@ -91,29 +92,29 @@ class Prefix(val num: Int,
         return ret
     }
 
-    ///
-    ///  Returns the length of the host portion
-    ///  of a netmask.
-    ///
-    ///    prefix = Prefix128.new 96
-    ///
-    ///    prefix.host_prefix
-    ///      ///  128
-    ///
+    // /
+    // /  Returns the length of the host portion
+    // /  of a netmask.
+    // /
+    // /    prefix = Prefix128.new 96
+    // /
+    // /    prefix.host_prefix
+    // /      ///  128
+    // /
     fun host_prefix(): Int {
         return this.ip_bits.bits - this.num
     }
 
-    ///
-    ///  Transforms the prefix into a string of bits
-    ///  representing the netmask
-    ///
-    ///    prefix = IPAddress::Prefix128.new 64
-    ///
-    ///    prefix.bits
-    ///      ///  "1111111111111111111111111111111111111111111111111111111111111111"
-    ///          "0000000000000000000000000000000000000000000000000000000000000000"
-    ///
+    // /
+    // /  Transforms the prefix into a string of bits
+    // /  representing the netmask
+    // /
+    // /    prefix = IPAddress::Prefix128.new 64
+    // /
+    // /    prefix.bits
+    // /      ///  "1111111111111111111111111111111111111111111111111111111111111111"
+    // /          "0000000000000000000000000000000000000000000000000000000000000000"
+    // /
     fun bits(): String {
         return this.netmask().toString(2)
     }
@@ -144,5 +145,4 @@ class Prefix(val num: Int,
         }
         return this.from(this.get_prefix() - other)
     }
-
 }

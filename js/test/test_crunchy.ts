@@ -4,21 +4,21 @@ describe("#compare", function () {
   it("Should confirm equality", function () {
     const x = Crunchy.from_string("12345678901234567890");
     const y = Crunchy.from_string("12345678901234567890");
-    assert.isTrue(x.eq(y));
+    assert.isTrue(x!.eq(y!));
     // this.done();
   });
 
   it("Should find first is greater than second", function () {
     const x = Crunchy.from_string("12345678901234567890");
     const y = Crunchy.from_string("1234567890");
-    assert.isTrue(x.gt(y));
+    assert.isTrue(x!.gt(y!));
     // this.done();
   });
 
   it("Should find first is less than second", function () {
     const x = Crunchy.from_string("1234567890");
     const y = Crunchy.from_string("12345678901234567890");
-    assert.isTrue(x.lt(y));
+    assert.isTrue(x!.lt(y!));
     // this.done();
   });
 });
@@ -151,7 +151,7 @@ describe("#add-from_string", function () {
     const y = Crunchy.from_string("12345678901234567890");
     // console.log(new Date(), x, y);
     // console.log("addddddd:", new Date(), x, x.toString(), y, y.toString(), x.add(y).toString());
-    assert.equal(x.add(y).toString(), "24691357812469135781");
+    assert.equal(x!.add(y!).toString(), "24691357812469135781");
     // console.log(new Date());
     // this.done();
   });
@@ -159,42 +159,42 @@ describe("#add-from_string", function () {
   it("Should add numbers, first longer than second", function () {
     const x = Crunchy.from_string("12345678901234567890");
     const y = Crunchy.from_string("1234567890");
-    assert.equal(x.add(y).toString(), "12345678902469135780");
+    assert.equal(x!.add(y!).toString(), "12345678902469135780");
     // this.done();
   });
 
   it("Should add numbers, second longer than first", function () {
     const x = Crunchy.from_string("1234567890");
     const y = Crunchy.from_string("12345678901234567890");
-    assert.equal(x.add(y).toString(), "12345678902469135780");
+    assert.equal(x!.add(y!).toString(), "12345678902469135780");
     // this.done();
   });
 
   it("Should add two identical numbers", function () {
     const x = Crunchy.from_string("12345678901234567890");
     const y = Crunchy.from_string("12345678901234567890");
-    assert.equal(x.add(y).toString(), "24691357802469135780");
+    assert.equal(x!.add(y!).toString(), "24691357802469135780");
     // this.done();
   });
 
   it("Should add zero to number", function () {
     const x = Crunchy.from_string("12345678901234567890");
     const y = Crunchy.from_string("0");
-    assert.equal(x.add(y).toString(), "12345678901234567890");
+    assert.equal(x!.add(y!).toString(), "12345678901234567890");
     // this.done();
   });
 
   it("Should add number to zero", function () {
     const x = Crunchy.from_string("0");
     const y = Crunchy.from_string("12345678901234567890");
-    assert.equal(x.add(y).toString(), "12345678901234567890");
+    assert.equal(x!.add(y!).toString(), "12345678901234567890");
     // this.done();
   });
 
   it("Should add two zeros", function () {
     const x = Crunchy.from_string("0");
     const y = Crunchy.from_string("0");
-    assert.equal(x.add(y).toString(), "0");
+    assert.equal(x!.add(y!).toString(), "0");
     // this.done();
   });
 });
@@ -381,49 +381,49 @@ describe("#div", function () {
     const x = Crunchy.from_8bit([52, 155, 168, 23, 6, 85]);
     const y = Crunchy.from_8bit([19, 26, 247]);
 
-    assert.deepEqual(x.div(y).to_8bit(), [2, 192, 234, 136]);
+    assert.deepEqual(x.div(y)!.to_8bit(), [2, 192, 234, 136]);
   });
 
   it("Should divide by one", function () {
     const x = Crunchy.from_8bit([15, 127, 73, 1]);
     const y = Crunchy.from_8bit([1]);
 
-    assert.deepEqual(x.div(y).to_8bit(), [15, 127, 73, 1]);
+    assert.deepEqual(x.div(y)!.to_8bit(), [15, 127, 73, 1]);
   });
 
   it("Should divide by self", function () {
     const x = Crunchy.from_8bit([15, 127, 73, 1]);
     const y = Crunchy.from_8bit([15, 127, 73, 1]);
 
-    assert.deepEqual(x.div(y).to_8bit(), [1]);
+    assert.deepEqual(x.div(y)!.to_8bit(), [1]);
   });
 
   it("Should divide negative number", function () {
     const x = Crunchy.from_8bit([-170, 153, 136]);
     const y = Crunchy.from_8bit([17, 68]);
 
-    assert.deepEqual(x.div(y).to_8bit(), [-9, 225]);
+    assert.deepEqual(x.div(y)!.to_8bit(), [-9, 225]);
   });
 
   it("Should divide by negative number", function () {
     const x = Crunchy.from_8bit([170, 153, 136, 119, 102, 85]);
     const y = Crunchy.from_8bit([-17, 68]);
 
-    assert.deepEqual(x.div(y).to_8bit(), [-9, 225, 129, 255, 9]);
+    assert.deepEqual(x.div(y)!.to_8bit(), [-9, 225, 129, 255, 9]);
   });
 
   it("Should divide two negative numbers", function () {
     const x = Crunchy.from_8bit([-52, 155, 168, 23, 6, 85]);
     const y = Crunchy.from_8bit([-19, 26, 247]);
 
-    assert.deepEqual(x.div(y).to_8bit(), [2, 192, 234, 136]);
+    assert.deepEqual(x.div(y)!.to_8bit(), [2, 192, 234, 136]);
   });
 
   it("Should divide zero", function () {
     const x = Crunchy.from_8bit([0]);
     const y = Crunchy.from_8bit([17, 68]);
 
-    assert.deepEqual(x.div(y).to_8bit(), [0]);
+    assert.deepEqual(x.div(y)!.to_8bit(), [0]);
   });
 
   it("Shouldn't divide by zero", function () {

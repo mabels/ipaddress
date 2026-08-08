@@ -4,22 +4,23 @@ import org.junit.Test
 import java.math.BigInteger
 import kotlin.test.assertEquals
 
-class IPv6LoopbackTest(val ip: IPAddress,
-                       val s: String,
-                       val n: String,
-                       val string: String,
-                       val one: BigInteger) {
-}
+class IPv6LoopbackTest(
+    val ip: IPAddress,
+    val s: String,
+    val n: String,
+    val string: String,
+    val one: BigInteger
+)
 
 class TestIpv6Loopback {
 
     fun setup(): IPv6LoopbackTest {
         return IPv6LoopbackTest(
-                Ipv6Loopback.create(),
-                "::1",
-                "::1/128",
-                "0000:0000:0000:0000:0000:0000:0000:0001/128",
-                BigInteger.ONE
+            Ipv6Loopback.create(),
+            "::1",
+            "::1/128",
+            "0000:0000:0000:0000:0000:0000:0000:0001/128",
+            BigInteger.ONE
         )
     }
 

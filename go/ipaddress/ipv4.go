@@ -111,7 +111,7 @@ func Ipv4New(str string) ResultIPAddress {
 		ipv4_to_ipv6}}
 }
 
-var ipv4_private_networks_val []*IPAddress;
+var ipv4_private_networks_val []*IPAddress
 
 func ipv4_private_networks() *[]*IPAddress {
 	if ipv4_private_networks_val == nil {
@@ -154,49 +154,46 @@ func ipv4_to_ipv6(ia *IPAddress) *IPAddress {
 	return ret
 }
 
-//  Checks whether the ip address belongs to a
-//  RFC 791 CLASS A network, no matter
-//  what the subnet mask is.
+// Checks whether the ip address belongs to a
+// RFC 791 CLASS A network, no matter
+// what the subnet mask is.
 //
-//  Example:
+// Example:
 //
-//    ip = IPAddress("10.0.0.1/24")
+//	ip = IPAddress("10.0.0.1/24")
 //
-//    ip.a?
-//      // => true
-//
+//	ip.a?
+//	  // => true
 func Is_class_a(my *IPAddress) bool {
 	return my.Is_ipv4() && my.Host_address.Cmp(big.NewInt(0x80000000)) < 0
 }
 
-//  Checks whether the ip address belongs to a
-//  RFC 791 CLASS B network, no matter
-//  what the subnet mask is.
+// Checks whether the ip address belongs to a
+// RFC 791 CLASS B network, no matter
+// what the subnet mask is.
 //
-//  Example:
+// Example:
 //
-//    ip = IPAddress("172.16.10.1/24")
+//	ip = IPAddress("172.16.10.1/24")
 //
-//    ip.b?
-//      // => true
-//
+//	ip.b?
+//	  // => true
 func Is_class_b(my *IPAddress) bool {
 	return my.Is_ipv4() &&
 		big.NewInt(0x80000000).Cmp(&my.Host_address) <= 0 &&
 		my.Host_address.Cmp(big.NewInt(0xc0000000)) < 0
 }
 
-//  Checks whether the ip address belongs to a
-//  RFC 791 CLASS C network, no matter
-//  what the subnet mask is.
+// Checks whether the ip address belongs to a
+// RFC 791 CLASS C network, no matter
+// what the subnet mask is.
 //
-//  Example:
+// Example:
 //
-//    ip = IPAddress("192.168.1.1/30")
+//	ip = IPAddress("192.168.1.1/30")
 //
-//    ip.c?
-//      // => true
-//
+//	ip.c?
+//	  // => true
 func Is_class_c(my *IPAddress) bool {
 	return my.Is_ipv4() &&
 		big.NewInt(0xc0000000).Cmp(&my.Host_address) <= 0 &&
@@ -338,28 +335,27 @@ func Is_class_c(my *IPAddress) bool {
 //   IPAddress.summarize(args)
 // end
 
-//  Creates a new IPv4 address object by parsing the
-//  address in a classful way.
+// Creates a new IPv4 address object by parsing the
+// address in a classful way.
 //
-//  Classful addresses have a fixed netmask based on the
-//  class they belong to:
+// Classful addresses have a fixed netmask based on the
+// class they belong to:
 //
-//  * Class A, from 0.0.0.0 to 127.255.255.255
-//  * Class B, from 128.0.0.0 to 191.255.255.255
-//  * Class C, D and E, from 192.0.0.0 to 255.255.255.254
+// * Class A, from 0.0.0.0 to 127.255.255.255
+// * Class B, from 128.0.0.0 to 191.255.255.255
+// * Class C, D and E, from 192.0.0.0 to 255.255.255.254
 //
-//  Example:
+// Example:
 //
-//    ip = IPAddress::IPv4.parse_classful "10.0.0.1"
+//	ip = IPAddress::IPv4.parse_classful "10.0.0.1"
 //
-//    ip.netmask
-//      // => "255.0.0.0"
-//    ip.a?
-//      // => true
+//	ip.netmask
+//	  // => "255.0.0.0"
+//	ip.a?
+//	  // => true
 //
-//  Note that classes C, D and E will all have a default
-//  prefix of /24 or 255.255.255.0
-//
+// Note that classes C, D and E will all have a default
+// prefix of /24 or 255.255.255.0
 func Parse_classful(ip_si string) ResultIPAddress {
 	if !Is_valid_ipv4(ip_si) {
 		tmp := fmt.Sprintf("Invalid IP %s", ip_si)

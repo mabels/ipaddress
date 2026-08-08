@@ -4,9 +4,18 @@ import IPAddress from "./ipaddress.js";
 import IpBits from "./ip_bits.js";
 import Prefix128 from "./prefix128.js";
 import Ipv6 from "./ipv6.js";
+import Prefix from "./prefix.js";
+
+function prefix32_or_throw(num: number): Prefix {
+  const ret = Prefix32.create(num);
+  if (ret === null) {
+    throw new Error(`invalid ipv4 prefix: ${num}`);
+  }
+  return ret;
+}
 
 export const Ipv4 = {
-  from_number(addr: Crunchy, prefix_num: number): IPAddress {
+  from_number(addr: Crunchy, prefix_num: number): IPAddress | null {
     const prefix = Prefix32.create(prefix_num);
     if (!prefix) {
       return null;
@@ -22,7 +31,7 @@ export const Ipv4 = {
     });
   },
 
-  create(str: string): IPAddress {
+  create(str: string): IPAddress | null {
     // console.log("create:v4:", str);
     // let enable = str == "0.0.0.0/0";
     const tmp = IPAddress.split_at_slash(str);
@@ -32,7 +41,7 @@ export const Ipv4 = {
       // enable && console.log("xx1");
       return null;
     }
-    let ip_prefix_num = 32;
+    let ip_prefix_num: number | null = 32;
     if (netmask) {
       //  netmask is defined
       ip_prefix_num = IPAddress.parse_netmask_to_prefix(netmask);
@@ -67,23 +76,27 @@ export const Ipv4 = {
   ipv4_is_private(my: IPAddress): boolean {
     return (
       [
-        IPAddress.parse("10.0.0.0/8"),
-        IPAddress.parse("169.254.0.0/16"),
-        IPAddress.parse("172.16.0.0/12"),
-        IPAddress.parse("192.168.0.0/16"),
+        IPAddress.parse_or_throw("10.0.0.0/8"),
+        IPAddress.parse_or_throw("169.254.0.0/16"),
+        IPAddress.parse_or_throw("172.16.0.0/12"),
+        IPAddress.parse_or_throw("192.168.0.0/16"),
       ].find((i) => i.includes(my)) != null
     );
   },
 
   ipv4_is_loopback(my: IPAddress): boolean {
-    return IPAddress.parse("127.0.0.0/8").includes(my);
+    return IPAddress.parse_or_throw("127.0.0.0/8").includes(my);
   },
 
   to_ipv6(ia: IPAddress): IPAddress {
+    const prefix = Prefix128.create(ia.prefix.num);
+    if (prefix === null) {
+      throw new Error(`invalid ipv6 prefix: ${ia.prefix.num}`);
+    }
     return new IPAddress({
       ip_bits: IpBits.v6(),
       host_address: ia.host_address.clone(),
-      prefix: Prefix128.create(ia.prefix.num),
+      prefix,
       mapped: null,
       vt_is_private: Ipv6.ipv6_is_private,
       vt_is_loopback: Ipv6.ipv6_is_loopback,
@@ -103,8 +116,8 @@ export const Ipv4 = {
   //      // => true
   //
   is_class_a(my: IPAddress): boolean {
-    // console.log("is_class_a:", my.to_string(), Crunchy.from_string("80000000", 16), my.is_ipv4());
-    return my.is_ipv4() && my.host_address.lt(Crunchy.from_string("80000000", 16));
+    // console.log("is_class_a:", my.to_string(), Crunchy.from_string_or_throw("80000000", 16), my.is_ipv4());
+    return my.is_ipv4() && my.host_address.lt(Crunchy.from_string_or_throw("80000000", 16));
   },
 
   //  Checks whether the ip address belongs to a
@@ -121,8 +134,8 @@ export const Ipv4 = {
   is_class_b(my: IPAddress): boolean {
     return (
       my.is_ipv4() &&
-      Crunchy.from_string("80000000", 16).lte(my.host_address) &&
-      my.host_address.lt(Crunchy.from_string("c0000000", 16))
+      Crunchy.from_string_or_throw("80000000", 16).lte(my.host_address) &&
+      my.host_address.lt(Crunchy.from_string_or_throw("c0000000", 16))
     );
   },
 
@@ -140,8 +153,8 @@ export const Ipv4 = {
   is_class_c(my: IPAddress): boolean {
     return (
       my.is_ipv4() &&
-      Crunchy.from_string("c0000000", 16).lte(my.host_address) &&
-      my.host_address.lt(Crunchy.from_string("e0000000", 16))
+      Crunchy.from_string_or_throw("c0000000", 16).lte(my.host_address) &&
+      my.host_address.lt(Crunchy.from_string_or_throw("e0000000", 16))
     );
   },
 
@@ -167,7 +180,7 @@ export const Ipv4 = {
   //  Note that classes C, D and E will all have a default
   //  prefix of /24 or 255.255.255.0
   //
-  parse_classful(ip_si: string): IPAddress {
+  parse_classful(ip_si: string): IPAddress | null {
     if (!IPAddress.is_valid_ipv4(ip_si)) {
       return null;
     }
@@ -177,11 +190,11 @@ export const Ipv4 = {
     }
     const ip = o_ip;
     if (Ipv4.is_class_a(ip)) {
-      ip.prefix = Prefix32.create(8);
+      ip.prefix = prefix32_or_throw(8);
     } else if (Ipv4.is_class_b(ip)) {
-      ip.prefix = Prefix32.create(16);
+      ip.prefix = prefix32_or_throw(16);
     } else if (Ipv4.is_class_c(ip)) {
-      ip.prefix = Prefix32.create(24);
+      ip.prefix = prefix32_or_throw(24);
     }
     return ip;
   },

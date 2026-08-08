@@ -36,7 +36,7 @@ class IPv6MappedTest {
 describe("ipv6_mapped", () => {
   function setup(): IPv6MappedTest {
     const ipv6 = new IPv6MappedTest({
-      ip: Ipv6Mapped.create("::172.16.10.1"),
+      ip: Ipv6Mapped.create("::172.16.10.1")!,
       s: "::ffff:172.16.10.1",
       sstr: "::ffff:172.16.10.1/32",
       string: "0000:0000:0000:0000:0000:ffff:ac10:0a01/128",
@@ -66,21 +66,21 @@ describe("ipv6_mapped", () => {
         // console.log(IPAddress.parse(ip));
       }
       assert.isOk(IPAddress.parse(ip));
-      assert.equal(u128.toString(), IPAddress.parse(ip).host_address.toString());
+      assert.equal(u128.toString(), IPAddress.parse(ip)!.host_address.toString());
     }
     for (const i of s.valid_mapped_ipv6) {
       const ip = i[0];
       const u128 = i[1];
       // println("===={}=={:x}", ip, u128);
       assert.isOk(IPAddress.parse(ip));
-      assert.equal(u128.toString(), IPAddress.parse(ip).host_address.toString());
+      assert.equal(u128.toString(), IPAddress.parse(ip)!.host_address.toString());
     }
   });
   it("test_mapped_from_ipv6_conversion", () => {
     for (const i of setup().valid_mapped_ipv6_conversion) {
       const ip6 = i[0];
       const ip4 = i[1];
-      assert.equal(ip4, IPAddress.parse(ip6).mapped.to_s());
+      assert.equal(ip4, IPAddress.parse(ip6)!.mapped!.to_s());
     }
   });
   it("test_attributes", () => {

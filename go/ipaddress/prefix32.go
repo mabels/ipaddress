@@ -6,14 +6,14 @@ func Prefix32From(my *Prefix, num uint8) ResultPrefix {
 	return Prefix32New(num)
 }
 
-///  Gives the prefix in IPv4 dotted decimal format,
-///  i.e. the canonical netmask we're all used to
-///
-///    prefix = IPAddress::prefix::Prefix32.new 24
-///
-///    prefix.to_ip
-///      ///  "255.255.255.0"
-///
+// /  Gives the prefix in IPv4 dotted decimal format,
+// /  i.e. the canonical netmask we're all used to
+// /
+// /    prefix = IPAddress::prefix::Prefix32.new 24
+// /
+// /    prefix.to_ip
+// /      ///  "255.255.255.0"
+// /
 func Prefix32New(num uint8) ResultPrefix {
 	if num <= 32 {
 		ipBits := IpBitsV4()

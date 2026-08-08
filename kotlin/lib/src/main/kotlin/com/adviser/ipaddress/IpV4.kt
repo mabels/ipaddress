@@ -7,12 +7,11 @@ val xc0000000: BigInteger = BigInteger.valueOf(3221225472L)
 val xe0000000: BigInteger = BigInteger.valueOf(3758096384L)
 
 val is_private = arrayOf(
-        IPAddress.parse("10.0.0.0/8").unwrap(),
-        IPAddress.parse("169.254.0.0/16").unwrap(),
-        IPAddress.parse("172.16.0.0/12").unwrap(),
-        IPAddress.parse("192.168.0.0/16").unwrap()
+    IPAddress.parse("10.0.0.0/8").unwrap(),
+    IPAddress.parse("169.254.0.0/16").unwrap(),
+    IPAddress.parse("172.16.0.0/12").unwrap(),
+    IPAddress.parse("192.168.0.0/16").unwrap()
 )
-
 
 class IpV4 {
     companion object {
@@ -23,11 +22,14 @@ class IpV4 {
 
         val to_ipv6: VtIPAddress = { ia ->
             IPAddress(
-                    IpBits.V6,
-                    BigInteger.ZERO.add(ia.host_address),
-                    Prefix128.create(ia.prefix.num).unwrap(),
-                    null,
-                    IpV6.ipv6_is_private, IpV6.ipv6_is_loopback, IpV6.ipv6_to_ipv6)
+                IpBits.V6,
+                BigInteger.ZERO.add(ia.host_address),
+                Prefix128.create(ia.prefix.num).unwrap(),
+                null,
+                IpV6.ipv6_is_private,
+                IpV6.ipv6_is_loopback,
+                IpV6.ipv6_to_ipv6
+            )
         }
 
         fun from_u32(addr: Long, _prefix: Int): Result<IPAddress> {
@@ -35,7 +37,8 @@ class IpV4 {
             if (prefix.isErr()) {
                 return Result.Err(prefix.unwrapErr())
             }
-            return Result.Ok(IPAddress(
+            return Result.Ok(
+                IPAddress(
                     IpBits.V4,
                     BigInteger.valueOf(addr),
                     prefix.unwrap(),
@@ -43,7 +46,8 @@ class IpV4 {
                     ipv4_is_private,
                     ipv4_is_loopback,
                     to_ipv6
-            ))
+                )
+            )
         }
 
         fun create(str: String): Result<IPAddress> {
@@ -58,7 +62,7 @@ class IpV4 {
                 if (ip_prefix_num.isErr()) {
                     return Result.Err(ip_prefix_num.unwrapErr())
                 }
-                //if ip_prefix.ip_bits.version
+                // if ip_prefix.ip_bits.version
             }
             val ip_prefix = Prefix32.create(ip_prefix_num.unwrap())
             if (ip_prefix.isErr()) {
@@ -68,11 +72,17 @@ class IpV4 {
             if (split_u32.isErr()) {
                 return Result.Err(split_u32.unwrapErr())
             }
-            return Result.Ok(IPAddress(IpBits.V4,
+            return Result.Ok(
+                IPAddress(
+                    IpBits.V4,
                     BigInteger.valueOf(split_u32.unwrap()),
                     ip_prefix.unwrap(),
                     null,
-                    ipv4_is_private, ipv4_is_loopback, to_ipv6))
+                    ipv4_is_private,
+                    ipv4_is_loopback,
+                    to_ipv6
+                )
+            )
         }
 
         //  Checks whether the ip address belongs to a
@@ -86,7 +96,6 @@ class IpV4 {
         //    ip.a?
         //      // => true
         //
-
 
         fun is_class_a(my: IPAddress): Boolean {
             return my.is_ipv4() && my.host_address.compareTo(x80000000) < 0
@@ -107,8 +116,8 @@ class IpV4 {
         //      // => true
         //
         fun is_class_b(my: IPAddress): Boolean {
-            return my.is_ipv4() && x80000000.compareTo(my.host_address) <= 0
-                    && my.host_address.compareTo(xc0000000) < 0
+            return my.is_ipv4() && x80000000.compareTo(my.host_address) <= 0 &&
+                my.host_address.compareTo(xc0000000) < 0
         }
         //  Checks whether the ip address belongs to a
 
@@ -126,10 +135,9 @@ class IpV4 {
         //
 
         fun is_class_c(my: IPAddress): Boolean {
-            return my.is_ipv4() && xc0000000.compareTo(my.host_address) <= 0
-                    && my.host_address.compareTo(xe0000000) < 0
+            return my.is_ipv4() && xc0000000.compareTo(my.host_address) <= 0 &&
+                my.host_address.compareTo(xe0000000) < 0
         }
-
 
         // pub fn is_private(my: &IPAddress) -> bool {
         //     for i in vec![IPv4::new("10.0.0.0/8"),
@@ -148,7 +156,6 @@ class IpV4 {
         //     return false
 
         // }
-
 
         // pub fn dns_reverse(my: &IPAddress) {
 
@@ -177,7 +184,6 @@ class IpV4 {
 
         //        value & 0xff)
 
-
         // }
 
         //  Returns the address portion of the IPv4 object
@@ -196,7 +202,6 @@ class IpV4 {
 
         //   return self.address
         // }
-
 
         //  Returns the prefix portion of the IPv4 object
 
@@ -221,7 +226,6 @@ class IpV4 {
 
         //   return self.prefix
         // }
-
 
         //  Set a new prefix number for the object
         //
@@ -256,7 +260,6 @@ class IpV4 {
         //   self.prefix = Prefix32::new(num)
         // }
 
-
         //  Returns the address as an array of decimal values
         //
 
@@ -270,7 +273,6 @@ class IpV4 {
 
         //   self.octets
         // }
-
 
         //  Returns a string with the address portion of
         //  the IPv4 object
@@ -295,7 +297,6 @@ class IpV4 {
         //   self.address
         // }
 
-
         //  Returns a string with the IP address in canonical
         //  form.
         //
@@ -318,7 +319,6 @@ class IpV4 {
 
         //
 
-
         //    ip = IPAddress("172.16.100.4/22")
         //
 
@@ -331,7 +331,6 @@ class IpV4 {
         // }
 
         //  Like IPv4// prefix=, this method allow you to
-
 
         //  change the prefix / netmask of an IP address
         //  object.
@@ -435,7 +434,6 @@ class IpV4 {
 
         //      // => 16
 
-
         //    ip[2]
         //      // => 100
         //    ip[3]
@@ -462,7 +460,6 @@ class IpV4 {
 
         //    ip.bits
 
-
         //      // => "01111111000000000000000000000001"
         //
         // pub fn bits(&self) {
@@ -482,7 +479,6 @@ class IpV4 {
 
         // pub fn broadcast(&self) {
 
-
         //   IPv4::parse_u32(self.broadcast_u32, self.prefix)
         // }
 
@@ -499,7 +495,6 @@ class IpV4 {
         //    ip = IPAddress("172.16.10.64/26")
         //
         //    ip.network?
-
 
         //      // => true
         //
@@ -521,7 +516,6 @@ class IpV4 {
         //
         // pub fn network()
 
-
         //   self.class.parse_u32(self.network_u32, prefix)
         //
 
@@ -538,7 +532,6 @@ class IpV4 {
         //    ip = IPAddress("192.168.100.0/24")
         //
         //    ip.first.to_s
-
 
         //      // => "192.168.100.1"
         //
@@ -573,7 +566,6 @@ class IpV4 {
 
         //    ip = IPAddress("192.168.100.0/24")
         //
-
 
         //    ip.last.to_s
         //      // => "192.168.100.254"
@@ -650,7 +642,6 @@ class IpV4 {
 
         //      // => "10.0.0.3"
 
-
         //      // => "10.0.0.4"
         //      // => "10.0.0.5"
 
@@ -682,7 +673,6 @@ class IpV4 {
         //  For example, 10.100.100.1 will be considered
 
         //  to be less than 172.16.0.1, because, in a ordered list,
-
 
         //  we expect 10.100.100.1 to come before 172.16.0.1.
         //
@@ -753,7 +743,6 @@ class IpV4 {
         //    ip = IPAddress("10.0.0.1/29")
         //
 
-
         //    ip.hosts.map {|i| i.address}
         //      // => ["10.0.0.1",
 
@@ -771,7 +760,6 @@ class IpV4 {
 
         //   self.to_a[1..-2]
         // }
-
 
         //  Returns the network number in Unsigned 32bits format
         //
@@ -801,7 +789,6 @@ class IpV4 {
 
         // pub fn broadcast_u32(&self) {
 
-
         //   self.network_u32 + self.size - 1
         // }
 
@@ -819,7 +806,6 @@ class IpV4 {
         //
         //    ip.include? addr
 
-
         //      // => true
         //
         //    ip.include? IPAddress("172.16.0.48/16")
@@ -833,7 +819,6 @@ class IpV4 {
 
         //   self.network_u32 == (oth.to_u32() & self.prefix.to_u32())
         // }
-
 
         //  Checks whether a subnet includes all the
         //  given IPv4 objects.
@@ -866,7 +851,6 @@ class IpV4 {
         //
         //    ip = IPAddress "10.1.1.1/24"
 
-
         //    ip.private?
         //      // => true
         //
@@ -888,7 +872,6 @@ class IpV4 {
 
         //      self.octets.get(3), self.octets.get(2),
 
-
         //      self.octets.get(1), self.octets.get(0))
         // }
         // pub fn arpa(&self) {
@@ -901,7 +884,6 @@ class IpV4 {
 
         //  for DNS Domain definition entries like SOA Records
         //
-
 
         //    ip = IPAddress("172.17.100.50/15")
         //
@@ -924,7 +906,6 @@ class IpV4 {
         // } else if (self.prefix.num > 24) { //  edge case class c
 
         //     cut = 1
-
 
         //     net = [network.supernet(24)]
         // }
@@ -963,7 +944,6 @@ class IpV4 {
 
         //      // => ["172.16.10.0/26",
         //           "172.16.10.64/26",
-
 
         //           "172.16.10.128/26",
         //           "172.16.10.192/26"]
@@ -1040,7 +1020,6 @@ class IpV4 {
         //      // => "172.16.8.0/22"
         //
 
-
         //  If +new_prefix+ is less than 1, returns 0.0.0.0/0
         //
 
@@ -1092,7 +1071,6 @@ class IpV4 {
 
         //  The resulting number of subnets will of course always be
 
-
         //  a power of two.
         //
 
@@ -1124,7 +1102,6 @@ class IpV4 {
         //      // => "ac10:0a01"
         //
 
-
         // pub fn to_ipv6(my: &IPAddress) {
 
         //     let part_mod = BigUint::one() << 16
@@ -1145,7 +1122,6 @@ class IpV4 {
         //    ip.to_string
 
         //      // => "10.0.0.0/8"
-
 
         //
         //  The +prefix+ parameter is optional:
@@ -1171,7 +1147,6 @@ class IpV4 {
 
         //  is represented with the binary "\254\020\n\001".
         //
-
 
         //    ip = IPAddress::IPv4::parse_data "\254\020\n\001"
 
@@ -1236,7 +1211,6 @@ class IpV4 {
         //     original networks
 
         //
-
 
         //  A few examples will help clarify the above. Let's consider for
         //  instance the following two networks:
@@ -1349,7 +1323,7 @@ class IpV4 {
         //
         fun parse_classful(ip_s: String): Result<IPAddress> {
             if (!IPAddress.is_valid_ipv4(ip_s)) {
-                return Result.Err("Invalid IP ${ip_s}")
+                return Result.Err("Invalid IP $ip_s")
             }
             val o_ip = IPAddress.parse(ip_s)
             if (o_ip.isErr()) {

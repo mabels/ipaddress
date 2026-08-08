@@ -54,7 +54,14 @@ def test_module_method_valid_ipv4_netmark():
 
 def test_summarize():
     netstr = []
-    for start, target in [(1, 10), (11, 127), (128, 169), (170, 172), (173, 192), (193, 224)]:
+    for start, target in [
+        (1, 10),
+        (11, 127),
+        (128, 169),
+        (170, 172),
+        (173, 192),
+        (193, 224),
+    ]:
         for i in range(start, target):
             netstr.append(f"{i}.0.0.0/8")
     for i in range(256):
@@ -69,11 +76,20 @@ def test_summarize():
     ip_addresses = [IPAddress.parse(net) for net in netstr]
 
     assert len(IPAddress.summarize_str([])) == 0
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize_str(["10.1.0.4/24"])), ["10.1.0.0/24"])
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize_str(["2000:1::4711/32"])), ["2000:1::/32"])
+    assert_array_equal(
+        IPAddress.to_string_vec(IPAddress.summarize_str(["10.1.0.4/24"])),
+        ["10.1.0.0/24"],
+    )
+    assert_array_equal(
+        IPAddress.to_string_vec(IPAddress.summarize_str(["2000:1::4711/32"])),
+        ["2000:1::/32"],
+    )
 
     assert_array_equal(
-        IPAddress.to_string_vec(IPAddress.summarize_str(["10.1.0.4/24", "7.0.0.0/0", "1.2.3.4/4"])), ["0.0.0.0/0"]
+        IPAddress.to_string_vec(
+            IPAddress.summarize_str(["10.1.0.4/24", "7.0.0.0/0", "1.2.3.4/4"])
+        ),
+        ["0.0.0.0/0"],
     )
     assert_array_equal(
         IPAddress.to_string_vec(
@@ -114,15 +130,24 @@ def test_summarize():
     )
 
     assert_array_equal(
-        IPAddress.to_string_vec(IPAddress.summarize_str(["10.0.0.0/23", "10.0.2.0/24"])),
+        IPAddress.to_string_vec(
+            IPAddress.summarize_str(["10.0.0.0/23", "10.0.2.0/24"])
+        ),
         ["10.0.0.0/23", "10.0.2.0/24"],
     )
     assert_array_equal(
-        IPAddress.to_string_vec(IPAddress.summarize_str(["10.0.0.0/24", "10.0.1.0/24", "10.0.2.0/23"])),
+        IPAddress.to_string_vec(
+            IPAddress.summarize_str(["10.0.0.0/24", "10.0.1.0/24", "10.0.2.0/23"])
+        ),
         ["10.0.0.0/22"],
     )
 
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize_str(["10.0.0.0/16", "10.0.2.0/24"])), ["10.0.0.0/16"])
+    assert_array_equal(
+        IPAddress.to_string_vec(
+            IPAddress.summarize_str(["10.0.0.0/16", "10.0.2.0/24"])
+        ),
+        ["10.0.0.0/16"],
+    )
 
     cnt = 10
     for _ in range(cnt):
@@ -178,6 +203,9 @@ def test_summarize():
     # test immutable input parameters
     a1 = IPAddress.parse("10.0.0.1/24")
     a2 = IPAddress.parse("10.0.1.1/24")
-    assert_array_equal(IPAddress.to_string_vec(IPAddress.summarize([a1.clone(), a2.clone()])), ["10.0.0.0/23"])
+    assert_array_equal(
+        IPAddress.to_string_vec(IPAddress.summarize([a1.clone(), a2.clone()])),
+        ["10.0.0.0/23"],
+    )
     assert "10.0.0.1/24" == a1.to_string()
     assert "10.0.1.1/24" == a2.to_string()

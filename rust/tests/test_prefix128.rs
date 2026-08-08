@@ -1,4 +1,3 @@
-
 extern crate ipaddress;
 extern crate num;
 
@@ -7,32 +6,33 @@ extern crate num;
 #[cfg(test)]
 mod tests {
     use ipaddress::prefix128;
-    use std::collections::HashMap;
     use num::bigint::BigUint;
-
+    use std::collections::HashMap;
 
     pub struct Prefix128Test {
         pub u128_hash: HashMap<usize, BigUint>,
     }
 
     pub fn setup() -> Prefix128Test {
-        let mut p128t = Prefix128Test { u128_hash: HashMap::new() };
-        p128t.u128_hash.insert(32,
-                               BigUint::parse_bytes(b"340282366841710300949110269838224261120",
-                                                    10)
-                                   .unwrap());
-        p128t.u128_hash.insert(64,
-                               BigUint::parse_bytes(b"340282366920938463444927863358058659840",
-                                                    10)
-                                   .unwrap());
-        p128t.u128_hash.insert(96,
-                               BigUint::parse_bytes(b"340282366920938463463374607427473244160",
-                                                    10)
-                                   .unwrap());
-        p128t.u128_hash.insert(126,
-                               BigUint::parse_bytes(b"340282366920938463463374607431768211452",
-                                                    10)
-                                   .unwrap());
+        let mut p128t = Prefix128Test {
+            u128_hash: HashMap::new(),
+        };
+        p128t.u128_hash.insert(
+            32,
+            BigUint::parse_bytes(b"340282366841710300949110269838224261120", 10).unwrap(),
+        );
+        p128t.u128_hash.insert(
+            64,
+            BigUint::parse_bytes(b"340282366920938463444927863358058659840", 10).unwrap(),
+        );
+        p128t.u128_hash.insert(
+            96,
+            BigUint::parse_bytes(b"340282366920938463463374607427473244160", 10).unwrap(),
+        );
+        p128t.u128_hash.insert(
+            126,
+            BigUint::parse_bytes(b"340282366920938463463374607431768211452", 10).unwrap(),
+        );
         return p128t;
     }
 

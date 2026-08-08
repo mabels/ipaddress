@@ -1,4 +1,3 @@
-
 use ipaddress::IPAddress;
 use num::bigint::BigUint;
 use num_traits::One;

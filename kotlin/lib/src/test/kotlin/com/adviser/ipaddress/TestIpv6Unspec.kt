@@ -1,26 +1,27 @@
 package com.adviser.ipaddress.kotlin
 
-import kotlin.test.Test
 import java.math.BigInteger
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class IPv6UnspecifiedTest(
-        val ip: IPAddress,
-        val to_s: String,
-        val to_string: String,
-        val to_string_uncompressed: String,
-        val num: BigInteger) {
-}
+    val ip: IPAddress,
+    val to_s: String,
+    val to_string: String,
+    val to_string_uncompressed: String,
+    val num: BigInteger
+)
 
 class TestIpv6Unspec {
 
     public fun setup(): IPv6UnspecifiedTest {
         return IPv6UnspecifiedTest(
-                Ipv6Unspec.create(),
-                "::",
-                "::/128",
-                "0000:0000:0000:0000:0000:0000:0000:0000/128",
-                BigInteger.ZERO)
+            Ipv6Unspec.create(),
+            "::",
+            "::/128",
+            "0000:0000:0000:0000:0000:0000:0000:0000/128",
+            BigInteger.ZERO
+        )
     }
 
     @Test
@@ -30,8 +31,10 @@ class TestIpv6Unspec {
         assertEquals(true, setup().ip.is_unspecified())
         assertEquals(setup().to_s, setup().ip.to_s())
         assertEquals(setup().to_string, setup().ip.to_string())
-        assertEquals(setup().to_string_uncompressed,
-                setup().ip.to_string_uncompressed())
+        assertEquals(
+            setup().to_string_uncompressed,
+            setup().ip.to_string_uncompressed()
+        )
     }
 
     @Test
