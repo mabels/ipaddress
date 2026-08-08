@@ -268,13 +268,13 @@ jobs:
         echo "publishing jsr version $version"
         sed -i "s/\"version\": \".*\"/\"version\": \"$version\"/" jsr.json
         cat jsr.json
-        npx -y jsr publish --allow-slow-types
+        npx -y jsr publish --allow-slow-types --allow-dirty
 
     - name: dry-publish
       if: steps.version.outputs.should_publish != 'true'
       working-directory: js
       run: |
-        npx -y jsr publish --allow-slow-types --dry-run
+        npx -y jsr publish --allow-slow-types --dry-run --allow-dirty
 
   kotlin:
     runs-on: ['ubuntu-latest']
@@ -435,12 +435,12 @@ jobs:
       working-directory: rust
       env:
         CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
-      run: cargo publish
+      run: cargo publish --allow-dirty
 
     - name: dry-publish
       if: steps.version.outputs.should_publish != 'true'
       working-directory: rust
-      run: cargo publish --dry-run
+      run: cargo publish --dry-run --allow-dirty
 
   swift:
     runs-on: ['ubuntu-latest']
