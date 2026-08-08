@@ -22,7 +22,12 @@ jobs:
     - name: "build cpp"
       run: |
         cd cpp && echo "build cpp"
-        find src test -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) -print0 | xargs -0 clang-format --dry-run --Werror
+        # Pinned explicitly: clang-format's formatting output differs
+        # between major versions (e.g. reference/pointer spacing in
+        # `operator<<` signatures changed between 16/17 and 18), and
+        # the unversioned `clang-format` alias on this runner image is
+        # ambiguous between the 16/17/18 it has installed.
+        find src test -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) -print0 | xargs -0 clang-format-18 --dry-run --Werror
         cmake -DCMAKE_BUILD_TYPE=Release .
         make
         for i in ./test/Release/*/test_*
