@@ -65,14 +65,14 @@ export class Crunchy {
   }
 
   public static parse(val: string): Crunchy {
-    return Crunchy.from_string(val, 10);
+    return Crunchy.from_string(val, 10)!;
   }
 
   public static from_number(val: number): Crunchy {
     return Crunchy.parse("" + val);
   }
 
-  public static from_string(val: string, radix = 10): Crunchy {
+  public static from_string(val: string, radix = 10): Crunchy | null {
     const x = val.split("");
     let p = Crunchy.one();
     let a = Crunchy.zero();
@@ -87,7 +87,7 @@ export class Crunchy {
       x.shift();
     }
     while (x.length > 0) {
-      const c = parseInt(x.pop(), radix);
+      const c = parseInt(x.pop()!, radix);
       if (isNaN(c)) {
         console.error("from_string:", val);
         return null;
@@ -368,7 +368,7 @@ export class Crunchy {
     return ret;
   }
 
-  public static msb(x: number): number {
+  public static msb(x: number): number | undefined {
     if (x !== 0) {
       let z = 0;
       for (let i = 134217728; i > x; z++) {
@@ -420,14 +420,14 @@ export class Crunchy {
   //   );
   // }
 
-  public div(y: Crunchy, internal = false): Crunchy {
+  public div(y: Crunchy, internal = false): Crunchy | null {
     if (y.num.length === 1 && y.num[0] === 0) {
       return null;
     }
     // var u, v, xt, yt, d, q, k, i, z;
     let u: Crunchy;
     let v: Crunchy;
-    const s = Crunchy.msb(y.num[0]) - 1;
+    const s = (Crunchy.msb(y.num[0]) ?? 0) - 1;
     if (s > 0) {
       u = this.lsh(s);
       v = y.lsh(s);
@@ -482,7 +482,7 @@ export class Crunchy {
     // For negative x, cmp doesn't work and result of div is negative
     // so take result away from the modulus to get the correct result
     if (this.negative) {
-      return y.sub(this.div(y, true));
+      return y.sub(this.div(y, true)!);
     }
     switch (this.compare(y)) {
       case -1:
@@ -490,7 +490,7 @@ export class Crunchy {
       case 0:
         return Crunchy.from_8bit([0]);
       default:
-        return this.div(y, true);
+        return this.div(y, true)!;
     }
   }
 
@@ -512,7 +512,7 @@ export class Crunchy {
     const zero = Crunchy.zero();
     do {
       const digit = x.mds(radix);
-      x = x.div(cradix);
+      x = x.div(cradix)!;
       a[i++] = "0123456789abcdef"[digit];
       // console.log("1-toString:", x, radix, digit, a.join(""));
       // console.log("2-toString:", x, radix, digit, a, Crunch.compare(x, Crunchy._zero.num));

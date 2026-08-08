@@ -43,16 +43,17 @@
     ]
   },
   "devDependencies": {
-    "@types/node": "^24.0.7",
-    "eslint": "9.21.0",
-    "prettier": "^3.6.2",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.0.0",
+    "eslint": "10.5.0",
+    "prettier": "^3.8.4",
     "standard": "^17.1.2",
-    "typescript": "^5.8.2",
-    "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.2.4"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.1",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.9"
   },
   "dependencies": {
-    "ts-standard": "^12.0.2",
-    "typescript-eslint": "^8.35.0"
+    "ts-standard": "^12.0.2"
   }
 }

@@ -28,7 +28,7 @@ export interface IPAddressParams {
   ip_bits: IpBits;
   host_address: Crunchy;
   prefix: Prefix;
-  mapped?: IPAddress;
+  mapped?: IPAddress | null;
   vt_is_private?: Is;
   vt_is_loopback?: Is;
   vt_to_ipv6?: ToIpv4;
@@ -38,23 +38,23 @@ export class IPAddress {
   ip_bits: IpBits;
   host_address: Crunchy;
   prefix: Prefix;
-  mapped: IPAddress;
-  vt_is_private: Is;
-  vt_is_loopback: Is;
-  vt_to_ipv6: ToIpv4;
+  mapped: IPAddress | null;
+  vt_is_private: Is | undefined;
+  vt_is_loopback: Is | undefined;
+  vt_to_ipv6: ToIpv4 | undefined;
 
   constructor(obj: IPAddressParams) {
     this.ip_bits = obj.ip_bits;
     this.host_address = obj.host_address;
     this.prefix = obj.prefix;
-    this.mapped = obj.mapped;
+    this.mapped = obj.mapped ?? null;
     this.vt_is_private = obj.vt_is_private;
     this.vt_is_loopback = obj.vt_is_loopback;
     this.vt_to_ipv6 = obj.vt_to_ipv6;
   }
 
   public clone(): IPAddress {
-    let mapped: IPAddress = null;
+    let mapped: IPAddress | null = null;
     if (this.mapped) {
       mapped = this.mapped.clone();
     }
@@ -136,7 +136,7 @@ export class IPAddress {
   //  ip_mapped.class
   //    //=> IPAddress.IPv6.Mapped
   //
-  public static parse(str: string): IPAddress {
+  public static parse(str: string): IPAddress | null {
     const re_mapped = new RegExp(":.+\\.");
     // const re_ipv4 = new RegExp('\\.')
     // const re_ipv6 = new RegExp(':')
@@ -155,7 +155,7 @@ export class IPAddress {
     return null;
   }
 
-  public static split_at_slash(str: string): [string, string] {
+  public static split_at_slash(str: string): [string, string | null] {
     const slash: string[] = str.trim().split("/");
     let addr = "";
     if (slash[0]) {
@@ -169,7 +169,7 @@ export class IPAddress {
   }
 
   public from(addr: Crunchy, prefix: Prefix): IPAddress {
-    let mapped: IPAddress = null;
+    let mapped: IPAddress | null = null;
     if (this.mapped) {
       mapped = this.mapped.clone();
     }
@@ -221,7 +221,7 @@ export class IPAddress {
     return IPAddress.is_valid_ipv4(addr) || IPAddress.is_valid_ipv6(addr);
   }
 
-  public static parse_dec_str(str: string): number {
+  public static parse_dec_str(str: string): number | null {
     const re_digit = new RegExp("^\\d+$");
     if (!re_digit.test(str)) {
       // console.log("parse_dec_str:-1:", str);
@@ -236,7 +236,7 @@ export class IPAddress {
     return part;
   }
 
-  public static parse_hex_str(str: string): number {
+  public static parse_hex_str(str: string): number | null {
     const re_digit = new RegExp("^[0-9a-fA-F]+$");
     if (!re_digit.test(str)) {
       return null;
@@ -258,7 +258,7 @@ export class IPAddress {
   //   IPAddress.valid_ipv4? "172.16.10.1"
   //     //=> true
   //
-  public static parse_ipv4_part(i: string): number {
+  public static parse_ipv4_part(i: string): number | null {
     const part = IPAddress.parse_dec_str(i);
     // console.log("i=", i, part);
     if (part === null || part >= 256) {
@@ -267,7 +267,7 @@ export class IPAddress {
     return part;
   }
 
-  public static split_to_u32(addr: string): Crunchy {
+  public static split_to_u32(addr: string): Crunchy | null {
     let ip = Crunchy.zero();
     let shift = 24;
     let split_addr = addr.split(".");
@@ -310,7 +310,7 @@ export class IPAddress {
   //   IPAddress.valid_ipv6? "2002.DEAD.BEEF"
   //     //=> false
   //
-  public static split_on_colon(addr: string): ResultCrunchyParts {
+  public static split_on_colon(addr: string): ResultCrunchyParts | null {
     const parts = addr.trim().split(":");
     let ip = Crunchy.zero();
     if (parts.length == 1 && parts[0].length == 0) {
@@ -330,7 +330,7 @@ export class IPAddress {
     return new ResultCrunchyParts(ip, parts_len);
   }
 
-  public static split_to_num(addr: string): ResultCrunchyParts {
+  public static split_to_num(addr: string): ResultCrunchyParts | null {
     // let ip = 0;
     const pre_post = addr.trim().split("::");
     if (pre_post.length > 2) {
@@ -719,7 +719,7 @@ export class IPAddress {
     return IPAddress.parse_netmask_to_prefix(addr) !== null;
   }
 
-  public static netmask_to_prefix(nm: Crunchy, bits: number): number {
+  public static netmask_to_prefix(nm: Crunchy, bits: number): number | null {
     let prefix = 0;
     let addr = nm.clone();
     let in_host_part = true;
@@ -739,7 +739,7 @@ export class IPAddress {
     return bits - prefix;
   }
 
-  public static parse_netmask_to_prefix(netmask: string): number {
+  public static parse_netmask_to_prefix(netmask: string): number | null {
     // console.log("--1", netmask);
     const is_number = IPAddress.parse_dec_str(netmask);
     if (is_number !== null) {
@@ -774,7 +774,7 @@ export class IPAddress {
   //    puts ip
   //      // => 172.16.100.4/22
   //
-  public change_prefix(num: number): IPAddress {
+  public change_prefix(num: number): IPAddress | null {
     const prefix = this.prefix.from(num);
     if (!prefix) {
       return null;
@@ -782,7 +782,7 @@ export class IPAddress {
     return this.from(this.host_address, prefix);
   }
 
-  public change_netmask(str: string): IPAddress {
+  public change_netmask(str: string): IPAddress | null {
     const nm = IPAddress.parse_netmask_to_prefix(str);
     if (!nm) {
       return null;
@@ -939,7 +939,7 @@ export class IPAddress {
     for (const ipstr of vec) {
       const ipa = IPAddress.parse(ipstr);
       if (!ipa) {
-        return null;
+        return [];
       }
       ret.push(ipa);
     }

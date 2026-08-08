@@ -14,7 +14,7 @@ const Prefix128 = {
   //      // => 64
   //
   // #[allow(unused_comparisons)]
-  create(num: number): Prefix {
+  create(num: number): Prefix | null {
     if (num <= 128) {
       // static _FROM: &'static (Fn(&Prefix, usize) -> Result<Prefix, String>) = &from;
       // static _TO_IP_STR: &'static (Fn(&Vec<u16>) -> String) = &Prefix128::to_ip_str;
@@ -31,7 +31,7 @@ const Prefix128 = {
   },
 
   from(my: Prefix, num: number): Prefix {
-    return Prefix128.create(num);
+    return Prefix128.create(num)!;
   },
 };
 

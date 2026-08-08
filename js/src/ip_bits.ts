@@ -8,15 +8,15 @@ export type ToString = (source: IpBits, num: Crunchy) => string;
 
 // #[derive(Debug, Clone)]
 export class IpBits {
-  version: IpVersion;
-  vt_as_compressed_string: ToString;
-  vt_as_uncompressed_string: ToString;
-  bits: number;
-  part_bits: number;
-  dns_bits: number;
-  rev_domain: string;
-  part_mod: number;
-  host_ofs: Crunchy; // ipv4=1, ipv6=0
+  version!: IpVersion;
+  vt_as_compressed_string!: ToString;
+  vt_as_uncompressed_string!: ToString;
+  bits!: number;
+  part_bits!: number;
+  dns_bits!: number;
+  rev_domain!: string;
+  part_mod!: number;
+  host_ofs!: Crunchy; // ipv4=1, ipv6=0
 
   public clone(): IpBits {
     // let my = new IpBits();
@@ -62,7 +62,7 @@ export class IpBits {
     }
   }
 
-  public static _v4: IpBits = null;
+  public static _v4: IpBits | null = null;
   public static v4(): IpBits {
     if (IpBits._v4) {
       return IpBits._v4;
@@ -81,7 +81,7 @@ export class IpBits {
     return my;
   }
 
-  public static _v6: IpBits = null;
+  public static _v6: IpBits | null = null;
   public static v6(): IpBits {
     if (IpBits._v6) {
       return IpBits._v6;

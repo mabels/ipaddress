@@ -15,3 +15,36 @@ js/ipaddress.js
 js/ipaddress.js.map
 js/LICENSE
 js/README.md
+js/.npmrc
+js/pnpm-lock.yaml
+js/pnpm-workspace.yaml
+
+# cpp
+cpp/.vscode/
+cpp/3rdparty/
+cpp/cascara-prefix/
+cpp/test/Release/
+
+# cs (.NET)
+cs/**/bin/
+cs/**/obj/
+cs/**/*.sln
+
+# dart
+dart/**/.dart_tool/
+dart/**/.packages
+
+# java
+java/target/
+
+# kotlin
+kotlin/.gradle/
+kotlin/.idea/
+kotlin/lib/build/
+kotlin/local.properties
+
+# python
+**/__pycache__/
+**/*.egg-info/
+**/.pytest_cache/
+python/.venv/

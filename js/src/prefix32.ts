@@ -3,10 +3,10 @@ import IpBits from "./ip_bits.js";
 
 const Prefix32 = {
   from(my: Prefix, num: number): Prefix {
-    return Prefix32.create(num);
+    return Prefix32.create(num)!;
   },
 
-  create(num: number): Prefix {
+  create(num: number): Prefix | null {
     if (num >= 0 && num <= 32) {
       // static _FROM: &'static (Fn(&::prefix::Prefix, usize) -> Result<::prefix::Prefix, String>) =
       // &from;
