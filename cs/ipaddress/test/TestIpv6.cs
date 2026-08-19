@@ -176,6 +176,14 @@ namespace address_test
         }
 
         [Fact]
+        public void test_method_first()
+        {
+            var ip = IPAddress.parse("fd00::10:12:80:0/124").unwrap();
+            Assert.Equal("fd00::10:12:80:1", ip.first().to_s());
+            Assert.Equal("fd00::10:12:80:f", ip.last().to_s());
+        }
+
+        [Fact]
         public void test_method_network_u128()
         {
             Assert.Equal(IpV6.from_int(BigInteger.Parse("42540766411282592856903984951653826560"), 64).unwrap(),

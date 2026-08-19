@@ -110,6 +110,13 @@ class Ipv6Tests: XCTestCase {
     XCTAssertEqual(true, setup().network.is_network())
     XCTAssertEqual(false, setup().ip.is_network())
   }
+  func test_method_first() {
+    // the zero host is the subnet-router anycast, NOT a usable unicast —
+    // first()/last() are the first/last USABLE hosts (:1/:f), 2026-08-19
+    let ip = IPAddress.parse("fd00::10:12:80:0/124")!
+    XCTAssertEqual("fd00::10:12:80:1", ip.first().to_s())
+    XCTAssertEqual("fd00::10:12:80:f", ip.last().to_s())
+  }
   func test_method_network_u128() {
     XCTAssertNotNil(
       Ipv6.from_int(BigUInt("42540766411282592856903984951653826560"), 64)!.eq(setup().ip.network())
@@ -371,6 +378,7 @@ class Ipv6Tests: XCTestCase {
       ("test_method_ipv4", test_method_ipv4),
       ("test_method_ipv6", test_method_ipv6),
       ("test_method_network_known", test_method_network_known),
+      ("test_method_first", test_method_first),
       ("test_method_network_u128", test_method_network_u128),
       ("test_method_broadcast_u128", test_method_broadcast_u128),
       ("test_method_size", test_method_size),

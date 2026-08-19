@@ -957,7 +957,10 @@ class IPAddress(
     // /      ///  "192.168.100.1"
     // /
     fun first(): IPAddress {
-        return this.from(this.network().host_address.add(this.ip_bits.host_ofs), this.prefix)
+        // always the first USABLE host: network + 1, for IPv6 too (the
+        // zero host is the subnet-router anycast, not an ordinary
+        // unicast — 2026-08-19)
+        return this.from(this.network().host_address.add(BigInteger.ONE), this.prefix)
     }
 
     // /  Like its sibling method IPv4/// first, this method

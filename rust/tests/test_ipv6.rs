@@ -193,6 +193,15 @@ mod tests {
         assert_eq!(false, setup().ip.is_network());
     }
     #[test]
+    pub fn test_method_first() {
+        // the zero host is the subnet-router anycast, NOT a usable
+        // unicast — first()/last() are the first/last USABLE hosts
+        // (:1/:f), 2026-08-19
+        let ip = IPAddress::parse("fd00::10:12:80:0/124").unwrap();
+        assert_eq!("fd00::10:12:80:1", ip.first().to_s());
+        assert_eq!("fd00::10:12:80:f", ip.last().to_s());
+    }
+    #[test]
     fn test_method_network_u128() {
         assert_eq!(
             ipv6::from_int(

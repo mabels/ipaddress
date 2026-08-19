@@ -840,7 +840,7 @@ class IPAddress {
   //    ip.first.to_s
   //      // => "192.168.100.1"
   //
-  IPAddress first() const { return this->from(this->network().host_address.add(this->ip_bits->host_ofs), this->prefix); }
+  IPAddress first() const { return this->from(this->network().host_address.add(Crunchy::one()), this->prefix); }
 
   //  Like its sibling method IPv4// first, this method
   //  returns a new IPv4 object with the

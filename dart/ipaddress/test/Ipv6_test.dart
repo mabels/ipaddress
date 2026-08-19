@@ -146,6 +146,14 @@ void main() {
     expect(false, setup().ip.is_network());
   });
 
+  test("test_method_first", () {
+    // the zero host is the subnet-router anycast, NOT a usable unicast —
+    // first()/last() are the first/last USABLE hosts (:1/:f), 2026-08-19
+    var ip = IPAddress.parse("fd00::10:12:80:0/124").value;
+    expect("fd00::10:12:80:1", ip.first().to_s());
+    expect("fd00::10:12:80:f", ip.last().to_s());
+  });
+
   test("test_method_network_u128", () {
     expect(
         IpV6.from_int(

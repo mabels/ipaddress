@@ -978,7 +978,7 @@ export class IPAddress {
   //      // => "192.168.100.1"
   //
   public first(): IPAddress {
-    return this.from(this.network().host_address.add(this.ip_bits.host_ofs), this.prefix);
+    return this.from(this.network().host_address.add(Crunchy.one()), this.prefix);
   }
 
   //  Like its sibling method IPv4// first, this method

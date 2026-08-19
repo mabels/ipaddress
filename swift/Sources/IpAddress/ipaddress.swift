@@ -970,7 +970,10 @@ public class IPAddress: Equatable, CustomStringConvertible {
   //      // => "192.168.100.1"
   //
   public func first() -> IPAddress {
-    return self.from(self.network().host_address + self.ip_bits.host_ofs, self.prefix)
+    // always the first USABLE host: network + 1, for IPv6 too (the
+    // zero host is the subnet-router anycast, not an ordinary
+    // unicast — 2026-08-19)
+    return self.from(self.network().host_address + BigUInt(1), self.prefix)
   }
 
   //  Like its sibling method IPv4// first, this method

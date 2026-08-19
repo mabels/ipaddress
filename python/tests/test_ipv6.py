@@ -148,6 +148,14 @@ def test_method_network_known():
     assert setup().ip.is_network() is False
 
 
+def test_method_first():
+    # the zero host is the subnet-router anycast, NOT a usable unicast —
+    # first()/last() are the first/last USABLE hosts (:1/:f), 2026-08-19
+    ip = IPAddress.parse("fd00::10:12:80:0/124")
+    assert "fd00::10:12:80:1" == ip.first().to_s()
+    assert "fd00::10:12:80:f" == ip.last().to_s()
+
+
 def test_method_network_u128():
     assert Ipv6.from_int(int("42540766411282592856903984951653826560"), 64).eq(
         setup().ip.network()

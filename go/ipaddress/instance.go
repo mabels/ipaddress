@@ -518,7 +518,10 @@ func (self *IPAddress) Add(other *IPAddress) *[]*IPAddress {
 // /
 func (self *IPAddress) First() *IPAddress {
 	ha := self.Network().Host_address
-	return self.From(big.NewInt(0).Add(&ha, &self.Ip_bits.Host_ofs), &self.Prefix)
+	// always the first USABLE host: network + 1, for IPv6 too (the
+	// zero host is the subnet-router anycast, not an ordinary
+	// unicast — 2026-08-19)
+	return self.From(big.NewInt(0).Add(&ha, big.NewInt(1)), &self.Prefix)
 }
 
 ///  Like its sibling method IPv4/// first, this method

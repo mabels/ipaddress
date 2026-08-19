@@ -154,6 +154,13 @@ class TestIpv6 {
     }
 
     @Test
+    fun test_method_first() {
+        val ip = IPAddress.parse("fd00::10:12:80:0/124").unwrap()
+        assertEquals("fd00::10:12:80:1", ip.first().to_s())
+        assertEquals("fd00::10:12:80:f", ip.last().to_s())
+    }
+
+    @Test
     fun test_method_network_u128() {
         assertEquals(
             IpV6.from_int(BigInteger("42540766411282592856903984951653826560"), 64).unwrap(),

@@ -160,6 +160,13 @@ class TestIpv6 {
   }
 
   @Test
+  def test_method_first() {
+    var ip = IPAddress.parse("fd00::10:12:80:0/124").unwrap();
+    assertEquals("fd00::10:12:80:1", ip.first().to_s());
+    assertEquals("fd00::10:12:80:f", ip.last().to_s());
+  }
+
+  @Test
   def test_method_network_u128() {
     assertEquals(IpV6.from_int(new BigInteger("42540766411282592856903984951653826560"), 64).unwrap(),
       setup().ip.network());

@@ -1128,7 +1128,10 @@ namespace ipaddress
         ///
         public IPAddress first()
         {
-            return this.from(this.network().host_address + (this.ip_bits.host_ofs), this.prefix);
+            // always the first USABLE host: network + 1, for IPv6 too (the
+            // zero host is the subnet-router anycast, not an ordinary
+            // unicast — 2026-08-19)
+            return this.from(this.network().host_address + 1, this.prefix);
         }
 
         ///  Like its sibling method IPv4/// first, this method

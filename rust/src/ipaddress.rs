@@ -953,10 +953,10 @@ impl IPAddress {
     ///      ///  "192.168.100.1"
     ///
     pub fn first(&self) -> IPAddress {
-        return self.from(
-            &self.network().host_address.add(&self.ip_bits.host_ofs),
-            &self.prefix,
-        );
+        // always the first USABLE host: network + 1, for IPv6 too (the
+        // zero host is the subnet-router anycast, not an ordinary
+        // unicast — 2026-08-19)
+        return self.from(&self.network().host_address.add(&BigUint::one()), &self.prefix);
     }
 
     ///  Like its sibling method IPv4/// first, this method

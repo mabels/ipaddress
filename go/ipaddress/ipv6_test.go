@@ -137,6 +137,15 @@ func TestIpv6(tx *testing.T) {
 			t.assert_bool(true, s.network.Is_network())
 			t.assert_bool(false, s.ip.Is_network())
 		})
+		t.Run("test_method_first", func(t *MyTesting) {
+			// the zero host is the subnet-router anycast, NOT a usable
+			// unicast — First()/Last() are the first/last USABLE hosts
+			// (:1/:f), 2026-08-19
+			ip := Parse("fd00::10:12:80:0/124").Unwrap().First()
+			t.assert_string("fd00::10:12:80:1", ip.To_s())
+			ip = Parse("fd00::10:12:80:0/124").Unwrap().Last()
+			t.assert_string("fd00::10:12:80:f", ip.To_s())
+		})
 		t.Run("test_method_network_u128", func(t *MyTesting) {
 			s := ipv6Setup()
 			t.assert_ipaddress(Ipv6FromInt(str2IntPtr("42540766411282592856903984951653826560", 10), 64).Unwrap(),
