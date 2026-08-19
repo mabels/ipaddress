@@ -1,5 +1,5 @@
 {
-  "name": "@mabels/ipaddress",
+  "name": "@adviser/ipaddress",
   "version": "0.0.0-dev",
   "license": "MIT",
   "exports": "./src/index.ts",
