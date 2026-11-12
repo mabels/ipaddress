@@ -99,7 +99,20 @@ jobs:
     - name: publish
       if: steps.version.outputs.should_publish == 'true'
       working-directory: cs/ipaddress
-      run: dotnet nuget push "nupkg/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
+      run: |
+        version="${{ steps.version.outputs.version }}"
+        if curl -sf "https://api.nuget.org/v3-flatcontainer/com.adviser.ipaddress/$version/com.adviser.ipaddress.$version.nupkg" >/dev/null; then
+          echo "com.adviser.ipaddress $version already published; skipping"
+          exit 0
+        fi
+        set +e
+        out=$(dotnet nuget push "nupkg/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json 2>&1)
+        rc=$?
+        echo "$out"
+        # NuGet indexing can lag the upload; a conflict means it is there.
+        if [ $rc -ne 0 ] && ! grep -qiE "409|already exists|conflict" <<<"$out"; then
+          exit $rc
+        fi
 
   dart:
     runs-on: ['ubuntu-latest']
@@ -217,9 +230,14 @@ jobs:
       if: steps.version.outputs.should_publish == 'true'
       working-directory: js
       run: |
+        version="${{ steps.version.outputs.version }}"
+        if curl -sf "https://registry.npmjs.org/ipaddress/$version" >/dev/null; then
+          echo "ipaddress@$version already published; skipping"
+          exit 0
+        fi
         npm install -g npm@latest
         npm --version
-        npm version "${{ steps.version.outputs.version }}"
+        npm version "$version"
         grep version package.json
         npm publish --access public --provenance
 
@@ -266,6 +284,10 @@ jobs:
       working-directory: js
       run: |
         version="${{ steps.version.outputs.version }}"
+        if curl -sf "https://jsr.io/@adviser/ipaddress/${version}_meta.json" >/dev/null; then
+          echo "@adviser/ipaddress $version already published; skipping"
+          exit 0
+        fi
         echo "publishing jsr version $version"
         sed -i "s/\"version\": \".*\"/\"version\": \"$version\"/" jsr.json
         cat jsr.json
@@ -351,11 +373,22 @@ jobs:
       working-directory: python
       run: python -m build
 
+    - name: check pypi version
+      id: pypi-version
+      if: steps.version.outputs.should_publish == 'true'
+      run: |
+        version="${{ steps.version.outputs.version }}"
+        if curl -sf "https://pypi.org/pypi/mabels-ipaddress/$version/json" >/dev/null; then
+          echo "exists=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "exists=false" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: publish
       # PyPI Trusted Publishing (OIDC) - no token needed. Requires the
       # mabels-ipaddress project on pypi.org to have this repo+workflow+job
       # registered as a "trusted publisher" beforehand.
-      if: steps.version.outputs.should_publish == 'true'
+      if: steps.version.outputs.should_publish == 'true' && steps.pypi-version.outputs.exists != 'true'
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         packages-dir: python/dist
@@ -442,7 +475,13 @@ jobs:
       working-directory: rust
       env:
         CARGO_REGISTRY_TOKEN: ${{ steps.crates-io-auth.outputs.token }}
-      run: cargo publish --allow-dirty
+      run: |
+        version="${{ steps.version.outputs.version }}"
+        if curl -sf -A "github-actions" "https://crates.io/api/v1/crates/ipaddress/$version" >/dev/null; then
+          echo "ipaddress $version already published; skipping"
+          exit 0
+        fi
+        cargo publish --allow-dirty
 
     - name: dry-publish
       if: steps.version.outputs.should_publish != 'true'
