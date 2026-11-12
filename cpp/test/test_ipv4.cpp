@@ -173,6 +173,19 @@ int main() {
        }
 
     );
+    it("test_method_host", []() {
+      auto ip = IPAddress::parse("192.168.128.7/22").unwrap();
+      assert.equal("192.168.129.44/22", ip.host(Crunchy::from_number(300)).unwrap().to_string());
+      assert.equal("192.168.128.7/22", ip.host(Crunchy::from_number(7)).unwrap().to_string());
+      assert.equal("192.168.128.0/22", ip.host(Crunchy::from_number(0)).unwrap().to_string());
+      assert.equal("192.168.131.255/22", ip.host(Crunchy::from_number(1023)).unwrap().to_string());
+      assert.isTrue(ip.host(Crunchy::from_number(1024)).isErr());
+    });
+    it("test_method_host_number", []() {
+      assert.isTrue(IPAddress::parse("192.168.129.44/22").unwrap().host_number().eq(Crunchy::from_number(300)));
+      assert.isTrue(IPAddress::parse("192.168.128.0/22").unwrap().host_number().eq(Crunchy::from_number(0)));
+      assert.isTrue(IPAddress::parse("192.168.131.255/22").unwrap().host_number().eq(Crunchy::from_number(1023)));
+    });
     it("test_method_bits", []() {
       auto ip = IPAddress::parse("127.0.0.1").unwrap();
       assert.equal("01111111000000000000000000000001", ip.bits());

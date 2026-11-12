@@ -784,6 +784,39 @@ class IPAddress {
 
   static Crunchy to_network(const Crunchy& adr, size_t host_prefix) { return adr.shr(host_prefix).shl(host_prefix); }
 
+  //  Returns a new IP object with the address at host number
+  //  +n+ relative to this address's network, keeping the prefix.
+  //  The receiver does not have to be a network: host(0) is always
+  //  the network base.
+  //
+  //    ip = IPAddress("192.168.128.7/24")
+  //
+  //    ip.host(93).unwrap().to_string()
+  //      // => "192.168.128.93/24"
+  //
+  //  Returns an error when +n+ is outside 0..size()-1.
+  //  Host numbers 0..size()-1 are all valid, including the broadcast
+  //  address.
+  //
+  Result<IPAddress> host(const Crunchy& n) const {
+    if (n.gte(this->size())) {
+      return Err<IPAddress>("host number out of range");
+    }
+    auto ret = this->from(this->network().host_address.add(n), this->prefix);
+    return Ok(ret);
+  }
+
+  //  Returns this address minus its network base, i.e. the host
+  //  number of the address within its network. This is the inverse
+  //  of host().
+  //
+  //    ip = IPAddress("192.168.128.93/24")
+  //
+  //    ip.host_number().toString()
+  //      // => "93"
+  //
+  Crunchy host_number() const { return this->host_address.sub(this->network().host_address); }
+
   Crunchy sub(const IPAddress& other) const {
     if (this->host_address.gt(other.host_address)) {
       return this->host_address.clone().sub(other.host_address);

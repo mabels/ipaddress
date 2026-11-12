@@ -599,6 +599,35 @@ class IPAddress:
     def to_network(adr: int, host_prefix: int) -> int:
         return (adr >> host_prefix) << host_prefix
 
+    # Returns a new IP object with the address at host number
+    # +n+ relative to this address's network, keeping the prefix.
+    # The receiver does not have to be a network: host(0) is always
+    # the network base.
+    #
+    #   ip = IPAddress("192.168.128.7/24")
+    #
+    #   ip.host(93).to_string
+    #     // => "192.168.128.93/24"
+    #
+    # Returns None when +n+ is outside 0..size-1.
+    #
+    def host(self, n: int) -> Optional["IPAddress"]:
+        if n < 0 or n >= self.size():
+            return None
+        return self.from_(self.network().host_address + n, self.prefix)
+
+    # Returns this address minus its network base, i.e. the host
+    # number of the address within its network. This is the inverse
+    # of host().
+    #
+    #   ip = IPAddress("192.168.128.93/24")
+    #
+    #   ip.host_number
+    #     // => 93
+    #
+    def host_number(self) -> int:
+        return self.host_address - self.network().host_address
+
     def sub(self, other: "IPAddress") -> int:
         if self.host_address > other.host_address:
             return self.host_address - other.host_address

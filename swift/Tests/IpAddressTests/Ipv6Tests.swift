@@ -137,6 +137,23 @@ class Ipv6Tests: XCTestCase {
     ip = IPAddress.parse("2001:db8::8:800:200c:417a/124")!
     XCTAssertEqual(BigUInt(1) << 4, ip.size())
   }
+  func test_method_host() {
+    let ip = IPAddress.parse("fd00::10:12:80:1/64")!
+    let p44 = BigInt(1) << 44
+    let p64 = BigInt(1) << 64
+    XCTAssertEqual("fd00::1000:0:0/64", ip.host(p44)!.to_string())
+    XCTAssertEqual("fd00::/64", ip.host(BigInt(0))!.to_string())
+    XCTAssertEqual("fd00::ffff:ffff:ffff:ffff/64", ip.host(p64 - 1)!.to_string())
+    XCTAssertNil(ip.host(p64))
+    XCTAssertNil(ip.host(BigInt(-1)))
+  }
+
+  func test_method_host_number() {
+    XCTAssertEqual(BigInt(1) << 44, IPAddress.parse("fd00::1000:0:0/64")!.host_number())
+    XCTAssertEqual(BigInt(0), IPAddress.parse("fd00::/64")!.host_number())
+    XCTAssertEqual((BigInt(1) << 64) - 1, IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64")!.host_number())
+  }
+
   func test_method_includes() {
     let ip = setup().ip
     XCTAssertEqual(true, ip.includes(ip))
@@ -382,6 +399,8 @@ class Ipv6Tests: XCTestCase {
       ("test_method_network_u128", test_method_network_u128),
       ("test_method_broadcast_u128", test_method_broadcast_u128),
       ("test_method_size", test_method_size),
+      ("test_method_host", test_method_host),
+      ("test_method_host_number", test_method_host_number),
       ("test_method_includes", test_method_includes),
       ("test_method_to_hex", test_method_to_hex),
       ("test_method_to_s", test_method_to_s),

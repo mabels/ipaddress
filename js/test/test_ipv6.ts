@@ -112,6 +112,19 @@ describe("ipv6", () => {
     assert.equal(true, setup().network.is_network());
     assert.equal(false, setup().ip.is_network());
   });
+  it("test_method_host", () => {
+    const ip = IPAddress.parse("fd00::10:12:80:1/64");
+    assert.equal("fd00::1000:0:0/64", ip!.host(2n ** 44n)!.to_string());
+    assert.equal("fd00::/64", ip!.host(0)!.to_string());
+    assert.equal("fd00::ffff:ffff:ffff:ffff/64", ip!.host(2n ** 64n - 1n)!.to_string());
+    assert.isNull(ip!.host(2n ** 64n));
+    assert.isNull(ip!.host(-1));
+  });
+  it("test_method_host_number", () => {
+    assert.equal(2n ** 44n, IPAddress.parse("fd00::1000:0:0/64")!.host_number());
+    assert.equal(0n, IPAddress.parse("fd00::/64")!.host_number());
+    assert.equal(2n ** 64n - 1n, IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64")!.host_number());
+  });
   it("test_method_first", () => {
     // the zero host is the subnet-router anycast, NOT a usable unicast —
     // first()/last() are the first/last USABLE hosts (:1/:f), 2026-08-19

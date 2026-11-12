@@ -109,6 +109,29 @@ func TestIpv6(tx *testing.T) {
 			t.assert_uint8(64, nip.Prefix.Num)
 			t.assert_string("2001:db8::8:800:200c:417a/64", nip.To_string())
 		})
+		t.Run("test_method_host", func(t *MyTesting) {
+			ip := Parse("fd00::10:12:80:1/64").Unwrap()
+			p44 := new(big.Int).Lsh(big.NewInt(1), 44)
+			p64 := new(big.Int).Lsh(big.NewInt(1), 64)
+			p64m1 := new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 64), big.NewInt(1))
+			t.assert_string("fd00::1000:0:0/64", ip.Host(p44).To_string())
+			t.assert_string("fd00::/64", ip.Host(big.NewInt(0)).To_string())
+			t.assert_string("fd00::ffff:ffff:ffff:ffff/64", ip.Host(p64m1).To_string())
+			t.assert(ip.Host(p64) == nil)
+			t.assert(ip.Host(big.NewInt(-1)) == nil)
+		})
+
+		t.Run("test_method_host_number", func(t *MyTesting) {
+			p44 := new(big.Int).Lsh(big.NewInt(1), 44)
+			p64m1 := new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 64), big.NewInt(1))
+			t.assert_bigint(*p44,
+				Parse("fd00::1000:0:0/64").Unwrap().Host_number())
+			t.assert_bigint(*big.NewInt(0),
+				Parse("fd00::/64").Unwrap().Host_number())
+			t.assert_bigint(*p64m1,
+				Parse("fd00::ffff:ffff:ffff:ffff/64").Unwrap().Host_number())
+		})
+
 		t.Run("test_method_mapped", func(t *MyTesting) {
 			s := ipv6Setup()
 			t.assert_bool(false, s.ip.Is_mapped())

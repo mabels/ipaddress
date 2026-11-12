@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.HashMap
 import java.util.List
@@ -262,6 +263,25 @@ class TestIpv4 {
     def test_method_size() {
         val ip = IPAddress.parse("10.0.0.1/29").unwrap();
         assertEquals(ip.size(), new BigInteger("8"));
+    }
+   @Test
+    def test_method_host() {
+        val ip = IPAddress.parse("192.168.128.7/22").unwrap();
+        assertEquals("192.168.129.44/22", ip.host(new BigInteger("300")).to_string());
+        assertEquals("192.168.128.7/22", ip.host(new BigInteger("7")).to_string());
+        assertEquals("192.168.128.0/22", ip.host(new BigInteger("0")).to_string());
+        assertEquals("192.168.131.255/22", ip.host(new BigInteger("1023")).to_string());
+        assertNull(ip.host(new BigInteger("1024")));
+        assertNull(ip.host(new BigInteger("-1")));
+    }
+   @Test
+    def test_method_host_number() {
+        assertEquals(new BigInteger("300"),
+                   IPAddress.parse("192.168.129.44/22").unwrap().host_number());
+        assertEquals(new BigInteger("0"),
+                   IPAddress.parse("192.168.128.0/22").unwrap().host_number());
+        assertEquals(new BigInteger("1023"),
+                   IPAddress.parse("192.168.131.255/22").unwrap().host_number());
     }
    @Test
     def test_method_network_u32() {

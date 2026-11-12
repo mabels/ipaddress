@@ -113,6 +113,23 @@ int main() {
       assert.equal("fd00::10:12:80:1", ip.first().to_s());
       assert.equal("fd00::10:12:80:f", ip.last().to_s());
     });
+    it("test_method_host", []() {
+      auto ip = IPAddress::parse("fd00::10:12:80:1/64").unwrap();
+      auto p44 = Crunchy::from_number(17592186044416ULL);
+      auto p64m1 = Crunchy::from_string("18446744073709551615").unwrap();
+      auto p64 = Crunchy::from_string("18446744073709551616").unwrap();
+      assert.equal("fd00::1000:0:0/64", ip.host(p44).unwrap().to_string());
+      assert.equal("fd00::/64", ip.host(Crunchy::from_number(0)).unwrap().to_string());
+      assert.equal("fd00::ffff:ffff:ffff:ffff/64", ip.host(p64m1).unwrap().to_string());
+      assert.isTrue(ip.host(p64).isErr());
+    });
+    it("test_method_host_number", []() {
+      auto p44 = Crunchy::from_number(17592186044416ULL);
+      auto p64m1 = Crunchy::from_string("18446744073709551615").unwrap();
+      assert.isTrue(IPAddress::parse("fd00::1000:0:0/64").unwrap().host_number().eq(p44));
+      assert.isTrue(IPAddress::parse("fd00::/64").unwrap().host_number().eq(Crunchy::from_number(0)));
+      assert.isTrue(IPAddress::parse("fd00::ffff:ffff:ffff:ffff/64").unwrap().host_number().eq(p64m1));
+    });
     it("test_method_network_u128", []() {
       assert.isTrue(
           Ipv6::from_int(Crunchy::parse("42540766411282592856903984951653826560").unwrap(), 64).unwrap().eq(setup().ip.network()));

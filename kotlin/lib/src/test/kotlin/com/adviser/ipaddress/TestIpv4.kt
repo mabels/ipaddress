@@ -238,6 +238,33 @@ class TestIpv4 {
     }
 
     @Test
+    fun test_method_host() {
+        val ip = IPAddress.parse("192.168.128.7/22").unwrap()
+        assertEquals("192.168.129.44/22", ip.host(BigInteger("300"))!!.to_string())
+        assertEquals("192.168.128.7/22", ip.host(BigInteger("7"))!!.to_string())
+        assertEquals("192.168.128.0/22", ip.host(BigInteger("0"))!!.to_string())
+        assertEquals("192.168.131.255/22", ip.host(BigInteger("1023"))!!.to_string())
+        assertEquals(null, ip.host(BigInteger("1024")))
+        assertEquals(null, ip.host(BigInteger("-1")))
+    }
+
+    @Test
+    fun test_method_host_number() {
+        assertEquals(
+            BigInteger("300"),
+            IPAddress.parse("192.168.129.44/22").unwrap().host_number()
+        )
+        assertEquals(
+            BigInteger("0"),
+            IPAddress.parse("192.168.128.0/22").unwrap().host_number()
+        )
+        assertEquals(
+            BigInteger("1023"),
+            IPAddress.parse("192.168.131.255/22").unwrap().host_number()
+        )
+    }
+
+    @Test
     fun test_method_last() {
         var ip = IPAddress.parse("192.168.100.0/24").unwrap()
         assertEquals("192.168.100.254", ip.last().to_s())

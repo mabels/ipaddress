@@ -1057,6 +1057,45 @@ class IPAddress
     from(broadcast.host_address.sub(@ip_bits.host_ofs), @prefix)
   end
 
+  #   Returns a new IPAddress object for the host number
+  #   n within the network of the given address. The prefix
+  #   is preserved.
+  #
+  #   The object IP doesn't need to be a network: the method
+  #   automatically gets the network number from it.
+  #
+  #     ip = IPAddress("192.168.128.7/24")
+  #
+  #     ip.host(93).to_string
+  #       #  => "192.168.128.93/24"
+  #
+  #   Returns nil when n is negative or greater than or equal
+  #   to the network size.
+  #
+  #     ip.host(256)
+  #       #  => nil
+  #
+  def host(n)
+    return nil if n < 0 || n >= size.num
+
+    from(network.host_address.add(Crunchy.from_number(n)), @prefix)
+  end
+
+  #   Returns the host number of the address as an Integer,
+  #   relative to its network number.
+  #
+  #     ip = IPAddress("192.168.128.93/24")
+  #
+  #     ip.host_number
+  #       #  => 93
+  #
+  #   The object IP doesn't need to be a network: the method
+  #   automatically gets the network number from it.
+  #
+  def host_number
+    @host_address.sub(network.host_address).num
+  end
+
   #   Iterates over all the hosts IP addresses for the given
   #   network (or IP address).
   #

@@ -215,6 +215,22 @@ class Ipv4Tests: XCTestCase {
     XCTAssertEqual(ip.size(), BigUInt(8))
   }
 
+  func test_method_host() {
+    let ip = IPAddress.parse("192.168.128.7/22")!
+    XCTAssertEqual("192.168.129.44/22", ip.host(BigInt(300))!.to_string())
+    XCTAssertEqual("192.168.128.7/22", ip.host(BigInt(7))!.to_string())
+    XCTAssertEqual("192.168.128.0/22", ip.host(BigInt(0))!.to_string())
+    XCTAssertEqual("192.168.131.255/22", ip.host(BigInt(1023))!.to_string())
+    XCTAssertNil(ip.host(BigInt(1024)))
+    XCTAssertNil(ip.host(BigInt(-1)))
+  }
+
+  func test_method_host_number() {
+    XCTAssertEqual(BigInt(300), IPAddress.parse("192.168.129.44/22")!.host_number())
+    XCTAssertEqual(BigInt(0), IPAddress.parse("192.168.128.0/22")!.host_number())
+    XCTAssertEqual(BigInt(1023), IPAddress.parse("192.168.131.255/22")!.host_number())
+  }
+
   func test_method_network_u32() {
     XCTAssertEqual("2886732288", String(setup().ip.network().host_address))
   }
@@ -660,6 +676,8 @@ class Ipv4Tests: XCTestCase {
       ("test_method_each_host", test_method_each_host),
       ("test_method_each", test_method_each),
       ("test_method_size", test_method_size),
+      ("test_method_host", test_method_host),
+      ("test_method_host_number", test_method_host_number),
       ("test_method_network_u32", test_method_network_u32),
       ("test_method_broadcast_u32", test_method_broadcast_u32),
       ("test_method_include", test_method_include),

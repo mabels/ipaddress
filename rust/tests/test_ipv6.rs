@@ -202,6 +202,42 @@ mod tests {
         assert_eq!("fd00::10:12:80:f", ip.last().to_s());
     }
     #[test]
+    pub fn test_method_host() {
+        let ip = IPAddress::parse("fd00::10:12:80:1/64").unwrap();
+        let p44 = BigUint::from(1u32) << 44;
+        let p64 = BigUint::from(1u32) << 64;
+        let p64m1 = &p64 - 1u32;
+        assert_eq!("fd00::1000:0:0/64", ip.host(&p44).unwrap().to_string());
+        assert_eq!(
+            "fd00::/64",
+            ip.host(&BigUint::from(0u32)).unwrap().to_string()
+        );
+        assert_eq!(
+            "fd00::ffff:ffff:ffff:ffff/64",
+            ip.host(&p64m1).unwrap().to_string()
+        );
+        assert_eq!(None, ip.host(&p64));
+    }
+    #[test]
+    pub fn test_method_host_number() {
+        let p44 = BigUint::from(1u32) << 44;
+        let p64m1 = (BigUint::from(1u32) << 64) - 1u32;
+        assert_eq!(
+            p44,
+            IPAddress::parse("fd00::1000:0:0/64").unwrap().host_number()
+        );
+        assert_eq!(
+            BigUint::from(0u32),
+            IPAddress::parse("fd00::/64").unwrap().host_number()
+        );
+        assert_eq!(
+            p64m1,
+            IPAddress::parse("fd00::ffff:ffff:ffff:ffff/64")
+                .unwrap()
+                .host_number()
+        );
+    }
+    #[test]
     fn test_method_network_u128() {
         assert_eq!(
             ipv6::from_int(

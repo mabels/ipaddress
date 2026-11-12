@@ -161,6 +161,37 @@ class TestIpv6 {
     }
 
     @Test
+    fun test_method_host() {
+        val ip = IPAddress.parse("fd00::10:12:80:1/64").unwrap()
+        val p44 = BigInteger.ONE.shiftLeft(44)
+        val p64 = BigInteger.ONE.shiftLeft(64)
+        val p64m1 = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE)
+        assertEquals("fd00::1000:0:0/64", ip.host(p44)!!.to_string())
+        assertEquals("fd00::/64", ip.host(BigInteger.ZERO)!!.to_string())
+        assertEquals("fd00::ffff:ffff:ffff:ffff/64", ip.host(p64m1)!!.to_string())
+        assertEquals(null, ip.host(p64))
+        assertEquals(null, ip.host(BigInteger.ONE.negate()))
+    }
+
+    @Test
+    fun test_method_host_number() {
+        val p44 = BigInteger.ONE.shiftLeft(44)
+        val p64m1 = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE)
+        assertEquals(
+            p44,
+            IPAddress.parse("fd00::1000:0:0/64").unwrap().host_number()
+        )
+        assertEquals(
+            BigInteger.ZERO,
+            IPAddress.parse("fd00::/64").unwrap().host_number()
+        )
+        assertEquals(
+            p64m1,
+            IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64").unwrap().host_number()
+        )
+    }
+
+    @Test
     fun test_method_network_u128() {
         assertEquals(
             IpV6.from_int(BigInteger("42540766411282592856903984951653826560"), 64).unwrap(),

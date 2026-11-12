@@ -432,6 +432,23 @@ namespace address_test
         {
             Assert.Equal(setup().ip.to_string(), IpV6.from_str(setup().hex, 16, 64).unwrap().to_string());
         }
+
+        [Fact]
+        public void test_host()
+        {
+            var ip = IPAddress.parse("fd00::10:12:80:1/64").unwrap();
+            var p44 = BigInteger.One << 44;
+            var p64m1 = (BigInteger.One << 64) - 1;
+            var p64 = BigInteger.One << 64;
+            Assert.Equal("fd00::1000:0:0/64", ip.host(p44).to_string());
+            Assert.Equal("fd00::/64", ip.host(0).to_string());
+            Assert.Equal("fd00::ffff:ffff:ffff:ffff/64", ip.host(p64m1).to_string());
+            Assert.Null(ip.host(p64));
+            Assert.Null(ip.host(-1));
+            Assert.Equal(p44, IPAddress.parse("fd00::1000:0:0/64").unwrap().host_number());
+            Assert.Equal(new BigInteger(0), IPAddress.parse("fd00::/64").unwrap().host_number());
+            Assert.Equal(p64m1, IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64").unwrap().host_number());
+        }
     }
 
 }

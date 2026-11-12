@@ -742,6 +742,21 @@ namespace address_test
         }
 
         [Fact]
+        void test_host()
+        {
+            var ip = IPAddress.parse("192.168.128.7/22").unwrap();
+            Assert.Equal("192.168.129.44/22", ip.host(300).to_string());
+            Assert.Equal("192.168.128.7/22", ip.host(7).to_string());
+            Assert.Equal("192.168.128.0/22", ip.host(0).to_string());
+            Assert.Equal("192.168.131.255/22", ip.host(1023).to_string());
+            Assert.Null(ip.host(1024));
+            Assert.Null(ip.host(-1));
+            Assert.Equal(new BigInteger(300), IPAddress.parse("192.168.129.44/22").unwrap().host_number());
+            Assert.Equal(new BigInteger(0), IPAddress.parse("192.168.128.0/22").unwrap().host_number());
+            Assert.Equal(new BigInteger(1023), IPAddress.parse("192.168.131.255/22").unwrap().host_number());
+        }
+
+        [Fact]
         void test_classmethod_parse_classful()
         {
             foreach (var kp in setup().classful)

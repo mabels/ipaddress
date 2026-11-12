@@ -219,6 +219,20 @@ describe("Ipv4Test", () => {
     const ip = IPAddress.parse("127.0.0.1");
     assert.equal("01111111000000000000000000000001", ip!.bits());
   });
+  it("test_method_host", () => {
+    const ip = IPAddress.parse("192.168.128.7/22");
+    assert.equal("192.168.129.44/22", ip!.host(300)!.to_string());
+    assert.equal("192.168.128.7/22", ip!.host(7)!.to_string());
+    assert.equal("192.168.128.0/22", ip!.host(0)!.to_string());
+    assert.equal("192.168.131.255/22", ip!.host(1023)!.to_string());
+    assert.isNull(ip!.host(1024));
+    assert.isNull(ip!.host(-1));
+  });
+  it("test_method_host_number", () => {
+    assert.equal(300n, IPAddress.parse("192.168.129.44/22")!.host_number());
+    assert.equal(0n, IPAddress.parse("192.168.128.0/22")!.host_number());
+    assert.equal(1023n, IPAddress.parse("192.168.131.255/22")!.host_number());
+  });
   it("test_method_first", () => {
     let ip = IPAddress.parse("192.168.100.0/24");
     assert.equal("192.168.100.1", ip!.first().to_s());

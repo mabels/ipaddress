@@ -145,6 +145,23 @@ class IPv6Test < Test::Unit::TestCase
     assert_equal 2**4, ip.size.num
   end
 
+  def test_method_host
+    ip = IPAddress.parse("fd00::10:12:80:1/64")
+    p44 = 2**44
+    p64 = 2**64
+    assert_equal "fd00::1000:0:0/64", ip.host(p44).to_string
+    assert_equal "fd00::/64", ip.host(0).to_string
+    assert_equal "fd00::ffff:ffff:ffff:ffff/64", ip.host(p64 - 1).to_string
+    assert_nil ip.host(p64)
+    assert_nil ip.host(-1)
+  end
+
+  def test_method_host_number
+    assert_equal 2**44, IPAddress.parse("fd00::1000:0:0/64").host_number
+    assert_equal 0, IPAddress.parse("fd00::/64").host_number
+    assert_equal 2**64 - 1, IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64").host_number
+  end
+
   def test_method_include?
     assert_equal true, @ip.include?(@ip)
     # test prefix on same address

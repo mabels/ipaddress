@@ -922,6 +922,45 @@ class IPAddress(
         return this.from(to_network(this.host_address, this.prefix.host_prefix()), this.prefix)
     }
 
+    // /  Returns a new IP object with the host number n relative to
+    // /  this address network, keeping the prefix.
+    // /
+    // /  The object IP doesn't need to be a network: the method
+    // /  automatically gets the network number from it.
+    // /
+    // /  Accepts host numbers 0 through size() - 1, including the
+    // /  network and broadcast addresses. Returns null for any host
+    // /  number outside that range.
+    // /
+    // /    ip = IPAddress("192.168.128.7/24")
+    // /
+    // /    ip.host(93).to_string
+    // /      ///  "192.168.128.93/24"
+    // /
+    // /    ip.host(256)
+    // /      ///  null
+    // /
+
+    fun host(n: BigInteger): IPAddress? {
+        if (n.compareTo(BigInteger.ZERO) < 0 || n.compareTo(this.size()) >= 0) {
+            return null
+        }
+        return this.from(this.network().host_address.add(n), this.prefix)
+    }
+
+    // /  Returns the host number of this address relative to its
+    // /  network number, as the inverse of host.
+    // /
+    // /    ip = IPAddress("192.168.128.93/24")
+    // /
+    // /    ip.host_number
+    // /      ///  93
+    // /
+
+    fun host_number(): BigInteger {
+        return this.host_address.subtract(this.network().host_address)
+    }
+
     fun sub(other: IPAddress): BigInteger {
         if (this.host_address.compareTo(other.host_address) >= 0) {
             return this.host_address.subtract(other.host_address)

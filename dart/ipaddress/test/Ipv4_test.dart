@@ -202,6 +202,25 @@ void main() {
     expect("192.168.100.254", ip.last().to_s());
   });
 
+  test("test_method_host", () {
+    final ip = IPAddress.parse("192.168.128.7/22").value;
+    expect("192.168.129.44/22", ip.host(BigInt.from(300))?.to_string());
+    expect("192.168.128.7/22", ip.host(BigInt.from(7))?.to_string());
+    expect("192.168.128.0/22", ip.host(BigInt.from(0))?.to_string());
+    expect("192.168.131.255/22", ip.host(BigInt.from(1023))?.to_string());
+    expect(null, ip.host(BigInt.from(1024)));
+    expect(null, ip.host(BigInt.from(-1)));
+  });
+
+  test("test_method_host_number", () {
+    var ip = IPAddress.parse("192.168.129.44/22").value;
+    expect(BigInt.from(300), ip.host_number());
+    ip = IPAddress.parse("192.168.128.0/22").value;
+    expect(BigInt.zero, ip.host_number());
+    ip = IPAddress.parse("192.168.131.255/22").value;
+    expect(BigInt.from(1023), ip.host_number());
+  });
+
   test("test_method_each_host", () {
     final ip = IPAddress.parse("10.0.0.1/29").value;
     final List<String> arr = [];

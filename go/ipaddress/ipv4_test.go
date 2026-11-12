@@ -198,6 +198,29 @@ func TestIpv4(tx *testing.T) {
 			}
 		})
 
+		t.Run("test_method_host", func(t *MyTesting) {
+			ip := Parse("192.168.128.7/22").Unwrap()
+			t.assert_string("192.168.129.44/22",
+				ip.Host(big.NewInt(300)).To_string())
+			t.assert_string("192.168.128.7/22",
+				ip.Host(big.NewInt(7)).To_string())
+			t.assert_string("192.168.128.0/22",
+				ip.Host(big.NewInt(0)).To_string())
+			t.assert_string("192.168.131.255/22",
+				ip.Host(big.NewInt(1023)).To_string())
+			t.assert(ip.Host(big.NewInt(1024)) == nil)
+			t.assert(ip.Host(big.NewInt(-1)) == nil)
+		})
+
+		t.Run("test_method_host_number", func(t *MyTesting) {
+			t.assert_bigint(*big.NewInt(300),
+				Parse("192.168.129.44/22").Unwrap().Host_number())
+			t.assert_bigint(*big.NewInt(0),
+				Parse("192.168.128.0/22").Unwrap().Host_number())
+			t.assert_bigint(*big.NewInt(1023),
+				Parse("192.168.131.255/22").Unwrap().Host_number())
+		})
+
 		t.Run("test_method_bits", func(t *MyTesting) {
 			ip := *Parse("127.0.0.1").Unwrap()
 			t.assert_string("01111111000000000000000000000001", ip.Bits())

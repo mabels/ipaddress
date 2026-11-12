@@ -168,6 +168,25 @@ def test_method_last():
     assert "192.168.100.254" == ip.last().to_s()
 
 
+def test_method_host():
+    ip = IPAddress.parse("192.168.128.7/22")
+    assert "192.168.129.44/22" == ip.host(300).to_string()
+    assert "192.168.128.7/22" == ip.host(7).to_string()
+    assert "192.168.128.0/22" == ip.host(0).to_string()
+    assert "192.168.131.255/22" == ip.host(1023).to_string()
+    assert ip.host(1024) is None
+    assert ip.host(-1) is None
+
+
+def test_method_host_number():
+    ip = IPAddress.parse("192.168.129.44/22")
+    assert 300 == ip.host_number()
+    ip = IPAddress.parse("192.168.128.0/22")
+    assert 0 == ip.host_number()
+    ip = IPAddress.parse("192.168.131.255/22")
+    assert 1023 == ip.host_number()
+
+
 def test_method_each_host():
     ip = IPAddress.parse("10.0.0.1/29")
     arr = []

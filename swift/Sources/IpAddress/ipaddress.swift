@@ -908,6 +908,38 @@ public class IPAddress: Equatable, CustomStringConvertible {
     return (adr >> Int(host_prefix)) << Int(host_prefix)
   }
 
+  //  Returns a new IPAddress with the address at host number
+  //  +n+ relative to this address's network, keeping the prefix.
+  //  The receiver does not have to be a network: host(0) is always
+  //  the network base.
+  //
+  //    ip = IPAddress("192.168.128.7/24")
+  //
+  //    ip.host(93).to_string()
+  //      // => "192.168.128.93/24"
+  //
+  //  Returns nil when +n+ is negative or not less than size().
+  //
+  public func host(_ n: BigInt) -> IPAddress? {
+    if n < BigInt(0) || n >= BigInt(self.size()) {
+      return nil
+    }
+    return self.from(self.network().host_address + BigUInt(n), self.prefix)
+  }
+
+  //  Returns this address minus its network base, i.e. the host
+  //  number of the address within its network. This is the inverse
+  //  of host().
+  //
+  //    ip = IPAddress("192.168.128.93/24")
+  //
+  //    ip.host_number()
+  //      // => 93
+  //
+  public func host_number() -> BigInt {
+    return BigInt(self.host_address - self.network().host_address)
+  }
+
   public func sub(_ other: IPAddress) -> BigUInt {
     if self.host_address > other.host_address {
       return self.host_address - other.host_address

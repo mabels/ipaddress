@@ -193,6 +193,22 @@ class IPv4Test < Test::Unit::TestCase
     assert_equal "192.168.100.254", ip.last.to_s
   end
 
+  def test_method_host
+    ip = IPAddress.parse("192.168.128.7/22")
+    assert_equal "192.168.129.44/22", ip.host(300).to_string
+    assert_equal "192.168.128.7/22", ip.host(7).to_string
+    assert_equal "192.168.128.0/22", ip.host(0).to_string
+    assert_equal "192.168.131.255/22", ip.host(1023).to_string
+    assert_nil ip.host(1024)
+    assert_nil ip.host(-1)
+  end
+
+  def test_method_host_number
+    assert_equal 300, IPAddress.parse("192.168.129.44/22").host_number
+    assert_equal 0, IPAddress.parse("192.168.128.0/22").host_number
+    assert_equal 1023, IPAddress.parse("192.168.131.255/22").host_number
+  end
+
   def test_method_each_host
     ip = IPAddress.parse("10.0.0.1/29")
     arr = []

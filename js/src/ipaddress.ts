@@ -915,6 +915,43 @@ export class IPAddress {
     return this.from(IPAddress.to_network(this.host_address, this.prefix.host_prefix()), this.prefix);
   }
 
+  //  Returns the address at host number +n+ relative to this address's
+  //  network, keeping the prefix. The address does not need to be a
+  //  network itself.
+  //
+  //    IPAddress.parse("192.168.128.7/24").host(93).to_string()
+  //      // => "192.168.128.93/24"
+  //
+  //  Host 0 is the network itself. Returns null when +n+ falls outside
+  //  the network (including negative numbers).
+  public host(n: number | bigint): IPAddress | null {
+    let offset: Crunchy;
+    if (typeof n === "bigint") {
+      if (n < 0n) {
+        return null;
+      }
+      offset = Crunchy.parse(n.toString());
+    } else {
+      if (n < 0 || !Number.isInteger(n)) {
+        return null;
+      }
+      offset = Crunchy.from_number(n);
+    }
+    if (offset.gte(this.size())) {
+      return null;
+    }
+    return this.from(this.network().host_address.add(offset), this.prefix);
+  }
+
+  //  Returns the host number of this address within its network, i.e.
+  //  this address minus its network base. The inverse of host().
+  //
+  //    IPAddress.parse("192.168.128.93/24").host_number()
+  //      // => 93n
+  public host_number(): bigint {
+    return BigInt(this.host_address.sub(this.network().host_address).toString());
+  }
+
   public static to_network(adr: Crunchy, host_prefix: number): Crunchy {
     return adr.shr(host_prefix).shl(host_prefix);
   }

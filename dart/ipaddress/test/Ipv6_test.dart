@@ -154,6 +154,24 @@ void main() {
     expect("fd00::10:12:80:f", ip.last().to_s());
   });
 
+  test("test_method_host", () {
+    final ip = IPAddress.parse("fd00::10:12:80:1/64").value;
+    expect("fd00::1000:0:0/64", ip.host(BigInt.one << 44)?.to_string());
+    expect("fd00::/64", ip.host(BigInt.zero)?.to_string());
+    expect("fd00::ffff:ffff:ffff:ffff/64",
+        ip.host((BigInt.one << 64) - BigInt.one)?.to_string());
+    expect(null, ip.host(BigInt.one << 64));
+    expect(null, ip.host(BigInt.from(-1)));
+  });
+
+  test("test_method_host_number", () {
+    expect(BigInt.one << 44,
+        IPAddress.parse("fd00::1000:0:0/64").value.host_number());
+    expect(BigInt.zero, IPAddress.parse("fd00::/64").value.host_number());
+    expect((BigInt.one << 64) - BigInt.one,
+        IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64").value.host_number());
+  });
+
   test("test_method_network_u128", () {
     expect(
         IpV6.from_int(

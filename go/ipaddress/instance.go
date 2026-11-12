@@ -485,6 +485,54 @@ func To_network(adr *big.Int, host_prefix uint8) big.Int {
 	return *num
 }
 
+///  Returns a new IP address object with the host number
+///  +n+ relative to this address's network, keeping the
+///  prefix. The receiver does not need to be a network.
+///
+///  +Host(0)+ is the network base. Host numbers
+///  +0..size()-1+ are all valid, including the broadcast
+///  address. Returns +nil+ when +n+ is negative or greater
+///  than or equal to +size()+.
+///
+///    ip = IPAddress("192.168.128.7/24")
+///
+///    ip.Host(big.NewInt(93)).to_string
+///      ///  "192.168.128.93/24"
+///
+///    ip.Host(big.NewInt(256))
+///      ///  nil
+///
+
+func (self *IPAddress) Host(n *big.Int) *IPAddress {
+	if n.Sign() < 0 {
+		return nil
+	}
+	size := self.Size()
+	if n.Cmp(&size) >= 0 {
+		return nil
+	}
+	net := self.Network().Host_address
+	addr := big.NewInt(0).Add(&net, n)
+	return self.From(addr, &self.Prefix)
+}
+
+///  Returns the host number of this address relative to
+///  its network base, as a +big.Int+. This is the inverse
+///  of +Host+.
+///
+///    ip = IPAddress("192.168.128.93/24")
+///
+///    ip.Host_number()
+///      ///  93
+///
+
+func (self *IPAddress) Host_number() big.Int {
+	net := self.Network().Host_address
+	ret := big.NewInt(0)
+	ret.Sub(&self.Host_address, &net)
+	return *ret
+}
+
 func (self *IPAddress) Sub(other *IPAddress) big.Int {
 	ret := big.NewInt(0)
 	if self.Host_address.Cmp(&other.Host_address) > 0 {

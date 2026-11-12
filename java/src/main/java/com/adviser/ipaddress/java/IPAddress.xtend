@@ -908,6 +908,44 @@ class IPAddress {
         return adr.shiftRight(host_prefix).shiftLeft(host_prefix);
     }
 
+    ///  Returns a new IP object with the host number n
+    ///  relative to the network of this address, keeping
+    ///  the prefix.
+    ///
+    ///  The object IP doesn't need to be a network: the
+    ///  method automatically gets the network number from it.
+    ///
+    ///    ip = IPAddress("192.168.128.7/24")
+    ///
+    ///    ip.host(93).to_string
+    ///      ///  "192.168.128.93/24"
+    ///
+    ///  Returns null if n is negative or not lower than
+    ///  the number of addresses in the network (size).
+    ///
+    def IPAddress host(BigInteger n) {
+        if (n.signum() < 0 || n.compareTo(this.size()) >= 0) {
+            return null;
+        }
+        return this.from(this.network().host_address.add(n), this.prefix);
+    }
+
+    ///  Returns the host number of this address relative
+    ///  to its network as a BigInteger.
+    ///
+    ///  The inverse of host: the object IP doesn't need to
+    ///  be a network: the method automatically gets the
+    ///  network number from it.
+    ///
+    ///    ip = IPAddress("192.168.128.93/24")
+    ///
+    ///    ip.host_number
+    ///      ///  93
+    ///
+    def BigInteger host_number() {
+        return this.host_address.subtract(this.network().host_address);
+    }
+
     def BigInteger sub(IPAddress other) {
         if (this.host_address.compareTo(other.host_address) >= 0) {
             return this.host_address.subtract(other.host_address);

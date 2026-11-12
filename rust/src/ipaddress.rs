@@ -894,6 +894,42 @@ impl IPAddress {
         return (adr.clone() >> host_prefix) << host_prefix;
     }
 
+    ///  Returns a new IPAddress object with the address at host
+    ///  number `n` relative to this address's network. The prefix
+    ///  is kept. The object IP doesn't need to be a network: host(0)
+    ///  is always the network base.
+    ///
+    ///    ip = IPAddress("192.168.128.7/24")
+    ///
+    ///    ip.host(93).to_string()
+    ///      ///  "192.168.128.93/24"
+    ///
+    ///  Returns None when `n` is outside 0..size-1. Host numbers
+    ///  0..size-1 are all valid, including the broadcast address;
+    ///  which of them are usable is the caller's rule.
+    ///
+    #[allow(dead_code)]
+    pub fn host(&self, n: &BigUint) -> Option<IPAddress> {
+        if n >= &self.size() {
+            return None;
+        }
+        return Some(self.from(&self.network().host_address.add(n), &self.prefix));
+    }
+
+    ///  Returns this address minus its network base, i.e. the host
+    ///  number of the address within its network. This is the
+    ///  inverse of host().
+    ///
+    ///    ip = IPAddress("192.168.128.93/24")
+    ///
+    ///    ip.host_number()
+    ///      ///  93
+    ///
+    #[allow(dead_code)]
+    pub fn host_number(&self) -> BigUint {
+        return self.host_address.clone().sub(&self.network().host_address);
+    }
+
     pub fn sub(&self, other: &IPAddress) -> BigUint {
         if self.host_address > other.host_address {
             return self.host_address.clone().sub(&other.host_address);

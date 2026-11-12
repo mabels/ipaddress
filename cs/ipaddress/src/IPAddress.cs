@@ -1058,6 +1058,45 @@ namespace ipaddress
             return (adr >> (int)host_prefix) << (int)host_prefix;
         }
 
+        ///  Returns a new IPAddress object with the address at
+        ///  host number n relative to the network of this address.
+        ///  The prefix is kept. The receiver does not need to be
+        ///  a network.
+        ///
+        ///  host(0) is the network address. Host numbers
+        ///  0 .. size()-1 are valid, including the broadcast address.
+        ///  Returns null when n is out of that range.
+        ///
+        ///    ip = IPAddress("192.168.128.7/24")
+        ///
+        ///    ip.host(93).to_s
+        ///      ///  "192.168.128.93/24"
+        ///
+
+        public IPAddress host(BigInteger n)
+        {
+            if (n < 0 || n >= this.size())
+            {
+                return null;
+            }
+            return this.from(this.network().host_address + n, this.prefix);
+        }
+
+        ///  Returns the host number of this address relative to its
+        ///  network address, as a BigInteger. This is the inverse
+        ///  of host().
+        ///
+        ///    ip = IPAddress("192.168.128.93/24")
+        ///
+        ///    ip.host_number
+        ///      ///  93
+        ///
+
+        public BigInteger host_number()
+        {
+            return this.host_address - this.network().host_address;
+        }
+
         public BigInteger sub(IPAddress other)
         {
             if (this.host_address >= other.host_address)

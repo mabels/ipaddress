@@ -251,6 +251,44 @@ mod tests {
         assert_eq!("192.168.100.1", ip.first().to_s());
     }
     #[test]
+    pub fn test_method_host() {
+        let ip = IPAddress::parse("192.168.128.7/22").unwrap();
+        assert_eq!(
+            "192.168.129.44/22",
+            ip.host(&BigUint::from(300u32)).unwrap().to_string()
+        );
+        assert_eq!(
+            "192.168.128.7/22",
+            ip.host(&BigUint::from(7u32)).unwrap().to_string()
+        );
+        assert_eq!(
+            "192.168.128.0/22",
+            ip.host(&BigUint::from(0u32)).unwrap().to_string()
+        );
+        assert_eq!(
+            "192.168.131.255/22",
+            ip.host(&BigUint::from(1023u32)).unwrap().to_string()
+        );
+        assert_eq!(None, ip.host(&BigUint::from(1024u32)));
+    }
+    #[test]
+    pub fn test_method_host_number() {
+        assert_eq!(
+            BigUint::from(300u32),
+            IPAddress::parse("192.168.129.44/22").unwrap().host_number()
+        );
+        assert_eq!(
+            BigUint::from(0u32),
+            IPAddress::parse("192.168.128.0/22").unwrap().host_number()
+        );
+        assert_eq!(
+            BigUint::from(1023u32),
+            IPAddress::parse("192.168.131.255/22")
+                .unwrap()
+                .host_number()
+        );
+    }
+    #[test]
     pub fn test_method_last() {
         let mut ip = IPAddress::parse("192.168.100.0/24").unwrap();
         assert_eq!("192.168.100.254", ip.last().to_s());

@@ -877,6 +877,40 @@ class IPAddress {
     return (adr >> host_prefix) << host_prefix;
   }
 
+  ///  Returns a new IPAddress with the address at host number [n]
+  ///  within this address's network, keeping the prefix.
+  ///
+  ///  The receiver does not need to be a network address: the
+  ///  network number is derived from it automatically.
+  ///
+  ///    ip = IPAddress("192.168.128.7/24")
+  ///
+  ///    ip.host(BigInt.from(93)).to_string()
+  ///      ///  "192.168.128.93/24"
+  ///
+  ///  Host number 0 is the network base and size() - 1 is the
+  ///  broadcast address (both are valid). Returns null when [n] is
+  ///  negative or is not smaller than size().
+  ///
+  IPAddress? host(BigInt n) {
+    if (n.isNegative || n >= this.size()) {
+      return null;
+    }
+    return this.from(this.network().host_address + n, this.prefix);
+  }
+
+  ///  Returns the host number of this address within its network,
+  ///  as a BigInt. It is the inverse of [host].
+  ///
+  ///    ip = IPAddress("192.168.128.93/24")
+  ///
+  ///    ip.host_number()
+  ///      ///  93
+  ///
+  BigInt host_number() {
+    return this.host_address - this.network().host_address;
+  }
+
   BigInt sub(IPAddress other) {
     if (this.host_address.compareTo(other.host_address) >= 0) {
       return this.host_address - other.host_address;

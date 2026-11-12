@@ -156,6 +156,25 @@ def test_method_first():
     assert "fd00::10:12:80:f" == ip.last().to_s()
 
 
+def test_method_host():
+    ip = IPAddress.parse("fd00::10:12:80:1/64")
+    p44 = 1 << 44
+    p64 = 1 << 64
+    assert "fd00::1000:0:0/64" == ip.host(p44).to_string()
+    assert "fd00::/64" == ip.host(0).to_string()
+    assert "fd00::ffff:ffff:ffff:ffff/64" == ip.host(p64 - 1).to_string()
+    assert ip.host(p64) is None
+    assert ip.host(-1) is None
+
+
+def test_method_host_number():
+    assert (1 << 44) == IPAddress.parse("fd00::1000:0:0/64").host_number()
+    assert 0 == IPAddress.parse("fd00::/64").host_number()
+    assert ((1 << 64) - 1) == IPAddress.parse(
+        "fd00::ffff:ffff:ffff:ffff/64"
+    ).host_number()
+
+
 def test_method_network_u128():
     assert Ipv6.from_int(int("42540766411282592856903984951653826560"), 64).eq(
         setup().ip.network()

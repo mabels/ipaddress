@@ -8,6 +8,7 @@ import java.util.List
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Vector
 
@@ -188,6 +189,28 @@ class TestIpv6 {
     assertEquals(BigInteger.ONE.shiftLeft(8), ip.size());
     ip = IPAddress.parse("2001:db8::8:800:200c:417a/124").unwrap();
     assertEquals(BigInteger.ONE.shiftLeft(4), ip.size());
+  }
+
+  @Test
+  def test_method_host() {
+    val ip = IPAddress.parse("fd00::10:12:80:1/64").unwrap();
+    val p44 = BigInteger.ONE.shiftLeft(44);
+    val p64 = BigInteger.ONE.shiftLeft(64);
+    val p64m1 = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
+    assertEquals("fd00::1000:0:0/64", ip.host(p44).to_string());
+    assertEquals("fd00::/64", ip.host(BigInteger.ZERO).to_string());
+    assertEquals("fd00::ffff:ffff:ffff:ffff/64", ip.host(p64m1).to_string());
+    assertNull(ip.host(p64));
+    assertNull(ip.host(BigInteger.ONE.negate()));
+  }
+
+  @Test
+  def test_method_host_number() {
+    val p44 = BigInteger.ONE.shiftLeft(44);
+    val p64m1 = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
+    assertEquals(p44, IPAddress.parse("fd00::1000:0:0/64").unwrap().host_number());
+    assertEquals(BigInteger.ZERO, IPAddress.parse("fd00::/64").unwrap().host_number());
+    assertEquals(p64m1, IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64").unwrap().host_number());
   }
 
   @Test
