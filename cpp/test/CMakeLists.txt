@@ -17,7 +17,9 @@ enable_testing()
 
 cmake_policy(SET CMP0167 NEW)
 
-find_package(Boost 1.54.0 COMPONENTS system regex REQUIRED)
+#Boost.System is header-only since 1.69 and no longer ships a CMake
+#component on newer Boost releases; only regex needs a compiled library.
+find_package(Boost 1.54.0 COMPONENTS regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
 find_package(Threads REQUIRED)
