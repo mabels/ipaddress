@@ -25,7 +25,9 @@ endif()
 cmake_policy(SET CMP0167 NEW)
 
 #Only tested with versions 1.55 and 1.56
-find_package(Boost 1.80 COMPONENTS system regex REQUIRED)
+#Boost.System is header-only since 1.69 and no longer ships a CMake
+#component on newer Boost releases; only regex needs a compiled library.
+find_package(Boost 1.80 COMPONENTS regex REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
 if(APPLE)
