@@ -151,7 +151,8 @@ class Ipv6Tests: XCTestCase {
   func test_method_host_number() {
     XCTAssertEqual(BigInt(1) << 44, IPAddress.parse("fd00::1000:0:0/64")!.host_number())
     XCTAssertEqual(BigInt(0), IPAddress.parse("fd00::/64")!.host_number())
-    XCTAssertEqual((BigInt(1) << 64) - 1, IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64")!.host_number())
+    XCTAssertEqual(
+      (BigInt(1) << 64) - 1, IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64")!.host_number())
   }
 
   func test_method_includes() {

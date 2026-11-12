@@ -19,15 +19,16 @@ jobs:
     - name: boost
       run: sudo apt-get update && sudo apt-get install -yq libboost-all-dev
 
+    - name: clang-format 18
+      # Pin the formatter through pip: the runner image no longer ships
+      # clang-format-18, and clang-format's output differs between major
+      # versions (e.g. reference/pointer spacing in `operator<<`).
+      run: pipx install clang-format==18.1.8
+
     - name: "build cpp"
       run: |
         cd cpp && echo "build cpp"
-        # Pinned explicitly: clang-format's formatting output differs
-        # between major versions (e.g. reference/pointer spacing in
-        # `operator<<` signatures changed between 16/17 and 18), and
-        # the unversioned `clang-format` alias on this runner image is
-        # ambiguous between the 16/17/18 it has installed.
-        find src test -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) -print0 | xargs -0 clang-format-18 --dry-run --Werror
+        find src test -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) -print0 | xargs -0 clang-format --dry-run --Werror
         cmake -DCMAKE_BUILD_TYPE=Release .
         make
         for i in ./test/Release/*/test_*
@@ -284,6 +285,12 @@ jobs:
         fetch-depth: 1
 
     - uses: fwilhe2/setup-kotlin@main
+
+    - uses: actions/setup-java@v4
+      with:
+        # Gradle 8.0.2 does not understand the runner's default JDK 25.
+        distribution: 'temurin'
+        java-version: '17'
 
     - name: "build kotlin"
       run: |
