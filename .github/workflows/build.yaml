@@ -46,9 +46,14 @@ jobs:
       with:
         fetch-depth: 1
 
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
     - name: "build cs"
       run: |
         cd cs/ipaddress && echo "build cs"
+        dotnet --info
         dotnet restore
         dotnet format ipaddress.csproj --verify-no-changes
         dotnet format test/ipaddress.Tests.csproj --verify-no-changes

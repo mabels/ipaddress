@@ -1096,6 +1096,30 @@ class IPAddress
     @host_address.sub(network.host_address).num
   end
 
+  #   Returns a new IPAddress object whose network part comes from this
+  #   address and whose host part (the low bits covered by this prefix)
+  #   comes from +off+, taking the prefix from +off+. The receiver does
+  #   not have to be a network. Both a relative host part and an absolute
+  #   address inside this network work:
+  #
+  #     IPAddress.parse("192.168.12.0/22")
+  #       .add_host(IPAddress.parse("0.0.1.1/28")).to_string
+  #       #  => "192.168.13.1/28"
+  #     IPAddress.parse("100.199.12.0/22")
+  #       .add_host(IPAddress.parse("100.199.15.1/28")).to_string
+  #       #  => "100.199.15.1/28"
+  #
+  #   Returns nil when +off+ is a different address family or when its
+  #   prefix is not longer than this prefix.
+  #
+  def add_host(off)
+    return nil if off.nil?
+    return nil unless ip_same_kind(off)
+    return nil if off.prefix.num <= @prefix.num
+
+    from(network.host_address.add(off.host_address.mod(size)), off.prefix)
+  end
+
   #   Iterates over all the hosts IP addresses for the given
   #   network (or IP address).
   #

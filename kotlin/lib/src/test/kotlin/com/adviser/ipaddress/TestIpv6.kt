@@ -174,6 +174,44 @@ class TestIpv6 {
     }
 
     @Test
+    fun test_method_add_host() {
+        val base = IPAddress.parse("fd00::/64").unwrap()
+        // relative host parts, including ones whose network part is not zero
+        assertEquals(
+            "fd00::1000:0:0/80",
+            base.add_host(IPAddress.parse("::1000:0:0/80").unwrap())!!.to_string()
+        )
+        assertEquals(
+            "fd00::5/80",
+            base.add_host(IPAddress.parse("2001:db8::5/80").unwrap())!!.to_string()
+        )
+        assertEquals(
+            "fd00::/80",
+            base.add_host(IPAddress.parse("::/80").unwrap())!!.to_string()
+        )
+        assertEquals(
+            "fd00::ffff:ffff:ffff:ffff/128",
+            base.add_host(IPAddress.parse("::ffff:ffff:ffff:ffff/128").unwrap())!!.to_string()
+        )
+        // an absolute address inside the network maps to itself
+        assertEquals(
+            "2001:db8:1::5/80",
+            IPAddress.parse("2001:db8:1::/64").unwrap()
+                .add_host(IPAddress.parse("2001:db8:1::5/80").unwrap())!!.to_string()
+        )
+        // the receiver does not have to be a network
+        assertEquals(
+            "fd00::1000:0:0/80",
+            IPAddress.parse("fd00::1/64").unwrap()
+                .add_host(IPAddress.parse("::1000:0:0/80").unwrap())!!.to_string()
+        )
+        // equal or shorter prefix, other family
+        assertEquals(null, base.add_host(IPAddress.parse("::5/64").unwrap()))
+        assertEquals(null, base.add_host(IPAddress.parse("::1000:0:0/48").unwrap()))
+        assertEquals(null, base.add_host(IPAddress.parse("0.0.1.1/24").unwrap()))
+    }
+
+    @Test
     fun test_method_host_number() {
         val p44 = BigInteger.ONE.shiftLeft(44)
         val p64m1 = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE)

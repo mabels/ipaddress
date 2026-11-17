@@ -930,6 +930,31 @@ impl IPAddress {
         return self.host_address.clone().sub(&self.network().host_address);
     }
 
+    ///  Returns a new IPAddress whose network part comes from this
+    ///  address and whose host part (the low bits covered by this
+    ///  prefix) comes from `off`, taking the prefix from `off`. The
+    ///  receiver does not have to be a network. Both a relative host
+    ///  part and an absolute address inside this network work:
+    ///
+    ///    IPAddress::parse("192.168.12.0/22")
+    ///      .add_host(&IPAddress::parse("0.0.1.1/28").unwrap()).unwrap().to_string()
+    ///      ///  "192.168.13.1/28"
+    ///    IPAddress::parse("100.199.12.0/22")
+    ///      .add_host(&IPAddress::parse("100.199.15.1/28").unwrap()).unwrap().to_string()
+    ///      ///  "100.199.15.1/28"
+    ///
+    ///  Returns None when `off` is a different address family or when
+    ///  its prefix is not longer than this prefix.
+    ///
+    #[allow(dead_code)]
+    pub fn add_host(&self, off: &IPAddress) -> Option<IPAddress> {
+        if !self.is_same_kind(off) || off.prefix.num <= self.prefix.num {
+            return None;
+        }
+        let offset = off.host_address.clone() % self.size();
+        return Some(self.from(&self.network().host_address.add(&offset), &off.prefix));
+    }
+
     pub fn sub(&self, other: &IPAddress) -> BigUint {
         if self.host_address > other.host_address {
             return self.host_address.clone().sub(&other.host_address);

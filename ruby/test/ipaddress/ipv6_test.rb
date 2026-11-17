@@ -162,6 +162,26 @@ class IPv6Test < Test::Unit::TestCase
     assert_equal 2**64 - 1, IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64").host_number
   end
 
+  def test_method_add_host
+    base = IPAddress.parse("fd00::/64")
+    # relative host parts, including ones whose network part is not zero
+    assert_equal "fd00::1000:0:0/80", base.add_host(IPAddress.parse("::1000:0:0/80")).to_string
+    assert_equal "fd00::5/80", base.add_host(IPAddress.parse("2001:db8::5/80")).to_string
+    assert_equal "fd00::/80", base.add_host(IPAddress.parse("::/80")).to_string
+    assert_equal "fd00::ffff:ffff:ffff:ffff/128",
+      base.add_host(IPAddress.parse("::ffff:ffff:ffff:ffff/128")).to_string
+    # an absolute address inside the network maps to itself
+    assert_equal "2001:db8:1::5/80",
+      IPAddress.parse("2001:db8:1::/64").add_host(IPAddress.parse("2001:db8:1::5/80")).to_string
+    # the receiver does not have to be a network
+    assert_equal "fd00::1000:0:0/80",
+      IPAddress.parse("fd00::1/64").add_host(IPAddress.parse("::1000:0:0/80")).to_string
+    # equal or shorter prefix, other family
+    assert_nil base.add_host(IPAddress.parse("::5/64"))
+    assert_nil base.add_host(IPAddress.parse("::1000:0:0/48"))
+    assert_nil base.add_host(IPAddress.parse("0.0.1.1/24"))
+  end
+
   def test_method_include?
     assert_equal true, @ip.include?(@ip)
     # test prefix on same address

@@ -132,6 +132,31 @@ func TestIpv6(tx *testing.T) {
 				Parse("fd00::ffff:ffff:ffff:ffff/64").Unwrap().Host_number())
 		})
 
+		t.Run("test_method_add_host", func(t *MyTesting) {
+			base := Parse("fd00::/64").Unwrap()
+			// relative host parts, including ones whose network part is not zero
+			t.assert_string("fd00::1000:0:0/80",
+				base.Add_host(Parse("::1000:0:0/80").Unwrap()).To_string())
+			t.assert_string("fd00::5/80",
+				base.Add_host(Parse("2001:db8::5/80").Unwrap()).To_string())
+			t.assert_string("fd00::/80",
+				base.Add_host(Parse("::/80").Unwrap()).To_string())
+			t.assert_string("fd00::ffff:ffff:ffff:ffff/128",
+				base.Add_host(Parse("::ffff:ffff:ffff:ffff/128").Unwrap()).To_string())
+			// an absolute address inside the network maps to itself
+			t.assert_string("2001:db8:1::5/80",
+				Parse("2001:db8:1::/64").Unwrap().
+					Add_host(Parse("2001:db8:1::5/80").Unwrap()).To_string())
+			// the receiver does not have to be a network
+			t.assert_string("fd00::1000:0:0/80",
+				Parse("fd00::1/64").Unwrap().
+					Add_host(Parse("::1000:0:0/80").Unwrap()).To_string())
+			// equal or shorter prefix, other family
+			t.assert(base.Add_host(Parse("::5/64").Unwrap()) == nil)
+			t.assert(base.Add_host(Parse("::1000:0:0/48").Unwrap()) == nil)
+			t.assert(base.Add_host(Parse("0.0.1.1/24").Unwrap()) == nil)
+		})
+
 		t.Run("test_method_mapped", func(t *MyTesting) {
 			s := ipv6Setup()
 			t.assert_bool(false, s.ip.Is_mapped())

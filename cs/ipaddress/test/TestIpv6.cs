@@ -449,6 +449,28 @@ namespace address_test
             Assert.Equal(new BigInteger(0), IPAddress.parse("fd00::/64").unwrap().host_number());
             Assert.Equal(p64m1, IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64").unwrap().host_number());
         }
+
+        [Fact]
+        public void test_add_host()
+        {
+            var baseIp = IPAddress.parse("fd00::/64").unwrap();
+            // relative host parts, including ones whose network part is not zero
+            Assert.Equal("fd00::1000:0:0/80", baseIp.add_host(IPAddress.parse("::1000:0:0/80").unwrap()).to_string());
+            Assert.Equal("fd00::5/80", baseIp.add_host(IPAddress.parse("2001:db8::5/80").unwrap()).to_string());
+            Assert.Equal("fd00::/80", baseIp.add_host(IPAddress.parse("::/80").unwrap()).to_string());
+            Assert.Equal("fd00::ffff:ffff:ffff:ffff/128",
+                baseIp.add_host(IPAddress.parse("::ffff:ffff:ffff:ffff/128").unwrap()).to_string());
+            // an absolute address inside the network maps to itself
+            Assert.Equal("2001:db8:1::5/80",
+                IPAddress.parse("2001:db8:1::/64").unwrap().add_host(IPAddress.parse("2001:db8:1::5/80").unwrap()).to_string());
+            // the receiver does not have to be a network
+            Assert.Equal("fd00::1000:0:0/80",
+                IPAddress.parse("fd00::1/64").unwrap().add_host(IPAddress.parse("::1000:0:0/80").unwrap()).to_string());
+            // equal or shorter prefix, other family
+            Assert.Null(baseIp.add_host(IPAddress.parse("::5/64").unwrap()));
+            Assert.Null(baseIp.add_host(IPAddress.parse("::1000:0:0/48").unwrap()));
+            Assert.Null(baseIp.add_host(IPAddress.parse("0.0.1.1/24").unwrap()));
+        }
     }
 
 }

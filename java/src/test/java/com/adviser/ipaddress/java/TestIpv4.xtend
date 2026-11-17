@@ -275,6 +275,26 @@ class TestIpv4 {
         assertNull(ip.host(new BigInteger("-1")));
     }
    @Test
+    def test_method_add_host() {
+        val base = IPAddress.parse("192.168.12.0/22").unwrap();
+        // relative host parts, including ones whose network part is not zero
+        assertEquals("192.168.13.1/28", base.add_host(IPAddress.parse("0.0.1.1/28").unwrap()).to_string());
+        assertEquals("192.168.15.1/28", base.add_host(IPAddress.parse("100.199.15.1/28").unwrap()).to_string());
+        assertEquals("192.168.12.0/32", base.add_host(IPAddress.parse("0.0.0.0/32").unwrap()).to_string());
+        assertEquals("192.168.15.255/32", base.add_host(IPAddress.parse("0.0.3.255/32").unwrap()).to_string());
+        // an absolute address inside the network maps to itself
+        assertEquals("192.168.15.1/28", base.add_host(IPAddress.parse("192.168.15.1/28").unwrap()).to_string());
+        assertEquals("100.199.15.1/28",
+            IPAddress.parse("100.199.12.0/22").unwrap().add_host(IPAddress.parse("100.199.15.1/28").unwrap()).to_string());
+        // the receiver does not have to be a network
+        assertEquals("192.168.13.1/28",
+            IPAddress.parse("192.168.13.4/22").unwrap().add_host(IPAddress.parse("0.0.1.1/28").unwrap()).to_string());
+        // equal or shorter prefix, other family
+        assertNull(base.add_host(IPAddress.parse("0.0.0.5/22").unwrap()));
+        assertNull(base.add_host(IPAddress.parse("0.0.1.1/16").unwrap()));
+        assertNull(base.add_host(IPAddress.parse("::1/128").unwrap()));
+    }
+   @Test
     def test_method_host_number() {
         assertEquals(new BigInteger("300"),
                    IPAddress.parse("192.168.129.44/22").unwrap().host_number());

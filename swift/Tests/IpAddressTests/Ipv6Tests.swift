@@ -155,6 +155,29 @@ class Ipv6Tests: XCTestCase {
       (BigInt(1) << 64) - 1, IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64")!.host_number())
   }
 
+  func test_method_add_host() {
+    let base = IPAddress.parse("fd00::/64")!
+    // relative host parts, including ones whose network part is not zero
+    XCTAssertEqual("fd00::1000:0:0/80", base.add_host(IPAddress.parse("::1000:0:0/80"))!.to_string())
+    XCTAssertEqual("fd00::5/80", base.add_host(IPAddress.parse("2001:db8::5/80"))!.to_string())
+    XCTAssertEqual("fd00::/80", base.add_host(IPAddress.parse("::/80"))!.to_string())
+    XCTAssertEqual(
+      "fd00::ffff:ffff:ffff:ffff/128",
+      base.add_host(IPAddress.parse("::ffff:ffff:ffff:ffff/128"))!.to_string())
+    // an absolute address inside the network maps to itself
+    XCTAssertEqual(
+      "2001:db8:1::5/80",
+      IPAddress.parse("2001:db8:1::/64")!.add_host(IPAddress.parse("2001:db8:1::5/80"))!.to_string())
+    // the receiver does not have to be a network
+    XCTAssertEqual(
+      "fd00::1000:0:0/80",
+      IPAddress.parse("fd00::1/64")!.add_host(IPAddress.parse("::1000:0:0/80"))!.to_string())
+    // equal or shorter prefix, other family
+    XCTAssertNil(base.add_host(IPAddress.parse("::5/64")))
+    XCTAssertNil(base.add_host(IPAddress.parse("::1000:0:0/48")))
+    XCTAssertNil(base.add_host(IPAddress.parse("0.0.1.1/24")))
+  }
+
   func test_method_includes() {
     let ip = setup().ip
     XCTAssertEqual(true, ip.includes(ip))
@@ -402,6 +425,7 @@ class Ipv6Tests: XCTestCase {
       ("test_method_size", test_method_size),
       ("test_method_host", test_method_host),
       ("test_method_host_number", test_method_host_number),
+      ("test_method_add_host", test_method_add_host),
       ("test_method_includes", test_method_includes),
       ("test_method_to_hex", test_method_to_hex),
       ("test_method_to_s", test_method_to_s),

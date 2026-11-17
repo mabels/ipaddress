@@ -175,6 +175,31 @@ def test_method_host_number():
     ).host_number()
 
 
+def test_method_add_host():
+    base = IPAddress.parse("fd00::/64")
+    # relative host parts, including ones whose network part is not zero
+    assert "fd00::1000:0:0/80" == base.add_host(
+        IPAddress.parse("::1000:0:0/80")
+    ).to_string()
+    assert "fd00::5/80" == base.add_host(IPAddress.parse("2001:db8::5/80")).to_string()
+    assert "fd00::/80" == base.add_host(IPAddress.parse("::/80")).to_string()
+    assert "fd00::ffff:ffff:ffff:ffff/128" == base.add_host(
+        IPAddress.parse("::ffff:ffff:ffff:ffff/128")
+    ).to_string()
+    # an absolute address inside the network maps to itself
+    assert "2001:db8:1::5/80" == IPAddress.parse("2001:db8:1::/64").add_host(
+        IPAddress.parse("2001:db8:1::5/80")
+    ).to_string()
+    # the receiver does not have to be a network
+    assert "fd00::1000:0:0/80" == IPAddress.parse("fd00::1/64").add_host(
+        IPAddress.parse("::1000:0:0/80")
+    ).to_string()
+    # equal or shorter prefix, other family
+    assert base.add_host(IPAddress.parse("::5/64")) is None
+    assert base.add_host(IPAddress.parse("::1000:0:0/48")) is None
+    assert base.add_host(IPAddress.parse("0.0.1.1/24")) is None
+
+
 def test_method_network_u128():
     assert Ipv6.from_int(int("42540766411282592856903984951653826560"), 64).eq(
         setup().ip.network()

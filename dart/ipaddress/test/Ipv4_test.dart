@@ -221,6 +221,39 @@ void main() {
     expect(BigInt.from(1023), ip.host_number());
   });
 
+  test("test_method_add_host", () {
+    final base = IPAddress.parse("192.168.12.0/22").value;
+    // relative host parts, including ones whose network part is not zero
+    expect("192.168.13.1/28",
+        base.add_host(IPAddress.parse("0.0.1.1/28").value)?.to_string());
+    expect("192.168.15.1/28",
+        base.add_host(IPAddress.parse("100.199.15.1/28").value)?.to_string());
+    expect("192.168.12.0/32",
+        base.add_host(IPAddress.parse("0.0.0.0/32").value)?.to_string());
+    expect("192.168.15.255/32",
+        base.add_host(IPAddress.parse("0.0.3.255/32").value)?.to_string());
+    // an absolute address inside the network maps to itself
+    expect("192.168.15.1/28",
+        base.add_host(IPAddress.parse("192.168.15.1/28").value)?.to_string());
+    expect(
+        "100.199.15.1/28",
+        IPAddress.parse("100.199.12.0/22")
+            .value
+            .add_host(IPAddress.parse("100.199.15.1/28").value)
+            ?.to_string());
+    // the receiver does not have to be a network
+    expect(
+        "192.168.13.1/28",
+        IPAddress.parse("192.168.13.4/22")
+            .value
+            .add_host(IPAddress.parse("0.0.1.1/28").value)
+            ?.to_string());
+    // equal or shorter prefix, other family
+    expect(null, base.add_host(IPAddress.parse("0.0.0.5/22").value));
+    expect(null, base.add_host(IPAddress.parse("0.0.1.1/16").value));
+    expect(null, base.add_host(IPAddress.parse("::1/128").value));
+  });
+
   test("test_method_each_host", () {
     final ip = IPAddress.parse("10.0.0.1/29").value;
     final List<String> arr = [];

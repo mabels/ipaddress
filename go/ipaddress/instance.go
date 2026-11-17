@@ -533,6 +533,32 @@ func (self *IPAddress) Host_number() big.Int {
 	return *ret
 }
 
+///  Returns a new IP address whose network part comes from this
+///  address and whose host part (the low bits covered by this
+///  prefix) comes from +off+, taking the prefix from +off+. The
+///  receiver does not have to be a network. Both a relative host
+///  part and an absolute address inside this network work:
+///
+///    IPAddress("192.168.12.0/22").Add_host(IPAddress("0.0.1.1/28")).To_string()
+///      ///  "192.168.13.1/28"
+///    IPAddress("100.199.12.0/22").Add_host(IPAddress("100.199.15.1/28")).To_string()
+///      ///  "100.199.15.1/28"
+///
+///  Returns +nil+ when +off+ is a different address family or when
+///  its prefix is not longer than this prefix.
+///
+
+func (self *IPAddress) Add_host(off *IPAddress) *IPAddress {
+	if off == nil || !self.Ip_same_kind(off) || off.Prefix.Num <= self.Prefix.Num {
+		return nil
+	}
+	size := self.Size()
+	offset := new(big.Int).Mod(&off.Host_address, &size)
+	net := self.Network().Host_address
+	addr := new(big.Int).Add(&net, offset)
+	return self.From(addr, &off.Prefix)
+}
+
 func (self *IPAddress) Sub(other *IPAddress) big.Int {
 	ret := big.NewInt(0)
 	if self.Host_address.Cmp(&other.Host_address) > 0 {

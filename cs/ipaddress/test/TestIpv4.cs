@@ -757,6 +757,28 @@ namespace address_test
         }
 
         [Fact]
+        void test_add_host()
+        {
+            var baseIp = IPAddress.parse("192.168.12.0/22").unwrap();
+            // relative host parts, including ones whose network part is not zero
+            Assert.Equal("192.168.13.1/28", baseIp.add_host(IPAddress.parse("0.0.1.1/28").unwrap()).to_string());
+            Assert.Equal("192.168.15.1/28", baseIp.add_host(IPAddress.parse("100.199.15.1/28").unwrap()).to_string());
+            Assert.Equal("192.168.12.0/32", baseIp.add_host(IPAddress.parse("0.0.0.0/32").unwrap()).to_string());
+            Assert.Equal("192.168.15.255/32", baseIp.add_host(IPAddress.parse("0.0.3.255/32").unwrap()).to_string());
+            // an absolute address inside the network maps to itself
+            Assert.Equal("192.168.15.1/28", baseIp.add_host(IPAddress.parse("192.168.15.1/28").unwrap()).to_string());
+            Assert.Equal("100.199.15.1/28",
+                IPAddress.parse("100.199.12.0/22").unwrap().add_host(IPAddress.parse("100.199.15.1/28").unwrap()).to_string());
+            // the receiver does not have to be a network
+            Assert.Equal("192.168.13.1/28",
+                IPAddress.parse("192.168.13.4/22").unwrap().add_host(IPAddress.parse("0.0.1.1/28").unwrap()).to_string());
+            // equal or shorter prefix, other family
+            Assert.Null(baseIp.add_host(IPAddress.parse("0.0.0.5/22").unwrap()));
+            Assert.Null(baseIp.add_host(IPAddress.parse("0.0.1.1/16").unwrap()));
+            Assert.Null(baseIp.add_host(IPAddress.parse("::1/128").unwrap()));
+        }
+
+        [Fact]
         void test_classmethod_parse_classful()
         {
             foreach (var kp in setup().classful)

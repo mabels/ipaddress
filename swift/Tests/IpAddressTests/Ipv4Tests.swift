@@ -231,6 +231,28 @@ class Ipv4Tests: XCTestCase {
     XCTAssertEqual(BigInt(1023), IPAddress.parse("192.168.131.255/22")!.host_number())
   }
 
+  func test_method_add_host() {
+    let base = IPAddress.parse("192.168.12.0/22")!
+    // relative host parts, including ones whose network part is not zero
+    XCTAssertEqual("192.168.13.1/28", base.add_host(IPAddress.parse("0.0.1.1/28"))!.to_string())
+    XCTAssertEqual("192.168.15.1/28", base.add_host(IPAddress.parse("100.199.15.1/28"))!.to_string())
+    XCTAssertEqual("192.168.12.0/32", base.add_host(IPAddress.parse("0.0.0.0/32"))!.to_string())
+    XCTAssertEqual("192.168.15.255/32", base.add_host(IPAddress.parse("0.0.3.255/32"))!.to_string())
+    // an absolute address inside the network maps to itself
+    XCTAssertEqual("192.168.15.1/28", base.add_host(IPAddress.parse("192.168.15.1/28"))!.to_string())
+    XCTAssertEqual(
+      "100.199.15.1/28",
+      IPAddress.parse("100.199.12.0/22")!.add_host(IPAddress.parse("100.199.15.1/28"))!.to_string())
+    // the receiver does not have to be a network
+    XCTAssertEqual(
+      "192.168.13.1/28",
+      IPAddress.parse("192.168.13.4/22")!.add_host(IPAddress.parse("0.0.1.1/28"))!.to_string())
+    // equal or shorter prefix, other family
+    XCTAssertNil(base.add_host(IPAddress.parse("0.0.0.5/22")))
+    XCTAssertNil(base.add_host(IPAddress.parse("0.0.1.1/16")))
+    XCTAssertNil(base.add_host(IPAddress.parse("::1/128")))
+  }
+
   func test_method_network_u32() {
     XCTAssertEqual("2886732288", String(setup().ip.network().host_address))
   }
@@ -678,6 +700,7 @@ class Ipv4Tests: XCTestCase {
       ("test_method_size", test_method_size),
       ("test_method_host", test_method_host),
       ("test_method_host_number", test_method_host_number),
+      ("test_method_add_host", test_method_add_host),
       ("test_method_network_u32", test_method_network_u32),
       ("test_method_broadcast_u32", test_method_broadcast_u32),
       ("test_method_include", test_method_include),

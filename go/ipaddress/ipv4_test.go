@@ -221,6 +221,33 @@ func TestIpv4(tx *testing.T) {
 				Parse("192.168.131.255/22").Unwrap().Host_number())
 		})
 
+		t.Run("test_method_add_host", func(t *MyTesting) {
+			base := Parse("192.168.12.0/22").Unwrap()
+			// relative host parts, including ones whose network part is not zero
+			t.assert_string("192.168.13.1/28",
+				base.Add_host(Parse("0.0.1.1/28").Unwrap()).To_string())
+			t.assert_string("192.168.15.1/28",
+				base.Add_host(Parse("100.199.15.1/28").Unwrap()).To_string())
+			t.assert_string("192.168.12.0/32",
+				base.Add_host(Parse("0.0.0.0/32").Unwrap()).To_string())
+			t.assert_string("192.168.15.255/32",
+				base.Add_host(Parse("0.0.3.255/32").Unwrap()).To_string())
+			// an absolute address inside the network maps to itself
+			t.assert_string("192.168.15.1/28",
+				base.Add_host(Parse("192.168.15.1/28").Unwrap()).To_string())
+			t.assert_string("100.199.15.1/28",
+				Parse("100.199.12.0/22").Unwrap().
+					Add_host(Parse("100.199.15.1/28").Unwrap()).To_string())
+			// the receiver does not have to be a network
+			t.assert_string("192.168.13.1/28",
+				Parse("192.168.13.4/22").Unwrap().
+					Add_host(Parse("0.0.1.1/28").Unwrap()).To_string())
+			// equal or shorter prefix, other family
+			t.assert(base.Add_host(Parse("0.0.0.5/22").Unwrap()) == nil)
+			t.assert(base.Add_host(Parse("0.0.1.1/16").Unwrap()) == nil)
+			t.assert(base.Add_host(Parse("::1/128").Unwrap()) == nil)
+		})
+
 		t.Run("test_method_bits", func(t *MyTesting) {
 			ip := *Parse("127.0.0.1").Unwrap()
 			t.assert_string("01111111000000000000000000000001", ip.Bits())

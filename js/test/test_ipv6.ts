@@ -125,6 +125,31 @@ describe("ipv6", () => {
     assert.equal(0n, IPAddress.parse("fd00::/64")!.host_number());
     assert.equal(2n ** 64n - 1n, IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64")!.host_number());
   });
+  it("test_method_add_host", () => {
+    const base = IPAddress.parse("fd00::/64");
+    // relative host parts, including ones whose network part is not zero
+    assert.equal("fd00::1000:0:0/80", base!.add_host(IPAddress.parse("::1000:0:0/80")!)!.to_string());
+    assert.equal("fd00::5/80", base!.add_host(IPAddress.parse("2001:db8::5/80")!)!.to_string());
+    assert.equal("fd00::/80", base!.add_host(IPAddress.parse("::/80")!)!.to_string());
+    assert.equal(
+      "fd00::ffff:ffff:ffff:ffff/128",
+      base!.add_host(IPAddress.parse("::ffff:ffff:ffff:ffff/128")!)!.to_string(),
+    );
+    // an absolute address inside the network maps to itself
+    assert.equal(
+      "2001:db8:1::5/80",
+      IPAddress.parse("2001:db8:1::/64")!.add_host(IPAddress.parse("2001:db8:1::5/80")!)!.to_string(),
+    );
+    // the receiver does not have to be a network
+    assert.equal(
+      "fd00::1000:0:0/80",
+      IPAddress.parse("fd00::1/64")!.add_host(IPAddress.parse("::1000:0:0/80")!)!.to_string(),
+    );
+    // equal or shorter prefix, other family
+    assert.isNull(base!.add_host(IPAddress.parse("::5/64")!));
+    assert.isNull(base!.add_host(IPAddress.parse("::1000:0:0/48")!));
+    assert.isNull(base!.add_host(IPAddress.parse("0.0.1.1/24")!));
+  });
   it("test_method_first", () => {
     // the zero host is the subnet-router anycast, NOT a usable unicast —
     // first()/last() are the first/last USABLE hosts (:1/:f), 2026-08-19

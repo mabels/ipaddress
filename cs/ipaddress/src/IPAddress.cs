@@ -1097,6 +1097,32 @@ namespace ipaddress
             return this.host_address - this.network().host_address;
         }
 
+        ///  Returns a new IPAddress whose network part comes from this
+        ///  address and whose host part (the low bits covered by this
+        ///  prefix) comes from off, taking the prefix from off. The
+        ///  receiver does not have to be a network. Both a relative host
+        ///  part and an absolute address inside this network work:
+        ///
+        ///    IPAddress.parse("192.168.12.0/22")
+        ///      .add_host(IPAddress.parse("0.0.1.1/28").unwrap()).to_string()
+        ///      ///  "192.168.13.1/28"
+        ///    IPAddress.parse("100.199.12.0/22")
+        ///      .add_host(IPAddress.parse("100.199.15.1/28").unwrap()).to_string()
+        ///      ///  "100.199.15.1/28"
+        ///
+        ///  Returns null when off is a different address family or when
+        ///  its prefix is not longer than this prefix.
+        ///
+
+        public IPAddress add_host(IPAddress off)
+        {
+            if (off == null || !this.ip_same_kind(off) || off.prefix.num <= this.prefix.num)
+            {
+                return null;
+            }
+            return this.from(this.network().host_address + (off.host_address % this.size()), off.prefix);
+        }
+
         public BigInteger sub(IPAddress other)
         {
             if (this.host_address >= other.host_address)

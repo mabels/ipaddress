@@ -186,6 +186,27 @@ int main() {
       assert.isTrue(IPAddress::parse("192.168.128.0/22").unwrap().host_number().eq(Crunchy::from_number(0)));
       assert.isTrue(IPAddress::parse("192.168.131.255/22").unwrap().host_number().eq(Crunchy::from_number(1023)));
     });
+    it("test_method_add_host", []() {
+      auto base = IPAddress::parse("192.168.12.0/22").unwrap();
+      // relative host parts, including ones whose network part is not zero
+      assert.equal("192.168.13.1/28", base.add_host(IPAddress::parse("0.0.1.1/28").unwrap()).unwrap().to_string());
+      assert.equal("192.168.15.1/28", base.add_host(IPAddress::parse("100.199.15.1/28").unwrap()).unwrap().to_string());
+      assert.equal("192.168.12.0/32", base.add_host(IPAddress::parse("0.0.0.0/32").unwrap()).unwrap().to_string());
+      assert.equal("192.168.15.255/32", base.add_host(IPAddress::parse("0.0.3.255/32").unwrap()).unwrap().to_string());
+      // an absolute address inside the network maps to itself
+      assert.equal("192.168.15.1/28", base.add_host(IPAddress::parse("192.168.15.1/28").unwrap()).unwrap().to_string());
+      assert.equal(
+          "100.199.15.1/28",
+          IPAddress::parse("100.199.12.0/22").unwrap().add_host(IPAddress::parse("100.199.15.1/28").unwrap()).unwrap().to_string());
+      // the receiver does not have to be a network
+      assert.equal(
+          "192.168.13.1/28",
+          IPAddress::parse("192.168.13.4/22").unwrap().add_host(IPAddress::parse("0.0.1.1/28").unwrap()).unwrap().to_string());
+      // equal or shorter prefix, other family
+      assert.isTrue(base.add_host(IPAddress::parse("0.0.0.5/22").unwrap()).isErr());
+      assert.isTrue(base.add_host(IPAddress::parse("0.0.1.1/16").unwrap()).isErr());
+      assert.isTrue(base.add_host(IPAddress::parse("::1/128").unwrap()).isErr());
+    });
     it("test_method_bits", []() {
       auto ip = IPAddress::parse("127.0.0.1").unwrap();
       assert.equal("01111111000000000000000000000001", ip.bits());

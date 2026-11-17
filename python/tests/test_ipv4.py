@@ -187,6 +187,38 @@ def test_method_host_number():
     assert 1023 == ip.host_number()
 
 
+def test_method_add_host():
+    base = IPAddress.parse("192.168.12.0/22")
+    # relative host parts, including ones whose network part is not zero
+    assert "192.168.13.1/28" == base.add_host(
+        IPAddress.parse("0.0.1.1/28")
+    ).to_string()
+    assert "192.168.15.1/28" == base.add_host(
+        IPAddress.parse("100.199.15.1/28")
+    ).to_string()
+    assert "192.168.12.0/32" == base.add_host(
+        IPAddress.parse("0.0.0.0/32")
+    ).to_string()
+    assert "192.168.15.255/32" == base.add_host(
+        IPAddress.parse("0.0.3.255/32")
+    ).to_string()
+    # an absolute address inside the network maps to itself
+    assert "192.168.15.1/28" == base.add_host(
+        IPAddress.parse("192.168.15.1/28")
+    ).to_string()
+    assert "100.199.15.1/28" == IPAddress.parse("100.199.12.0/22").add_host(
+        IPAddress.parse("100.199.15.1/28")
+    ).to_string()
+    # the receiver does not have to be a network
+    assert "192.168.13.1/28" == IPAddress.parse("192.168.13.4/22").add_host(
+        IPAddress.parse("0.0.1.1/28")
+    ).to_string()
+    # equal or shorter prefix, other family
+    assert base.add_host(IPAddress.parse("0.0.0.5/22")) is None
+    assert base.add_host(IPAddress.parse("0.0.1.1/16")) is None
+    assert base.add_host(IPAddress.parse("::1/128")) is None
+
+
 def test_method_each_host():
     ip = IPAddress.parse("10.0.0.1/29")
     arr = []

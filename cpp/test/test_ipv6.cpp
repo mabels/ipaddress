@@ -130,6 +130,28 @@ int main() {
       assert.isTrue(IPAddress::parse("fd00::/64").unwrap().host_number().eq(Crunchy::from_number(0)));
       assert.isTrue(IPAddress::parse("fd00::ffff:ffff:ffff:ffff/64").unwrap().host_number().eq(p64m1));
     });
+    it("test_method_add_host", []() {
+      auto base = IPAddress::parse("fd00::/64").unwrap();
+      // relative host parts, including ones whose network part is not zero
+      assert.equal("fd00::1000:0:0/80", base.add_host(IPAddress::parse("::1000:0:0/80").unwrap()).unwrap().to_string());
+      assert.equal("fd00::5/80", base.add_host(IPAddress::parse("2001:db8::5/80").unwrap()).unwrap().to_string());
+      assert.equal("fd00::/80", base.add_host(IPAddress::parse("::/80").unwrap()).unwrap().to_string());
+      assert.equal(
+          "fd00::ffff:ffff:ffff:ffff/128",
+          base.add_host(IPAddress::parse("::ffff:ffff:ffff:ffff/128").unwrap()).unwrap().to_string());
+      // an absolute address inside the network maps to itself
+      assert.equal(
+          "2001:db8:1::5/80",
+          IPAddress::parse("2001:db8:1::/64").unwrap().add_host(IPAddress::parse("2001:db8:1::5/80").unwrap()).unwrap().to_string());
+      // the receiver does not have to be a network
+      assert.equal(
+          "fd00::1000:0:0/80",
+          IPAddress::parse("fd00::1/64").unwrap().add_host(IPAddress::parse("::1000:0:0/80").unwrap()).unwrap().to_string());
+      // equal or shorter prefix, other family
+      assert.isTrue(base.add_host(IPAddress::parse("::5/64").unwrap()).isErr());
+      assert.isTrue(base.add_host(IPAddress::parse("::1000:0:0/48").unwrap()).isErr());
+      assert.isTrue(base.add_host(IPAddress::parse("0.0.1.1/24").unwrap()).isErr());
+    });
     it("test_method_network_u128", []() {
       assert.isTrue(
           Ipv6::from_int(Crunchy::parse("42540766411282592856903984951653826560").unwrap(), 64).unwrap().eq(setup().ip.network()));

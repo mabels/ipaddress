@@ -172,6 +172,40 @@ void main() {
         IPAddress.parse("fd00::ffff:ffff:ffff:ffff/64").value.host_number());
   });
 
+  test("test_method_add_host", () {
+    final base = IPAddress.parse("fd00::/64").value;
+    // relative host parts, including ones whose network part is not zero
+    expect("fd00::1000:0:0/80",
+        base.add_host(IPAddress.parse("::1000:0:0/80").value)?.to_string());
+    expect("fd00::5/80",
+        base.add_host(IPAddress.parse("2001:db8::5/80").value)?.to_string());
+    expect("fd00::/80",
+        base.add_host(IPAddress.parse("::/80").value)?.to_string());
+    expect(
+        "fd00::ffff:ffff:ffff:ffff/128",
+        base
+            .add_host(IPAddress.parse("::ffff:ffff:ffff:ffff/128").value)
+            ?.to_string());
+    // an absolute address inside the network maps to itself
+    expect(
+        "2001:db8:1::5/80",
+        IPAddress.parse("2001:db8:1::/64")
+            .value
+            .add_host(IPAddress.parse("2001:db8:1::5/80").value)
+            ?.to_string());
+    // the receiver does not have to be a network
+    expect(
+        "fd00::1000:0:0/80",
+        IPAddress.parse("fd00::1/64")
+            .value
+            .add_host(IPAddress.parse("::1000:0:0/80").value)
+            ?.to_string());
+    // equal or shorter prefix, other family
+    expect(null, base.add_host(IPAddress.parse("::5/64").value));
+    expect(null, base.add_host(IPAddress.parse("::1000:0:0/48").value));
+    expect(null, base.add_host(IPAddress.parse("0.0.1.1/24").value));
+  });
+
   test("test_method_network_u128", () {
     expect(
         IpV6.from_int(
