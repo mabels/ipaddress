@@ -131,20 +131,14 @@ describe("ipv6", () => {
     assert.equal("fd00::1000:0:0/80", base!.add_host(IPAddress.parse("::1000:0:0/80")!)!.to_string());
     assert.equal("fd00::5/80", base!.add_host(IPAddress.parse("2001:db8::5/80")!)!.to_string());
     assert.equal("fd00::/80", base!.add_host(IPAddress.parse("::/80")!)!.to_string());
-    assert.equal(
-      "fd00::ffff:ffff:ffff:ffff/128",
-      base!.add_host(IPAddress.parse("::ffff:ffff:ffff:ffff/128")!)!.to_string(),
-    );
+    assert.equal("fd00::ffff:ffff:ffff:ffff/128", base!.add_host(IPAddress.parse("::ffff:ffff:ffff:ffff/128")!)!.to_string());
     // an absolute address inside the network maps to itself
     assert.equal(
       "2001:db8:1::5/80",
       IPAddress.parse("2001:db8:1::/64")!.add_host(IPAddress.parse("2001:db8:1::5/80")!)!.to_string(),
     );
     // the receiver does not have to be a network
-    assert.equal(
-      "fd00::1000:0:0/80",
-      IPAddress.parse("fd00::1/64")!.add_host(IPAddress.parse("::1000:0:0/80")!)!.to_string(),
-    );
+    assert.equal("fd00::1000:0:0/80", IPAddress.parse("fd00::1/64")!.add_host(IPAddress.parse("::1000:0:0/80")!)!.to_string());
     // equal or shorter prefix, other family
     assert.isNull(base!.add_host(IPAddress.parse("::5/64")!));
     assert.isNull(base!.add_host(IPAddress.parse("::1000:0:0/48")!));

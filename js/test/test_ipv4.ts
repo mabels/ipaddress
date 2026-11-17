@@ -242,15 +242,9 @@ describe("Ipv4Test", () => {
     assert.equal("192.168.15.255/32", base!.add_host(IPAddress.parse("0.0.3.255/32")!)!.to_string());
     // an absolute address inside the network maps to itself
     assert.equal("192.168.15.1/28", base!.add_host(IPAddress.parse("192.168.15.1/28")!)!.to_string());
-    assert.equal(
-      "100.199.15.1/28",
-      IPAddress.parse("100.199.12.0/22")!.add_host(IPAddress.parse("100.199.15.1/28")!)!.to_string(),
-    );
+    assert.equal("100.199.15.1/28", IPAddress.parse("100.199.12.0/22")!.add_host(IPAddress.parse("100.199.15.1/28")!)!.to_string());
     // the receiver does not have to be a network
-    assert.equal(
-      "192.168.13.1/28",
-      IPAddress.parse("192.168.13.4/22")!.add_host(IPAddress.parse("0.0.1.1/28")!)!.to_string(),
-    );
+    assert.equal("192.168.13.1/28", IPAddress.parse("192.168.13.4/22")!.add_host(IPAddress.parse("0.0.1.1/28")!)!.to_string());
     // equal or shorter prefix, other family
     assert.isNull(base!.add_host(IPAddress.parse("0.0.0.5/22")!));
     assert.isNull(base!.add_host(IPAddress.parse("0.0.1.1/16")!));

@@ -199,9 +199,8 @@ int main() {
           "100.199.15.1/28",
           IPAddress::parse("100.199.12.0/22").unwrap().add_host(IPAddress::parse("100.199.15.1/28").unwrap()).unwrap().to_string());
       // the receiver does not have to be a network
-      assert.equal(
-          "192.168.13.1/28",
-          IPAddress::parse("192.168.13.4/22").unwrap().add_host(IPAddress::parse("0.0.1.1/28").unwrap()).unwrap().to_string());
+      assert.equal("192.168.13.1/28",
+                   IPAddress::parse("192.168.13.4/22").unwrap().add_host(IPAddress::parse("0.0.1.1/28").unwrap()).unwrap().to_string());
       // equal or shorter prefix, other family
       assert.isTrue(base.add_host(IPAddress::parse("0.0.0.5/22").unwrap()).isErr());
       assert.isTrue(base.add_host(IPAddress::parse("0.0.1.1/16").unwrap()).isErr());
